@@ -193,6 +193,7 @@ class MyWidget(QtGui.QMainWindow):
 		
 		#**************MENU HELP********************************
 		self.menuHelp = QtGui.QMenu("&Help")
+		self.aboutAction = self.menuHelp.addAction("&On-line documentation")
 		self.aboutAction = self.menuHelp.addAction("&About...")
 		self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.openHelpWindow)
 		#*********************************************************
