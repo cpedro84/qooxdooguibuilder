@@ -1,4 +1,7 @@
-#-*-encoding:latin1 -*-
+# !/usr/bin/env python
+# -*- encoding: latin1 -*-
+
+
 
 import sys
 from PyQt4 import QtCore, QtGui
@@ -6,15 +9,14 @@ from PyQt4 import QtCore, QtGui
 
 
 class WidgetHelp(QtGui.QDialog):
-    
+	
 	def __init__(self, parent=None):
 		QtGui.QDialog.__init__(self, parent)
-	
-		self.setFixedSize(400, 220)
-		self.quit = QtGui.QPushButton("Quit", self)
+		self.setFixedSize(250, 100)
+		self.quit = QtGui.QPushButton("Close", self)
 		self.quit.setGeometry(62, 40, 75, 30)
 		self.connect(self.quit, QtCore.SIGNAL("clicked()"), self.close)
-		
+
 
 class MyWidget(QtGui.QMainWindow):
     
@@ -23,7 +25,7 @@ class MyWidget(QtGui.QMainWindow):
 		self.widgetRect = self.geometry()
 		#self.widgetRect.setWidth(sizeWint())
 		#self.widgetRect.setHeight(sizeHint())
-		#self.setFixedSize(400, 220)
+		self.setFixedSize(800, 600)
 				
 		self.menu = self.createMenu()
 		self.menuRect = self.menu.geometry()
@@ -122,118 +124,109 @@ class MyWidget(QtGui.QMainWindow):
 		
 	
 	
-	
 	def createWidgetBox(self):
 		self.WidgetBox = QtGui.QDockWidget("Widget Box", self)	
 		return self.WidgetBox
-		
+	
+	
 	def createMenu(self):
-		#Criação dos menu items
+		
+		
+		#Criação do menu
+		
 		
 		#**************MENU FILE********************************
-		self.menuFile = QtGui.QMenu("File")
+		self.menuFile = QtGui.QMenu("&File")
 		
-		self.newinterfaceAction = self.menuFile.addAction("New interface...")
-		self.openinterfaceAction = self.menuFile.addAction("Open interface...")
-		self.openTemplateAction = self.menuFile.addAction("Open Template...")
-		self.newinterfaceAction = self.menuFile.addAction("Close...")
-		
-		#Adicionar separador
-		self.menuFile.addSeparator()
-		
-		self.saveAction = self.menuFile.addAction("Save")
-		self.saveAsAction = self.menuFile.addAction("Save As...")
-		self.saveAsTemplateAction = self.menuFile.addAction("Save As Template...")
+		self.newInterfaceAction = self.menuFile.addAction("&New interface...")
+		self.openInterfaceAction = self.menuFile.addAction("&Open interface...")
+		self.openTemplateAction = self.menuFile.addAction("Open &template...")
 		
 		#Adicionar separador
 		self.menuFile.addSeparator()
 		
-		self.exitAction = self.menuFile.addAction("Exit")		
-		self.connect(self.exitAction, QtCore.SIGNAL("triggered()"),  
-			QtGui.qApp, QtCore.SLOT("quit()"))
+		self.saveInterfaceAction = self.menuFile.addAction("&Save interface")
+		self.saveInterfaceAsAction = self.menuFile.addAction("Save interface &as...")
+		
+		#Adicionar separador
+		self.menuFile.addSeparator()
+		
+		self.configureAction = self.menuFile.addAction("&Configure...")
+		
+		#Adicionar separador
+		self.menuFile.addSeparator()
+		
+		self.exitAction = self.menuFile.addAction("&Exit")		
+		self.connect(self.exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
 		#*********************************************************
 		
-		#**************MENU EDIT********************************
-		self.menuEdit = QtGui.QMenu("Edit")
 		
-		self.undoAction = self.menuEdit.addAction(QtGui.QIcon("./icons/back.xpm"),"Undo")
-		self.redoAction = self.menuEdit.addAction(QtGui.QIcon("./icons/forward.xpm"),"Redo")
+		#**************MENU EDIT********************************
+		self.menuEdit = QtGui.QMenu("&Edit")
+		
+		self.undoAction = self.menuEdit.addAction(QtGui.QIcon("./icons/back.xpm"), "&Undo (Ctrl+Z)")
+		self.redoAction = self.menuEdit.addAction(QtGui.QIcon("./icons/forward.xpm"), "&Redo (Ctrl+Y)")
 				
 		#Adicionar separador
 		self.menuEdit.addSeparator()
 		
-		self.cutAction = self.menuEdit.addAction("Cut")
-		self.copyAction = self.menuEdit.addAction("Copy")
-		self.pasteAction = self.menuEdit.addAction("Paste")
+		self.cutAction = self.menuEdit.addAction("&Cut (Ctrl+X)")
+		self.copyAction = self.menuEdit.addAction("C&opy (Ctrl+C)")
+		self.pasteAction = self.menuEdit.addAction("&Paste (Ctrl+V)")
 		#*********************************************************
 		
-		#**************MENU VIEW********************************
-		self.menuView = QtGui.QMenu("View")
-				
-		#*********************************************************		
-		
-		#**************MENU INSERT********************************
-		self.menuInsert = QtGui.QMenu("Insert")
-				
-		#*********************************************************
 		
 		#**************MENU CONTROL********************************
-		self.menuControl = QtGui.QMenu("Control")
-		
-		self.statusControlMenu = self.menuControl.addMenu("Status Control")
-		self.VisibleAction = self.statusControlMenu.addAction("Visible")
-		self.ReadOnlyAction = self.statusControlMenu.addAction("Read only")		
+		self.menuControl = QtGui.QMenu("&Control")
+		self.statusMenu = self.menuControl.addMenu("&Status")
+		self.protectedAction = self.statusMenu.addAction("&Protected")
+		self.visibleAction = self.statusMenu.addAction("&Visible")
 		#*********************************************************
 		
-		#**************MENU CONFIGURE*************************
-		self.menuConfigure = QtGui.QMenu("Configure")
-				
+		
+		#**************MENU PREVIEW****************************
+		self.menuPreview = QtGui.QMenu("&Preview")
+		self.previewInApplicationAction = self.menuPreview.addAction("Preview in &application")
+		self.previewInBrowserAction = self.menuPreview.addAction("Preview in &browser")
 		#*********************************************************
 		
-		#**************MENU TEST*************************
-		self.menuTest = QtGui.QMenu("Test")
 		
-		self.testinterfaceFormatAppAction = self.menuTest.addAction("Test interface App")
-		self.testinterfaceFormatWebAction = self.menuTest.addAction("Test interface Web")
-		#*********************************************************
-				
 		#**************MENU HELP********************************
-		self.menuHelp = QtGui.QMenu("Help")
-		self.helpAction = self.menuHelp.addAction("About...")		
-		self.connect(self.helpAction, QtCore.SIGNAL("triggered()"),  self.openHelpWindow)
+		self.menuHelp = QtGui.QMenu("&Help")
+		self.aboutAction = self.menuHelp.addAction("&About...")
+		self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.openHelpWindow)
 		#*********************************************************
 		
-				
-		self.MenuBar = QtGui.QMenuBar(self)
-		self.MenuBar.addMenu(self.menuFile)
-		self.MenuBar.addMenu(self.menuEdit)
-		self.MenuBar.addMenu(self.menuView)
-		self.MenuBar.addMenu(self.menuInsert)
-		self.MenuBar.addMenu(self.menuControl)
-		self.MenuBar.addMenu(self.menuConfigure)
-		self.MenuBar.addMenu(self.menuTest)
-		self.MenuBar.addMenu(self.menuHelp)
 		
-		return self.MenuBar
-	
-	def createToolBar(self):
-						
-		self.ToolBar = QtGui.QToolBar(self)
-		self.ToolBar.setMovable(1)
-				
-		self.OpenAction = self.ToolBar.addAction(QtGui.QIcon("./icons/forward.xpm"), "Open")
-		return self.ToolBar
-	
-	
-	def openHelpWindow(self):
+		self.menuBar = QtGui.QMenuBar(self)
+		self.menuBar.addMenu(self.menuFile)
+		self.menuBar.addMenu(self.menuEdit)
+		self.menuBar.addMenu(self.menuControl)
+		self.menuBar.addMenu(self.menuPreview)
+		self.menuBar.addMenu(self.menuHelp)
 		
-		self.wdw_help = WidgetHelp()
-		self.wdw_help.show()
+		return self.menuBar
+	
+	
+	def createToolBar(self):					
+		self.toolBar = QtGui.QToolBar(self)
+		self.toolBar.setMovable(1)
+		self.openAction = self.toolBar.addAction(QtGui.QIcon("./icons/forward.xpm"), "Open interface")
+		return self.toolBar
 	
 
-	
-#main 
-app = QtGui.QApplication(sys.argv)
-widget = MyWidget()
-widget.show()
-sys.exit(app.exec_())
+	def openHelpWindow(self):
+		self.wdw_help = WidgetHelp()
+		self.wdw_help.show()
+
+
+
+def main(): 
+	app = QtGui.QApplication(sys.argv)
+	widget = MyWidget()
+	widget.show()
+	sys.exit(app.exec_())
+
+
+
+main()
