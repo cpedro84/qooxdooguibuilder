@@ -5,7 +5,7 @@ from PyQt4 import QtCore, QtGui
 
 
 
-class ResizebleWidget(QtGui.QFrame):
+class ResizableWidget(QtGui.QFrame):
     
 	def __init__(self, parent=None):
 		
@@ -21,9 +21,9 @@ class ResizebleWidget(QtGui.QFrame):
 		self.RectLT = QtCore.QRect(0,0,0,0) #LEFT TOP
 		self.RectCT = QtCore.QRect(0,0,0,0) #CENTER TOP
 		self.RectRT = QtCore.QRect(0,0,0,0) #RIGHT TOP
-		self.RectLB = QtCore.QRect(0,0,0,0) #LEFT BOTTON
-		self.RectCB = QtCore.QRect(0,0,0,0) #CENTER BOTTON
-		self.RectRB = QtCore.QRect(0,0,0,0) #RIGHT BOTTON
+		self.RectLB = QtCore.QRect(0,0,0,0) #LEFT BOTTOM
+		self.RectCB = QtCore.QRect(0,0,0,0) #CENTER BOTTOM
+		self.RectRB = QtCore.QRect(0,0,0,0) #RIGHT BOTTOM
 				
 		"""text = "teste"
 		
@@ -103,7 +103,7 @@ class ResizebleWidget(QtGui.QFrame):
 		
 		painter.end()
 						
-		#REDIMENSIONAR TAMANHO DA WIDGET
+		#REDIMENSIONAR A WIDGET
 		self.Btn1.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
 		
 	
@@ -125,11 +125,11 @@ class ResizebleWidget(QtGui.QFrame):
 			self.setCursor(QtGui.QCursor(QtCore.Qt.SizeVerCursor))
 		elif self.IsPointInsideRect(point, self.RectRT) == bool(1): # RIGHT TOP
 			self.setCursor(QtGui.QCursor(QtCore.Qt.SizeBDiagCursor))
-		elif self.IsPointInsideRect(point, self.RectLB) == bool(1): # LEFT BOTTON
+		elif self.IsPointInsideRect(point, self.RectLB) == bool(1): # LEFT BOTTOM
 			self.setCursor(QtGui.QCursor(QtCore.Qt.SizeBDiagCursor))
-		elif self.IsPointInsideRect(point, self.RectCB) == bool(1): # CENTER BOTTON
+		elif self.IsPointInsideRect(point, self.RectCB) == bool(1): # CENTER BOTTOM
 			self.setCursor(QtGui.QCursor(QtCore.Qt.SizeVerCursor))
-		elif self.IsPointInsideRect(point, self.RectRB) == bool(1): # RIGHT BOTTON
+		elif self.IsPointInsideRect(point, self.RectRB) == bool(1): # RIGHT BOTTOM
 			self.setCursor(QtGui.QCursor(QtCore.Qt.SizeFDiagCursor))
 		else:			
 			self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
@@ -153,6 +153,6 @@ class ResizebleWidget(QtGui.QFrame):
 
 #main 
 app = QtGui.QApplication(sys.argv)
-widget = ResizebleWidget()
+widget = ResizableWidget()
 widget.show()
 sys.exit(app.exec_())
