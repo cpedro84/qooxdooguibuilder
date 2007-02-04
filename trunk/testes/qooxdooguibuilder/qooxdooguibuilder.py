@@ -25,7 +25,7 @@ class MyWidget(QtGui.QMainWindow):
 		self.widgetRect = self.geometry()
 		#self.widgetRect.setWidth(sizeWint())
 		#self.widgetRect.setHeight(sizeHint())
-		self.setFixedSize(800, 600)
+		#self.setFixedSize(800, 600)
 				
 		self.menu = self.createMenu()
 		self.menuRect = self.menu.geometry()
