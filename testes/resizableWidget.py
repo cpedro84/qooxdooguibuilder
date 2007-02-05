@@ -1,7 +1,11 @@
 #!/usr/bin/env python
+# -*- encoding: latin1 -*-
+
+
 
 import sys
 from PyQt4 import QtCore, QtGui
+
 
 
 class ResizebleWidget(QtGui.QWidget):
