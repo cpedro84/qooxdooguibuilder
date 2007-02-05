@@ -14,6 +14,9 @@ CLASS HelpWindow
 class HelpWindow(QtGui.QDialog):
 
 
+	"""
+	FUNCTION __init__
+	"""
 	def __init__(self, parent = None):
 		QtGui.QDialog.__init__(self, parent)
 				
@@ -32,6 +35,9 @@ CLASS ApplicationWindow
 class ApplicationWindow(QtGui.QMainWindow):
 
 
+	"""
+	FUNCTION __init__
+	"""
 	def __init__(self, parent = None):
 		QtGui.QWidget.__init__(self, parent)
 		self.widgetRect = self.geometry()
