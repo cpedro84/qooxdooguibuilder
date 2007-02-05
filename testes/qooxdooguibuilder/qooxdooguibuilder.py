@@ -306,7 +306,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def aboutAct(self):
 
-        QtGui.QMessageBox.about(self, self.tr("About"), self.tr("The <b>Qooxdoo GUI Builder</b> provides visual construction of interfaces, using the qooxdoo framework."))
+        QtGui.QMessageBox.about(self, self.tr("About"), self.tr("<b>Qooxdoo GUI Builder</b> provides visual construction of interfaces, using the qooxdoo framework."))
 
 
 
