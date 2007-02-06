@@ -15,43 +15,30 @@ class MainWindow(QtGui.QMainWindow):
 
         QtGui.QWidget.__init__(self, parent)
 
-        self.widgetRect = self.geometry()
-
         self.createActions()
         self.createMenus()
         self.createToolBars()
         self.createStatusBar()
 
-        self.ControlsWidget = self.createWidgetBox()
-        self.ControlsWidget.setFixedWidth(0.2 * self.width())
-        self.ControlsWidget.setWindowTitle(self.tr("Controls"))
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.ControlsWidget, QtCore.Qt.Vertical)
+        self.controlsWidget = QtGui.QDockWidget(self)
+        self.controlsWidget.setFixedWidth(self.width() * 0.2)
+        self.controlsWidget.setWindowTitle(self.tr("Controls"))
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsWidget, QtCore.Qt.Vertical)
 
-        self.PropertiesWidget = self.createWidgetBox()
-        self.PropertiesWidget.setFixedWidth(0.2 * self.width())
-        self.PropertiesWidget.setWindowTitle(self.tr("Properties"))
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.PropertiesWidget, QtCore.Qt.Vertical)
+        self.propertiesWidget = QtGui.QDockWidget(self)
+        self.propertiesWidget.setFixedWidth(self.width() * 0.2)
+        self.propertiesWidget.setWindowTitle(self.tr("Properties"))
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesWidget, QtCore.Qt.Vertical)
 
-        self.CentralWidget = QtGui.QScrollArea(self)
-        self.CentralWidget.setBackgroundRole(QtGui.QPalette.Dark)
+        self.centralWidget = QtGui.QScrollArea(self)
+        self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
 
-        self.RectCentralWidget = QtCore.QRect()
-        self.RectCentralWidget.setWidth(self.widgetRect.width()*0.8)
-        self.RectCentralWidget.setHeight(self.widgetRect.height())
-        self.CentralWidget.setGeometry(self.RectCentralWidget)
+        self.drawArea = QtGui.QFrame(self.centralWidget)
+        self.drawArea.setBackgroundRole(QtGui.QPalette.Midlight)
+        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 1.05, self.height() * 5.25)
 
-        self.drawWidget = QtGui.QFrame(self.CentralWidget)
-        self.drawWidget.setAutoFillBackground(bool(0))
-        self.drawWidget.setGeometry(self.RectCentralWidget.x() + self.RectCentralWidget.width() * 0.2, self.RectCentralWidget.y() + self.RectCentralWidget.height() * 0.2, self.RectCentralWidget.width(), self.RectCentralWidget.height())
-        self.drawWidget.setBackgroundRole(QtGui.QPalette.Midlight)
-
-        self.drawLayout = QtGui.QBoxLayout(QtGui.QBoxLayout.LeftToRight)
-        self.drawLayout.addStretch(1)
-        self.drawLayout.setMargin(11)
-        self.drawLayout.addWidget(self.drawWidget)
-
-        self.CentralWidget.setWidget(self.drawWidget)
-        self.setCentralWidget(self.CentralWidget)
+        self.centralWidget.setWidget(self.drawArea)
+        self.setCentralWidget(self.centralWidget)
 
         self.setWindowTitle(self.tr("Qooxdoo GUI Builder"))
         self.setMinimumSize(800, 600)
@@ -204,13 +191,6 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar().showMessage(self.tr("Ready"))
 
 
-    def createWidgetBox(self):
-
-        self.WidgetBox = QtGui.QDockWidget(self)
-
-        return self.WidgetBox
-
-
     def contextMenuEvent(self, event):
 
         menu = QtGui.QMenu(self)
@@ -313,7 +293,7 @@ class MainWindow(QtGui.QMainWindow):
 def main():
     app = QtGui.QApplication(sys.argv)
     main_widget = MainWindow()
-    main_widget.show()
+    main_widget.showMaximized()
     sys.exit(app.exec_())
 
 
