@@ -21,12 +21,12 @@ class MainWindow(QtGui.QMainWindow):
         self.createStatusBar()
 
         self.controlsWidget = QtGui.QDockWidget(self)
-        self.controlsWidget.setFixedWidth(self.width() * 0.2)
+        self.controlsWidget.setFixedWidth(self.width() * 0.25)
         self.controlsWidget.setWindowTitle(self.tr("Controls"))
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsWidget, QtCore.Qt.Vertical)
 
         self.propertiesWidget = QtGui.QDockWidget(self)
-        self.propertiesWidget.setFixedWidth(self.width() * 0.2)
+        self.propertiesWidget.setFixedWidth(self.width() * 0.25)
         self.propertiesWidget.setWindowTitle(self.tr("Properties"))
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesWidget, QtCore.Qt.Vertical)
 
@@ -35,7 +35,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.drawArea = QtGui.QFrame(self.centralWidget)
         self.drawArea.setBackgroundRole(QtGui.QPalette.Midlight)
-        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 1.05, self.height() * 5.25)
+        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
 
         self.centralWidget.setWidget(self.drawArea)
         self.setCentralWidget(self.centralWidget)
