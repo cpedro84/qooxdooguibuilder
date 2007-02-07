@@ -34,7 +34,7 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
 
         self.drawArea = QtGui.QFrame(self.centralWidget)
-        self.drawArea.setBackgroundRole(QtGui.QPalette.Midlight)
+        self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
         self.drawArea.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
 
         self.centralWidget.setWidget(self.drawArea)
