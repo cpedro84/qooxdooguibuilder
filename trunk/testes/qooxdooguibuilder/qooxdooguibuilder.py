@@ -31,6 +31,7 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setWidget(self.drawArea)
         self.setCentralWidget(self.centralWidget)
 
+        self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
         self.setWindowTitle(self.tr("Qooxdoo GUI Builder"))
         self.setMinimumSize(800, 600)
 
