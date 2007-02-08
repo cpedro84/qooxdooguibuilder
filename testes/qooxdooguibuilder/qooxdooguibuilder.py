@@ -19,16 +19,7 @@ class MainWindow(QtGui.QMainWindow):
         self.createMenus()
         self.createToolBars()
         self.createStatusBar()
-
-        self.controlsWidget = QtGui.QDockWidget(self)
-        self.controlsWidget.setFixedWidth(self.width() * 0.25)
-        self.controlsWidget.setWindowTitle(self.tr("Controls"))
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsWidget, QtCore.Qt.Vertical)
-
-        self.propertiesWidget = QtGui.QDockWidget(self)
-        self.propertiesWidget.setFixedWidth(self.width() * 0.25)
-        self.propertiesWidget.setWindowTitle(self.tr("Properties"))
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesWidget, QtCore.Qt.Vertical)
+        self.createDockWindows()
 
         self.centralWidget = QtGui.QScrollArea(self)
         self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
@@ -189,6 +180,31 @@ class MainWindow(QtGui.QMainWindow):
     def createStatusBar(self):
 
         self.statusBar().showMessage(self.tr("Ready"))
+
+
+    def createDockWindows(self):
+
+        self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
+        self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+        self.controlsDock.setFixedWidth(self.width() * 0.25)
+
+        self.controlsList = QtGui.QListWidget(self.controlsDock)
+        #self.controlsList.addItems()
+
+        self.controlsDock.setWidget(self.controlsList)
+                                   
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
+
+        self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
+        self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+        self.propertiesDock.setFixedWidth(self.width() * 0.25)
+
+        self.propertiesList = QtGui.QListWidget(self.propertiesDock)
+        #self.propertiesList.addItems()
+
+        self.propertiesDock.setWidget(self.propertiesList)
+                                   
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
 
 
     def contextMenuEvent(self, event):
