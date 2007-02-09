@@ -8,6 +8,39 @@ from PyQt4 import QtCore, QtGui
 
 
 
+class PropertiesWindow(QtGui.QListWidget):
+
+    def __init__(self, parent = None):
+
+        QtGui.QListWidget.__init__(self, parent)
+
+
+
+class ControlsWindow(QtGui.QListWidget):
+
+    def __init__(self, parent = None):
+
+        QtGui.QListWidget.__init__(self, parent)
+
+        self.setDragEnabled(True)
+        self.setViewMode(QtGui.QListView.IconMode)
+        self.setIconSize(QtCore.QSize(60, 60))
+        self.setSpacing(10)
+
+
+    def addPiece(self, iconPath):
+
+        pieceItem = QtGui.QListWidgetItem(self)
+        pieceItem.setIcon(QtGui.QIcon(iconPath))
+        pieceItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+
+
+    def startDrag(self):
+
+        item = self.currentItem()
+
+
+
 class MainWindow(QtGui.QMainWindow):
 
 
@@ -22,12 +55,10 @@ class MainWindow(QtGui.QMainWindow):
         self.createDockWindows()
 
         self.centralWidget = QtGui.QScrollArea(self)
+
+        self.createDrawArea()
+
         self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
-
-        self.drawArea = QtGui.QFrame(self.centralWidget)
-        self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
-        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
-
         self.centralWidget.setWidget(self.drawArea)
         self.setCentralWidget(self.centralWidget)
 
@@ -189,23 +220,26 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.controlsDock.setFixedWidth(self.width() * 0.25)
 
-        self.controlsList = QtGui.QListWidget(self.controlsDock)
-        #self.controlsList.addItems()
+        self.controlsList = ControlsWindow(self.controlsDock)
 
         self.controlsDock.setWidget(self.controlsList)
-                                   
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
 
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
         self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.propertiesDock.setFixedWidth(self.width() * 0.25)
 
-        self.propertiesList = QtGui.QListWidget(self.propertiesDock)
-        #self.propertiesList.addItems()
+        self.propertiesList = PropertiesWindow(self.propertiesDock)
 
         self.propertiesDock.setWidget(self.propertiesList)
-                                   
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
+
+
+    def createDrawArea(self):
+
+        self.drawArea = QtGui.QFrame(self.centralWidget)
+        self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
+        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
 
 
     def contextMenuEvent(self, event):
