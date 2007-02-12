@@ -14,10 +14,9 @@ class PropertiesWindow(QtGui.QTableWidget):
 
         QtGui.QTableWidget.__init__(self, parent)
 
-        self.headerLabels = QtCore.QStringList(["Property", "Value"])
         self.setColumnCount(2)
         self.setRowCount(15)
-        self.setHorizontalHeaderLabels(self.headerLabels)
+        self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
 
 
 
@@ -35,14 +34,14 @@ class ControlsWindow(QtGui.QListWidget):
 
     def addPiece(self, iconPath):
 
-        pieceItem = QtGui.QListWidgetItem(self)
-        pieceItem.setIcon(QtGui.QIcon(iconPath))
-        pieceItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        self.pieceItem = QtGui.QListWidgetItem(self)
+        self.pieceItem.setIcon(QtGui.QIcon(iconPath))
+        self.pieceItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
 
 
     def startDrag(self):
 
-        item = self.currentItem()
+        self.item = self.currentItem()
 
 
 
