@@ -8,11 +8,16 @@ from PyQt4 import QtCore, QtGui
 
 
 
-class PropertiesWindow(QtGui.QListWidget):
+class PropertiesWindow(QtGui.QTableWidget):
 
     def __init__(self, parent = None):
 
-        QtGui.QListWidget.__init__(self, parent)
+        QtGui.QTableWidget.__init__(self, parent)
+
+        self.headerLabels = QtCore.QStringList(["Property", "Value"])
+        self.setColumnCount(2)
+        self.setRowCount(15)
+        self.setHorizontalHeaderLabels(self.headerLabels)
 
 
 
@@ -219,6 +224,7 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
         self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.controlsDock.setFixedWidth(self.width() * 0.25)
+        self.controlsDock.setWindowIcon(QtGui.QIcon("icons/controlswindow.png"))
 
         self.controlsList = ControlsWindow(self.controlsDock)
 
@@ -228,10 +234,11 @@ class MainWindow(QtGui.QMainWindow):
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
         self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.propertiesDock.setFixedWidth(self.width() * 0.25)
+        self.propertiesDock.setWindowIcon(QtGui.QIcon("icons/propertieswindow.png"))
 
-        self.propertiesList = PropertiesWindow(self.propertiesDock)
+        self.propertiesTable = PropertiesWindow(self.propertiesDock)
 
-        self.propertiesDock.setWidget(self.propertiesList)
+        self.propertiesDock.setWidget(self.propertiesTable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
 
 
