@@ -19,28 +19,55 @@ class DrawArea(QtGui.QFrame):
 
 
 
-class PropertiesWindow(QtGui.QTableWidget):
+class PropertiesTable(QtGui.QTableWidget):
 
     def __init__(self, parent = None):
 
         QtGui.QTableWidget.__init__(self, parent)
 
-        self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
+        self.verticalHeader().hide()
+
+
+    def preload(self):
+
         self.setColumnCount(2)
-        self.setColumnWidth(1, 125)
+        self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+        self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
+
+
+    def load(self, filePath):
 
         i = 0
-        f = file("data/properties.dat", 'r')
-        for line in f:
-            self.setRowCount(self.rowCount() + 1)
-            self.setRowHeight(i, 20)
-            self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line)))
-            i = i + 1
-        f.close()
+        fetch = False
+        restart = False
+        f1 = file(filePath, 'r')
+        f2 = file("data/properties.dat", 'r')
+
+        for line1 in f1:
+            for line2 in f2:
+                if fetch:
+                    for c in line2:
+                        if c != "Q":
+                            self.setRowCount(self.rowCount() + 1)
+                            self.setRowHeight(i, 20)
+                            self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line2)))
+                            i = i + 1
+                        else:
+                            restart = True
+                        break
+                elif line1 == line2:
+                    fetch = True
+                elif restart:
+                    fetch = False
+                    restart = False
+                    break
+
+        f2.close()
+        f1.close()
 
 
 
-class ControlsWindow(QtGui.QListWidget):
+class ControlsList(QtGui.QListWidget):
 
     def __init__(self, parent = None):
 
@@ -254,7 +281,7 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDock.setFixedWidth(self.width() * 0.28)
         self.controlsDock.setWindowIcon(QtGui.QIcon("icons/controlswindow.png"))
 
-        self.controlsList = ControlsWindow()
+        self.controlsList = ControlsList()
 
         self.controlsDock.setWidget(self.controlsList)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
@@ -264,7 +291,7 @@ class MainWindow(QtGui.QMainWindow):
         self.propertiesDock.setFixedWidth(self.width() * 0.28)
         self.propertiesDock.setWindowIcon(QtGui.QIcon("icons/propertieswindow.png"))
 
-        self.propertiesTable = PropertiesWindow()
+        self.propertiesTable = PropertiesTable()
 
         self.propertiesDock.setWidget(self.propertiesTable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
