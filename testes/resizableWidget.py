@@ -8,12 +8,19 @@ from PyQt4 import QtCore, QtGui
 
 
 
-class ResizebleWidget(QtGui.QWidget):
+
+class ResizableWidget(QtGui.QWidget):
     
-	def __init__(self, parent=None):
+	def __init__(self, widget=None, parent=None):
 		
-		QtGui.QWidget.__init__(self, parent)		
-		self.Btn1 = QtGui.QPushButton(self)		
+		QtGui.QWidget.__init__(self, parent)				
+		
+		self.childWidget = widget
+		self.childWidget.setParent(self)
+		#self.childWidget = QtGui.QPushButton(self)		
+		#self.childWidget.setEnabled(bool(0))
+		
+		self.setSizeIncrement(10,10)
 		self.setMouseTracking(bool(1))
 		
 		#DEFINIÇÃO DE TAMANHOS
@@ -51,6 +58,36 @@ class ResizebleWidget(QtGui.QWidget):
 		self.MouseLastXpos = 0
 		self.MouseLastYpos = 0
 		
+		
+		#POP-UP MENU (definição de acções)		
+		self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
+		self.cutAction.setShortcut(self.tr("Ctrl+X"))
+		self.cutAction.setStatusTip(self.tr("Cut the current selection"))
+		self.connect(self.cutAction, QtCore.SIGNAL("triggered()"), self.cutAct)
+	
+		self.copyAction = QtGui.QAction(QtGui.QIcon("icons/edit_copy.png"), self.tr("&Copy"), self)
+		self.copyAction.setShortcut(self.tr("Ctrl+C"))
+		self.copyAction.setStatusTip(self.tr("Copy the current selection"))
+		self.connect(self.copyAction, QtCore.SIGNAL("triggered()"), self.copyAct)
+	
+		self.pasteAction = QtGui.QAction(QtGui.QIcon("icons/edit_paste.png"), self.tr("&Paste"), self)
+		self.pasteAction.setShortcut(self.tr("Ctrl+V"))
+		self.pasteAction.setStatusTip(self.tr("Paste into the current selection"))
+		self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
+	
+		self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), self.tr("&Delete"), self)
+		self.deleteAction.setShortcut(self.tr("Ctrl+D"))
+		self.deleteAction.setStatusTip(self.tr("Delete the current selection"))
+		self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
+		
+		self.applyTemplateAction = QtGui.QAction(QtGui.QIcon("icons/file_open.png"), self.tr("Apply template..."), self)
+		self.applyTemplateAction.setStatusTip(self.tr("Apply an existing template"))
+		self.connect(self.applyTemplateAction, QtCore.SIGNAL("triggered()"), self.applyTemplateAct)
+	
+		self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Save template as..."), self)
+		self.saveTemplateAsAction.setStatusTip(self.tr("Save the template"))
+		self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
+		
 		"""text = "teste"
 		
 		fm = QtGui.QFontMetrics(self.font())
@@ -77,9 +114,24 @@ class ResizebleWidget(QtGui.QWidget):
 		 
 		self.setPixmap(QtGui.QPixmap.fromImage(image))
 		self.labelText = text"""
+	
+
+	def getX(self):
+		return self.x()
 		
+	def getY(self):
+		return self.y()
+		
+	def getWidth(self):
+		return self.width()
+		
+	def getHeight(self):
+		return self.height()		
+	
+	#-------EVENTOS----------------------------------------------------------------	
 	def paintEvent(self, event):
 		
+				
 		#DEFINIR CURSOR DO RATO
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 		
@@ -132,7 +184,7 @@ class ResizebleWidget(QtGui.QWidget):
 		painter.end()
 						
 		#REDIMENSIONAR TAMANHO DA WIDGET
-		self.Btn1.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
+		self.childWidget.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
 		
 	
 	def mouseMoveEvent(self, event):
@@ -175,18 +227,30 @@ class ResizebleWidget(QtGui.QWidget):
 			else:			
 				self.pontoRef = self.noRef #definir como de referência do rato
 				self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-						
+			
+		
+		#print(mouseYpos, self.MouseLastYpos)
+		"""if mouseYpos > self.MouseLastYpos:
+			print("maior")					
+		else:
+			print("menor")
+		"""
 		
 		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)
 		if self.MouseState == self.MouseClicked:
-			
-			if self.pontoRef == self.RefRectCenterTop: # NO OK				
+			#print(mouseYpos, self.MouseLastYpos)
+			if self.pontoRef == self.RefRectLeftTop: # NO OK				
+				self.setGeometry(mouseXpos, mouseYpos, widgetRect.width(), widgetRect.height())			
+			elif self.pontoRef == self.RefRectCenterTop: # NO OK				
 				if mouseYpos > self.MouseLastYpos:
-					print("maior")
+					#print("maior")
 					self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()-(mouseYpos - widgetRect.y()) )
+					
 				else:
-					print("menor")
+					#print("menor")
 					self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()+(widgetRect.y() - mouseYpos) )
+					#self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()+(widgetRect.y() - mouseYpos) )
+				
 			elif self.pontoRef == self.RefRectRightTop:# NO OK
 				self.setGeometry(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
 			elif self.pontoRef == self.RefRectLeftBottom: #NO OK
@@ -201,10 +265,10 @@ class ResizebleWidget(QtGui.QWidget):
 				self.setGeometry(widgetRect.x(), widgetRect.y(), mouseXpos,widgetRect.height())
 			
 			
+		#GUARDAR POSICIONAMENTO DO RATO
+		self.MouseLastXpos = mouseXpos
+		self.MouseLastYpos = mouseYpos	
 			
-			#GUARDAR POSICIONAMENTO DO RATO
-			self.MouseLastXpos = mouseXpos
-			self.MouseLastYpos = mouseYpos
 			
 	def mousePressEvent(self, event):
 		#ACTUALIZAR O ESTADO DO RATO
@@ -232,15 +296,93 @@ class ResizebleWidget(QtGui.QWidget):
 			return bool(0) #FALSE
 
 
+	def contextMenuEvent(self, event):
 
+		menu = QtGui.QMenu(self)
+		menu.addAction(self.cutAction)
+		menu.addAction(self.copyAction)
+		menu.addAction(self.pasteAction)
+		menu.addAction(self.deleteAction)
+		menu.addSeparator();
+		menu.addAction(self.applyTemplateAction)
+		menu.addAction(self.saveTemplateAsAction)
+		menu.exec_(event.globalPos())
+
+	def cutAct(self):
+		print("")
+
+	def copyAct(self):
+		print("")
+
+	def pasteAct(self):
+		print("")
+
+	def deleteAct(self):
+		print("")
+		
+	def applyTemplateAct(self):
+		print("")
+
+	def saveTemplateAsAct(self):
+		print("")
+
+
+#-------------------------------------------------------------------------------------
+class ResizableButton(ResizableWidget):
+	def __init__(self, parent=None):
+		
+		ResizableWidget.__init__(self, QtGui.QPushButton(),  parent)	
+	
+
+#-------------------------------------------------------------------------------------
+class ResizableLabel(ResizableWidget):
+	def __init__(self, parent=None):
+		
+		ResizableWidget.__init__(self, QtGui.QLabel(),  parent)	
+
+
+#-------------------------------------------------------------------------------------
+class ResizableLabel(ResizableWidget):
+	def __init__(self, parent=None):
+		
+		ResizableWidget.__init__(self, QtGui.QLabel(),  parent)	
+
+#-------------------------------------------------------------------------------------
+class ResizableEdit(ResizableWidget):
+	def __init__(self, parent=None):
+		
+		ResizableWidget.__init__(self, QtGui.QTextEdit(),  parent)	
+
+
+
+
+#(..... CONTINUAR WIDGETS)
+
+
+
+
+
+#-------------------------------------------------------------------------------------
 class MainWidget(QtGui.QMainWindow):
 	
 	def __init__(self, parent=None):
 		QtGui.QWidget.__init__(self, parent)
 		#widgetRect = self.geometry()
-		
-		resizableWidget = ResizebleWidget(self)
 
+                #childWidget = QtGui.QPushButton(self)
+		#childWidget = QtGui.QLabel(self)
+		
+		#self.resizableBtn = ResizableButton(self)
+		self.w = ResizableEdit(self)
+		"""Btn = QtGui.QPushButton(self)
+		Btn.setGeometry(21, self.resizableWidget.getHeight(), 10,10)
+		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
+					self.info)
+		"""
+		
+	def info(self):
+		print(self.resizableWidget.getWidth())
+#-------------------------------------------------------------------------------------
 
 #main 
 app = QtGui.QApplication(sys.argv)
