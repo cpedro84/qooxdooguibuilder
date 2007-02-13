@@ -8,15 +8,35 @@ from PyQt4 import QtCore, QtGui
 
 
 
+class DrawArea(QtGui.QFrame):
+
+    def __init__(self, parent = None):
+
+        QtGui.QFrame.__init__(self, parent)
+
+        self.setBackgroundRole(QtGui.QPalette.Light)
+        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
+
+
+
 class PropertiesWindow(QtGui.QTableWidget):
 
     def __init__(self, parent = None):
 
         QtGui.QTableWidget.__init__(self, parent)
 
-        self.setColumnCount(2)
-        self.setRowCount(15)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
+        self.setColumnCount(2)
+        self.setColumnWidth(1, 125)
+
+        i = 0
+        f = file("data/properties.dat", 'r')
+        for line in f:
+            self.setRowCount(self.rowCount() + 1)
+            self.setRowHeight(i, 20)
+            self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line)))
+            i = i + 1
+        f.close()
 
 
 
@@ -57,13 +77,12 @@ class MainWindow(QtGui.QMainWindow):
         self.createToolBars()
         self.createStatusBar()
         self.createDockWindows()
-
-        self.centralWidget = QtGui.QScrollArea(self)
-
         self.createDrawArea()
 
+        self.centralWidget = QtGui.QScrollArea(self)
         self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
         self.centralWidget.setWidget(self.drawArea)
+
         self.setCentralWidget(self.centralWidget)
 
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
@@ -74,6 +93,7 @@ class MainWindow(QtGui.QMainWindow):
     def createActions(self):
 
         self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), self.tr("&New interface"), self)
+        self.newInterfaceAction.setDisabled(bool(1))
         self.newInterfaceAction.setShortcut(self.tr("Ctrl+N"))
         self.newInterfaceAction.setStatusTip(self.tr("Create a new interface"))
         self.connect(self.newInterfaceAction, QtCore.SIGNAL("triggered()"), self.newInterfaceAct)
@@ -88,11 +108,13 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.openTemplateAction, QtCore.SIGNAL("triggered()"), self.openTemplateAct)
 
         self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("&Save interface"), self)
+        self.saveInterfaceAction.setDisabled(bool(1))
         self.saveInterfaceAction.setShortcut(self.tr("Ctrl+S"))
         self.saveInterfaceAction.setStatusTip(self.tr("Save the interface"))
         self.connect(self.saveInterfaceAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAct)
 
         self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), self.tr("Save interface &as..."), self)
+        self.saveInterfaceAsAction.setDisabled(bool(1))
         self.saveInterfaceAsAction.setStatusTip(self.tr("Save the interface under a new name"))
         self.connect(self.saveInterfaceAsAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAsAct)
 
@@ -106,54 +128,64 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
 
         self.undoAction = QtGui.QAction(QtGui.QIcon("icons/edit_undo.png"), self.tr("&Undo"), self)
+        self.undoAction.setDisabled(bool(1))
         self.undoAction.setShortcut(self.tr("Ctrl+Z"))
         self.undoAction.setStatusTip(self.tr("Undo the action taken before"))
         self.connect(self.undoAction, QtCore.SIGNAL("triggered()"), self.undoAct)
 
         self.redoAction = QtGui.QAction(QtGui.QIcon("icons/edit_redo.png"), self.tr("&Redo"), self)
+        self.redoAction.setDisabled(bool(1))
         self.redoAction.setShortcut(self.tr("Ctrl+Y"))
         self.redoAction.setStatusTip(self.tr("Redo the action taken after"))
         self.connect(self.redoAction, QtCore.SIGNAL("triggered()"), self.redoAct)
 
         self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
+        self.cutAction.setDisabled(bool(1))
         self.cutAction.setShortcut(self.tr("Ctrl+X"))
         self.cutAction.setStatusTip(self.tr("Cut the current selection"))
         self.connect(self.cutAction, QtCore.SIGNAL("triggered()"), self.cutAct)
 
         self.copyAction = QtGui.QAction(QtGui.QIcon("icons/edit_copy.png"), self.tr("&Copy"), self)
+        self.copyAction.setDisabled(bool(1))
         self.copyAction.setShortcut(self.tr("Ctrl+C"))
         self.copyAction.setStatusTip(self.tr("Copy the current selection"))
         self.connect(self.copyAction, QtCore.SIGNAL("triggered()"), self.copyAct)
 
         self.pasteAction = QtGui.QAction(QtGui.QIcon("icons/edit_paste.png"), self.tr("&Paste"), self)
+        self.pasteAction.setDisabled(bool(1))
         self.pasteAction.setShortcut(self.tr("Ctrl+V"))
         self.pasteAction.setStatusTip(self.tr("Paste into the current selection"))
         self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
 
         self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), self.tr("&Delete"), self)
+        self.deleteAction.setDisabled(bool(1))
         self.deleteAction.setShortcut(self.tr("Ctrl+D"))
         self.deleteAction.setStatusTip(self.tr("Delete the current selection"))
         self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
 
         self.previewInApplicationAction = QtGui.QAction(QtGui.QIcon("icons/preview_application.png"), self.tr("Preview in the &application"), self)
+        self.previewInApplicationAction.setDisabled(bool(1))
         self.previewInApplicationAction.setStatusTip(self.tr("Preview the interface in the application"))
         self.connect(self.previewInApplicationAction, QtCore.SIGNAL("triggered()"), self.previewInApplicationAct)
 
         self.previewInBrowserAction = QtGui.QAction(QtGui.QIcon("icons/preview_browser.png"), self.tr("Preview in a &browser"), self)
+        self.previewInBrowserAction.setDisabled(bool(1))
         self.previewInBrowserAction.setStatusTip(self.tr("Preview the interface in a browser"))
         self.connect(self.previewInBrowserAction, QtCore.SIGNAL("triggered()"), self.previewInBrowserAct)
 
+        self.aboutAction = QtGui.QAction(self.tr("&About"), self)
+        self.aboutAction.setStatusTip(self.tr("Show the application's About box"))
+        self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.aboutAct)
+
         self.applyTemplateAction = QtGui.QAction(QtGui.QIcon("icons/file_open.png"), self.tr("Apply template..."), self)
+        self.applyTemplateAction.setDisabled(bool(1))
         self.applyTemplateAction.setStatusTip(self.tr("Apply an existing template"))
         self.connect(self.applyTemplateAction, QtCore.SIGNAL("triggered()"), self.applyTemplateAct)
 
         self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Save template as..."), self)
+        self.saveTemplateAsAction.setDisabled(bool(1))
         self.saveTemplateAsAction.setStatusTip(self.tr("Save the template"))
         self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
-
-        self.aboutAction = QtGui.QAction(QtGui.QIcon("icons/help_about.png"), self.tr("&About"), self)
-        self.aboutAction.setStatusTip(self.tr("Show the application's About box"))
-        self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.aboutAct)
 
 
     def createMenus(self):
@@ -209,9 +241,6 @@ class MainWindow(QtGui.QMainWindow):
         self.previewToolBar.addAction(self.previewInApplicationAction)
         self.previewToolBar.addAction(self.previewInBrowserAction)
 
-        self.helpToolBar = self.addToolBar(self.tr("Help"))
-        self.helpToolBar.addAction(self.aboutAction)
-
 
     def createStatusBar(self):
 
@@ -222,20 +251,20 @@ class MainWindow(QtGui.QMainWindow):
 
         self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
         self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.controlsDock.setFixedWidth(self.width() * 0.25)
+        self.controlsDock.setFixedWidth(self.width() * 0.28)
         self.controlsDock.setWindowIcon(QtGui.QIcon("icons/controlswindow.png"))
 
-        self.controlsList = ControlsWindow(self.controlsDock)
+        self.controlsList = ControlsWindow()
 
         self.controlsDock.setWidget(self.controlsList)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
 
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
         self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.propertiesDock.setFixedWidth(self.width() * 0.25)
+        self.propertiesDock.setFixedWidth(self.width() * 0.28)
         self.propertiesDock.setWindowIcon(QtGui.QIcon("icons/propertieswindow.png"))
 
-        self.propertiesTable = PropertiesWindow(self.propertiesDock)
+        self.propertiesTable = PropertiesWindow()
 
         self.propertiesDock.setWidget(self.propertiesTable)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
@@ -243,22 +272,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDrawArea(self):
 
-        self.drawArea = QtGui.QFrame(self.centralWidget)
-        self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
-        self.drawArea.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
-
-
-    def contextMenuEvent(self, event):
-
-        menu = QtGui.QMenu(self)
-        menu.addAction(self.cutAction)
-        menu.addAction(self.copyAction)
-        menu.addAction(self.pasteAction)
-        menu.addAction(self.deleteAction)
-        menu.addSeparator();
-        menu.addAction(self.applyTemplateAction)
-        menu.addAction(self.saveTemplateAsAction)
-        menu.exec_(event.globalPos())
+        self.drawArea = DrawArea()
 
 
     def newInterfaceAct(self):
@@ -331,6 +345,11 @@ class MainWindow(QtGui.QMainWindow):
         print("")
 
 
+    def aboutAct(self):
+
+        QtGui.QMessageBox.about(self, self.tr("About"), self.tr("<b>Qooxdoo GUI Builder</b><p>System of visual construction of interfaces, for the qooxdoo framework.<p><br>Authors:<p>- Cláudia Oliveira&nbsp;&nbsp;&nbsp;<a href=claudia.i.h.oliveira@gmail.com>claudia.i.h.oliveira@gmail.com</a><p>- Cláudio Pedro&nbsp;&nbsp;&nbsp;<a href=claudio.pedro@gmail.com>claudio.pedro@gmail.com</a><p>- Nuno Coelho&nbsp;&nbsp;&nbsp;<a href=nuno.a.coelho@gmail.com>nuno.a.coelho@gmail.com</a><p><br>Official Web Site:&nbsp;&nbsp;&nbsp;<a href=http://qooxdooguibuilder.googlepages.com>http://qooxdooguibuilder.googlepages.com</a>"))
+
+
     def applyTemplateAct(self):
 
         print("")
@@ -341,18 +360,9 @@ class MainWindow(QtGui.QMainWindow):
         print("")
 
 
-    def aboutAct(self):
 
-        QtGui.QMessageBox.about(self, self.tr("About"), self.tr("<b>Qooxdoo GUI Builder</b> provides visual construction of interfaces, using the qooxdoo framework."))
-
-
-
-def main():
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     main_widget = MainWindow()
     main_widget.showMaximized()
     sys.exit(app.exec_())
-
-
-
-main()
