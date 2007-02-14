@@ -31,8 +31,8 @@ class PropertiesTable(QtGui.QTableWidget):
     def preload(self):
 
         self.setColumnCount(2)
-        self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
+        self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
 
     def load(self, filePath):
@@ -75,20 +75,39 @@ class ControlsList(QtGui.QListWidget):
 
         self.setDragEnabled(True)
         self.setViewMode(QtGui.QListView.IconMode)
-        self.setIconSize(QtCore.QSize(60, 60))
+        self.setIconSize(QtCore.QSize(200, 150))
         self.setSpacing(10)
 
-
-    def addPiece(self, iconPath):
-
-        self.pieceItem = QtGui.QListWidgetItem(self)
-        self.pieceItem.setIcon(QtGui.QIcon(iconPath))
-        self.pieceItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        self.load()
 
 
-    def startDrag(self):
+    def load(self):
 
-        self.item = self.currentItem()
+##        f = file("data/controls.dat", 'r')
+##
+##        for line in f:
+##
+##            listWidgetItem = QtGui.QListWidgetItem(self)
+##            listWidgetItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+##            listWidgetItem.setIcon(QtGui.QIcon(self.tr(line)))
+##
+##        f.close()
+
+        itemPushButton = QtGui.QListWidgetItem(self)
+        itemPushButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemPushButton.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-pushbutton.png")))
+
+        itemLabel = QtGui.QListWidgetItem(self)
+        itemLabel.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemLabel.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-label.png")))
+
+        itemFrame = QtGui.QListWidgetItem(self)
+        itemFrame.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemFrame.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-frame.png")))
+
+        itemLCDNumber = QtGui.QListWidgetItem(self)
+        itemLCDNumber.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemLCDNumber.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-lcdnumber.png")))
 
 
 
