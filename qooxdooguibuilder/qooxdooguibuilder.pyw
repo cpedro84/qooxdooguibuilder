@@ -30,6 +30,7 @@ class PropertiesTable(QtGui.QTableWidget):
 
     def preload(self):
 
+        self.setAlternatingRowColors(bool(1))
         self.setColumnCount(2)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
@@ -75,39 +76,68 @@ class ControlsList(QtGui.QListWidget):
 
         self.setDragEnabled(True)
         self.setViewMode(QtGui.QListView.IconMode)
-        self.setIconSize(QtCore.QSize(200, 150))
-        self.setSpacing(10)
+        self.setIconSize(QtCore.QSize(200, 20))
 
         self.load()
 
 
     def load(self):
 
-##        f = file("data/controls.dat", 'r')
-##
-##        for line in f:
-##
-##            listWidgetItem = QtGui.QListWidgetItem(self)
-##            listWidgetItem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-##            listWidgetItem.setIcon(QtGui.QIcon(self.tr(line)))
-##
-##        f.close()
+        itemCheckBox = QtGui.QListWidgetItem(self)
+        itemCheckBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemCheckBox.setIcon(QtGui.QIcon(self.tr("controls/check_box.png")))
 
-        itemPushButton = QtGui.QListWidgetItem(self)
-        itemPushButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemPushButton.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-pushbutton.png")))
-
-        itemLabel = QtGui.QListWidgetItem(self)
-        itemLabel.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemLabel.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-label.png")))
+        itemComboBox = QtGui.QListWidgetItem(self)
+        itemComboBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemComboBox.setIcon(QtGui.QIcon(self.tr("controls/combo_box.png")))
 
         itemFrame = QtGui.QListWidgetItem(self)
         itemFrame.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemFrame.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-frame.png")))
+        itemFrame.setIcon(QtGui.QIcon(self.tr("controls/frame.png")))
 
-        itemLCDNumber = QtGui.QListWidgetItem(self)
-        itemLCDNumber.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemLCDNumber.setIcon(QtGui.QIcon(self.tr("controls/windowsxp-lcdnumber.png")))
+        itemGroupBox = QtGui.QListWidgetItem(self)
+        itemGroupBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemGroupBox.setIcon(QtGui.QIcon(self.tr("controls/group_box.png")))
+
+        itemLabel = QtGui.QListWidgetItem(self)
+        itemLabel.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemLabel.setIcon(QtGui.QIcon(self.tr("controls/label.png")))
+
+        itemLineEdit = QtGui.QListWidgetItem(self)
+        itemLineEdit.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemLineEdit.setIcon(QtGui.QIcon(self.tr("controls/line_edit.png")))
+
+        itemListWidget = QtGui.QListWidgetItem(self)
+        itemListWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemListWidget.setIcon(QtGui.QIcon(self.tr("controls/list_widget.png")))
+
+        itemPushButton = QtGui.QListWidgetItem(self)
+        itemPushButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemPushButton.setIcon(QtGui.QIcon(self.tr("controls/push_button.png")))
+
+        itemRadioButton = QtGui.QListWidgetItem(self)
+        itemRadioButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemRadioButton.setIcon(QtGui.QIcon(self.tr("controls/radio_button.png")))
+
+        itemSpinBox = QtGui.QListWidgetItem(self)
+        itemSpinBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemSpinBox.setIcon(QtGui.QIcon(self.tr("controls/spin_box.png")))
+
+        itemTabWidget = QtGui.QListWidgetItem(self)
+        itemTabWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemTabWidget.setIcon(QtGui.QIcon(self.tr("controls/tab_widget.png")))
+
+        itemTableWidget = QtGui.QListWidgetItem(self)
+        itemTableWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemTableWidget.setIcon(QtGui.QIcon(self.tr("controls/table_widget.png")))
+
+        itemTextEdit = QtGui.QListWidgetItem(self)
+        itemTextEdit.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemTextEdit.setIcon(QtGui.QIcon(self.tr("controls/text_edit.png")))
+
+        itemTreeWidget = QtGui.QListWidgetItem(self)
+        itemTreeWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
+        itemTreeWidget.setIcon(QtGui.QIcon(self.tr("controls/tree_widget.png")))
 
 
 
