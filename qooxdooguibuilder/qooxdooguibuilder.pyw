@@ -13,13 +13,14 @@ class DrawArea(QtGui.QFrame):
     def __init__(self, parent = None):
 
         QtGui.QFrame.__init__(self, parent)
-
-        self.setBackgroundRole(QtGui.QPalette.Light)
+        
         self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
+        self.setFrameStyle(QtGui.QFrame.Sunken | QtGui.QFrame.StyledPanel)
+        self.setAcceptDrops(True)
 
 
 
-class PropertiesTable(QtGui.QTableWidget):
+class PropertiesWidget(QtGui.QTableWidget):
 
     def __init__(self, parent = None):
 
@@ -30,7 +31,7 @@ class PropertiesTable(QtGui.QTableWidget):
 
     def preload(self):
 
-        self.setAlternatingRowColors(bool(1))
+        self.setAlternatingRowColors(True)
         self.setColumnCount(2)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
@@ -68,6 +69,107 @@ class PropertiesTable(QtGui.QTableWidget):
 
 
 
+class ControlsWidget(QtGui.QFrame):
+
+    def __init__(self, parent = None):
+
+        QtGui.QFrame.__init__(self, parent)
+
+        self.setAcceptDrops(False)
+        self.setFrameStyle(QtGui.QFrame.Sunken | QtGui.QFrame.StyledPanel)
+        
+        self.load()
+
+
+    def load(self):
+
+        iconCheckBox = QtGui.QLabel(self)
+        iconCheckBox.setPixmap(QtGui.QPixmap("controls/check_box.png"))
+        iconCheckBox.move(5, 5)
+        iconCheckBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconCheckBox.show()
+
+        iconComboBox = QtGui.QLabel(self)
+        iconComboBox.setPixmap(QtGui.QPixmap("controls/combo_box.png"))
+        iconComboBox.move(153, 5)
+        iconComboBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconComboBox.show()
+
+        iconFrame = QtGui.QLabel(self)
+        iconFrame.setPixmap(QtGui.QPixmap("controls/frame.png"))
+        iconFrame.move(5, 28)
+        iconFrame.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconFrame.show()
+
+        iconGroupBox = QtGui.QLabel(self)
+        iconGroupBox.setPixmap(QtGui.QPixmap("controls/group_box.png"))
+        iconGroupBox.move(153, 28)
+        iconGroupBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconGroupBox.show()
+
+        iconLabel = QtGui.QLabel(self)
+        iconLabel.setPixmap(QtGui.QPixmap("controls/label.png"))
+        iconLabel.move(5, 51)
+        iconLabel.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconLabel.show()
+
+        iconLineEdit = QtGui.QLabel(self)
+        iconLineEdit.setPixmap(QtGui.QPixmap("controls/line_edit.png"))
+        iconLineEdit.move(153, 51)
+        iconLineEdit.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconLineEdit.show()
+
+        iconListWidget = QtGui.QLabel(self)
+        iconListWidget.setPixmap(QtGui.QPixmap("controls/list_widget.png"))
+        iconListWidget.move(5, 74)
+        iconListWidget.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconListWidget.show()
+
+        iconPushButton = QtGui.QLabel(self)
+        iconPushButton.setPixmap(QtGui.QPixmap("controls/push_button.png"))
+        iconPushButton.move(153, 74)
+        iconPushButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconPushButton.show()
+
+        iconRadioButton = QtGui.QLabel(self)
+        iconRadioButton.setPixmap(QtGui.QPixmap("controls/radio_button.png"))
+        iconRadioButton.move(5, 97)
+        iconRadioButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconRadioButton.show()
+
+        iconSpinBox = QtGui.QLabel(self)
+        iconSpinBox.setPixmap(QtGui.QPixmap("controls/spin_box.png"))
+        iconSpinBox.move(153, 97)
+        iconSpinBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconSpinBox.show()
+
+        iconTabWidget = QtGui.QLabel(self)
+        iconTabWidget.setPixmap(QtGui.QPixmap("controls/tab_widget.png"))
+        iconTabWidget.move(5, 120)
+        iconTabWidget.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconTabWidget.show()
+
+        iconTableWidget = QtGui.QLabel(self)
+        iconTableWidget.setPixmap(QtGui.QPixmap("controls/table_widget.png"))
+        iconTableWidget.move(153, 120)
+        iconTableWidget.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconTableWidget.show()
+
+        iconTextEdit = QtGui.QLabel(self)
+        iconTextEdit.setPixmap(QtGui.QPixmap("controls/text_edit.png"))
+        iconTextEdit.move(5, 143)
+        iconTextEdit.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconTextEdit.show()
+
+        iconTreeWidget = QtGui.QLabel(self)
+        iconTreeWidget.setPixmap(QtGui.QPixmap("controls/tree_widget.png"))
+        iconTreeWidget.move(153, 143)
+        iconTreeWidget.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        iconTreeWidget.show()
+
+
+
+"""
 class ControlsList(QtGui.QListWidget):
 
     def __init__(self, parent = None):
@@ -75,6 +177,7 @@ class ControlsList(QtGui.QListWidget):
         QtGui.QListWidget.__init__(self, parent)
 
         self.setDragEnabled(True)
+        self.setAcceptDrops(False)
         self.setViewMode(QtGui.QListView.IconMode)
         self.setIconSize(QtCore.QSize(200, 20))
 
@@ -138,6 +241,7 @@ class ControlsList(QtGui.QListWidget):
         itemTreeWidget = QtGui.QListWidgetItem(self)
         itemTreeWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
         itemTreeWidget.setIcon(QtGui.QIcon(self.tr("controls/tree_widget.png")))
+"""
 
 
 
@@ -169,7 +273,7 @@ class MainWindow(QtGui.QMainWindow):
     def createActions(self):
 
         self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), self.tr("&New interface"), self)
-        self.newInterfaceAction.setDisabled(bool(1))
+        self.newInterfaceAction.setDisabled(True)
         self.newInterfaceAction.setShortcut(self.tr("Ctrl+N"))
         self.newInterfaceAction.setStatusTip(self.tr("Create a new interface"))
         self.connect(self.newInterfaceAction, QtCore.SIGNAL("triggered()"), self.newInterfaceAct)
@@ -184,13 +288,13 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.openTemplateAction, QtCore.SIGNAL("triggered()"), self.openTemplateAct)
 
         self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("&Save interface"), self)
-        self.saveInterfaceAction.setDisabled(bool(1))
+        self.saveInterfaceAction.setDisabled(True)
         self.saveInterfaceAction.setShortcut(self.tr("Ctrl+S"))
         self.saveInterfaceAction.setStatusTip(self.tr("Save the interface"))
         self.connect(self.saveInterfaceAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAct)
 
         self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), self.tr("Save interface &as..."), self)
-        self.saveInterfaceAsAction.setDisabled(bool(1))
+        self.saveInterfaceAsAction.setDisabled(True)
         self.saveInterfaceAsAction.setStatusTip(self.tr("Save the interface under a new name"))
         self.connect(self.saveInterfaceAsAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAsAct)
 
@@ -204,48 +308,48 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
 
         self.undoAction = QtGui.QAction(QtGui.QIcon("icons/edit_undo.png"), self.tr("&Undo"), self)
-        self.undoAction.setDisabled(bool(1))
+        self.undoAction.setDisabled(True)
         self.undoAction.setShortcut(self.tr("Ctrl+Z"))
         self.undoAction.setStatusTip(self.tr("Undo the action taken before"))
         self.connect(self.undoAction, QtCore.SIGNAL("triggered()"), self.undoAct)
 
         self.redoAction = QtGui.QAction(QtGui.QIcon("icons/edit_redo.png"), self.tr("&Redo"), self)
-        self.redoAction.setDisabled(bool(1))
+        self.redoAction.setDisabled(True)
         self.redoAction.setShortcut(self.tr("Ctrl+Y"))
         self.redoAction.setStatusTip(self.tr("Redo the action taken after"))
         self.connect(self.redoAction, QtCore.SIGNAL("triggered()"), self.redoAct)
 
         self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
-        self.cutAction.setDisabled(bool(1))
+        self.cutAction.setDisabled(True)
         self.cutAction.setShortcut(self.tr("Ctrl+X"))
         self.cutAction.setStatusTip(self.tr("Cut the current selection"))
         self.connect(self.cutAction, QtCore.SIGNAL("triggered()"), self.cutAct)
 
         self.copyAction = QtGui.QAction(QtGui.QIcon("icons/edit_copy.png"), self.tr("&Copy"), self)
-        self.copyAction.setDisabled(bool(1))
+        self.copyAction.setDisabled(True)
         self.copyAction.setShortcut(self.tr("Ctrl+C"))
         self.copyAction.setStatusTip(self.tr("Copy the current selection"))
         self.connect(self.copyAction, QtCore.SIGNAL("triggered()"), self.copyAct)
 
         self.pasteAction = QtGui.QAction(QtGui.QIcon("icons/edit_paste.png"), self.tr("&Paste"), self)
-        self.pasteAction.setDisabled(bool(1))
+        self.pasteAction.setDisabled(True)
         self.pasteAction.setShortcut(self.tr("Ctrl+V"))
         self.pasteAction.setStatusTip(self.tr("Paste into the current selection"))
         self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
 
         self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), self.tr("&Delete"), self)
-        self.deleteAction.setDisabled(bool(1))
+        self.deleteAction.setDisabled(True)
         self.deleteAction.setShortcut(self.tr("Ctrl+D"))
         self.deleteAction.setStatusTip(self.tr("Delete the current selection"))
         self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
 
         self.previewInApplicationAction = QtGui.QAction(QtGui.QIcon("icons/preview_application.png"), self.tr("Preview in the &application"), self)
-        self.previewInApplicationAction.setDisabled(bool(1))
+        self.previewInApplicationAction.setDisabled(True)
         self.previewInApplicationAction.setStatusTip(self.tr("Preview the interface in the application"))
         self.connect(self.previewInApplicationAction, QtCore.SIGNAL("triggered()"), self.previewInApplicationAct)
 
         self.previewInBrowserAction = QtGui.QAction(QtGui.QIcon("icons/preview_browser.png"), self.tr("Preview in a &browser"), self)
-        self.previewInBrowserAction.setDisabled(bool(1))
+        self.previewInBrowserAction.setDisabled(True)
         self.previewInBrowserAction.setStatusTip(self.tr("Preview the interface in a browser"))
         self.connect(self.previewInBrowserAction, QtCore.SIGNAL("triggered()"), self.previewInBrowserAct)
 
@@ -254,12 +358,12 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.aboutAct)
 
         self.applyTemplateAction = QtGui.QAction(QtGui.QIcon("icons/file_open.png"), self.tr("Apply template..."), self)
-        self.applyTemplateAction.setDisabled(bool(1))
+        self.applyTemplateAction.setDisabled(True)
         self.applyTemplateAction.setStatusTip(self.tr("Apply an existing template"))
         self.connect(self.applyTemplateAction, QtCore.SIGNAL("triggered()"), self.applyTemplateAct)
 
         self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Save template as..."), self)
-        self.saveTemplateAsAction.setDisabled(bool(1))
+        self.saveTemplateAsAction.setDisabled(True)
         self.saveTemplateAsAction.setStatusTip(self.tr("Save the template"))
         self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
 
@@ -327,22 +431,21 @@ class MainWindow(QtGui.QMainWindow):
 
         self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
         self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.controlsDock.setFixedWidth(self.width() * 0.28)
-        self.controlsDock.setWindowIcon(QtGui.QIcon("icons/controlswindow.png"))
+        self.controlsDock.setFixedWidth(296)
+        self.controlsDock.setFixedHeight(186)
 
-        self.controlsList = ControlsList()
+        self.controlsWidget = ControlsWidget()
 
-        self.controlsDock.setWidget(self.controlsList)
+        self.controlsDock.setWidget(self.controlsWidget)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
 
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
         self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.propertiesDock.setFixedWidth(self.width() * 0.28)
-        self.propertiesDock.setWindowIcon(QtGui.QIcon("icons/propertieswindow.png"))
+        self.propertiesDock.setFixedWidth(296)
 
-        self.propertiesTable = PropertiesTable()
+        self.propertiesWidget = PropertiesWidget()
 
-        self.propertiesDock.setWidget(self.propertiesTable)
+        self.propertiesDock.setWidget(self.propertiesWidget)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
 
 
