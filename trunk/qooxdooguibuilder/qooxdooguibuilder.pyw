@@ -27,6 +27,8 @@ class PropertiesWidget(QtGui.QTableWidget):
         QtGui.QTableWidget.__init__(self, parent)
 
         self.verticalHeader().hide()
+        self.preload()
+        self.load("data/properties_qpushbutton.dat")
 
 
     def preload(self):
