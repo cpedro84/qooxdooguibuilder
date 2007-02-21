@@ -58,7 +58,9 @@ class PropertiesWidget(QtGui.QTableWidget):
                     if fetch:
                         self.setRowCount(self.rowCount() + 1)
                         self.setRowHeight(i, 20)
-                        self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line2)))
+                        item = QtGui.QTableWidgetItem(self.tr(line2))
+                        item.setFlags(QtCore.Qt.ItemIsEnabled)
+                        self.setItem(i, 0, item)
                         i = i + 1
 
         f2.close()
