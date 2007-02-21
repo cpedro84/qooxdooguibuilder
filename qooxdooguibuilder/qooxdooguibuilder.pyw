@@ -10,6 +10,7 @@ from PyQt4 import QtCore, QtGui
 
 class DrawArea(QtGui.QFrame):
 
+
     def __init__(self, parent = None):
 
         QtGui.QFrame.__init__(self, parent)
@@ -22,13 +23,12 @@ class DrawArea(QtGui.QFrame):
 
 class PropertiesWidget(QtGui.QTableWidget):
 
+
     def __init__(self, parent = None):
 
         QtGui.QTableWidget.__init__(self, parent)
 
         self.verticalHeader().hide()
-        self.preload()
-        self.load("data/properties_qpushbutton.dat")
 
 
     def preload(self):
@@ -42,29 +42,24 @@ class PropertiesWidget(QtGui.QTableWidget):
     def load(self, filePath):
 
         i = 0
-        fetch = False
-        restart = False
         f1 = file(filePath, 'r')
         f2 = file("data/properties.dat", 'r')
 
         for line1 in f1:
+            fetch = False
+            f2 = file("data/properties.dat", 'r')
             for line2 in f2:
-                if fetch:
-                    for c in line2:
-                        if c != "Q":
-                            self.setRowCount(self.rowCount() + 1)
-                            self.setRowHeight(i, 20)
-                            self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line2)))
-                            i = i + 1
-                        else:
-                            restart = True
+                if "Q" in line2:
+                    if fetch:
                         break
-                elif line1 == line2:
-                    fetch = True
-                elif restart:
-                    fetch = False
-                    restart = False
-                    break
+                    elif line1 == line2:
+                        fetch = True
+                else:
+                    if fetch:
+                        self.setRowCount(self.rowCount() + 1)
+                        self.setRowHeight(i, 20)
+                        self.setItem(i, 0, QtGui.QTableWidgetItem(self.tr(line2)))
+                        i = i + 1
 
         f2.close()
         f1.close()
@@ -72,6 +67,7 @@ class PropertiesWidget(QtGui.QTableWidget):
 
 
 class ControlsWidget(QtGui.QFrame):
+
 
     def __init__(self, parent = None):
 
@@ -439,7 +435,7 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsWidget = ControlsWidget()
 
         self.controlsDock.setWidget(self.controlsWidget)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
 
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
         self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
@@ -448,7 +444,7 @@ class MainWindow(QtGui.QMainWindow):
         self.propertiesWidget = PropertiesWidget()
 
         self.propertiesDock.setWidget(self.propertiesWidget)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDock, QtCore.Qt.Vertical)
 
 
     def createDrawArea(self):
