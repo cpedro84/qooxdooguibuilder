@@ -115,6 +115,9 @@ class ResizableWidget(QtGui.QWidget):
 		self.setPixmap(QtGui.QPixmap.fromImage(image))
 		self.labelText = text"""
 	
+	
+	def getChildWidget(self):
+		return self.childWidget
 
 	def getX(self):
 		return self.x()
@@ -307,7 +310,7 @@ class ResizableWidget(QtGui.QWidget):
 		menu.addAction(self.applyTemplateAction)
 		menu.addAction(self.saveTemplateAsAction)
 		menu.exec_(event.globalPos())
-
+	
 	def cutAct(self):
 		print("")
 
@@ -327,35 +330,170 @@ class ResizableWidget(QtGui.QWidget):
 		print("")
 
 
+	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
+	"""def setText(self,text):
+		self.childWidget.setText(text)
+	"""
+	def setFont(self, Font):
+		self.childWidget.setFont(Font)
+
 #-------------------------------------------------------------------------------------
 class ResizableButton(ResizableWidget):
 	def __init__(self, parent=None):
-		
-		ResizableWidget.__init__(self, QtGui.QPushButton(),  parent)	
+		self.Button = QtGui.QPushButton()
+		ResizableWidget.__init__(self, self.Button,  parent)	
 	
+	"""def __init__(self, strText, parent=None):
+		self.Button = QtGui.QPushButton(strText)
+		ResizableWidget.__init__(self, self.Button,  parent)	
+		
+	def __init__(self, strText, Icon, parent=None):
+		self.Button = QtGui.QPushButton(strText, Icon)
+		ResizableWidget.__init__(self, self.Button,  parent)	
+	"""
+	
+	def setIcon(self, Icon):
+		self.Button.setIcon(Icon)
+
+
+	def setText(self, strText):
+		self.Button.setText(strText)
+		
+
+
+
 
 #-------------------------------------------------------------------------------------
 class ResizableLabel(ResizableWidget):
 	def __init__(self, parent=None):
+		self.Label = QtGui.QLabel()
+		ResizableWidget.__init__(self, self.Label,  parent)
+	
+	def setAlign(self, Alignment):
+		self.Label.setAlignment(Alignment)
+	
+	def setAlignLeft(self):
+		self.Label.setAlignment(QtCore.Qt.AlignLeft)
 		
-		ResizableWidget.__init__(self, QtGui.QLabel(),  parent)	
+	def setAlignRight(self):
+		self.Label.setAlignment(QtCore.Qt.AlignRight)
+		
+	def setAlignCenter(self):
+		self.Label.setAlignment(QtCore.Qt.AlignHCenter)
+		
+	def setAlignJustify(self):
+		self.Label.setAlignment(QtCore.Qt.AlignJustify)
+	
+	def setText(self, strText):
+		self.Label.setText(strText)
+	
+	def enabledWordWrap(self):
+		self.Label.setWordWrap(bool(1))
+		
+	def disabledWordWrap(self):
+		self.Label.setWordWrap(bool(0))
+		
+		
+#-------------------------------------------------------------------------------------
+class ResizableLineEdit(ResizableWidget):
+	def __init__(self, parent=None):
+		self.LineEdit = QtGui.QLineEdit()
+		ResizableWidget.__init__(self, self.LineEdit, parent)
+	
+	def setLength(self, lenght)
+		self.LineEdit.setMaxLenght(lenght)
+		
+	def enableReadOnly(self):
+		sself.LineEdit.setReadOnly(bool(1))
+		
+	def disableReadOnly(self):
+		self.LineEdit.setReadOnly(bool(0))
+
+	def getText(self):
+		return self.LineEdit.text()
+		
+
+class ResizableTextEdit(ResizableWidget):
+	def __init__(self, parent=None):
+		self.TextEdit = QtGui.QTextEdit()
+		ResizableWidget.__init__(self, self.TextEdit, parent)	
+	
+	def enableReadOnly(self):
+		self.TextEdit.setReadOnly(bool(1))
+		
+	def disableReadOnly(self):
+		self.TextEdit.setReadOnly(bool(0))
+	
+	def enableWordWrap(self):
+		self.TextEdit.setWordWrapMode(QtCore.QTextOption.WordWrap)
+	
+	def getText(self):
+		return self.TextEdit.toPlainText()
 
 
 #-------------------------------------------------------------------------------------
-class ResizableLabel(ResizableWidget):
+class ResizableCheckBox(ResizableWidget):
 	def __init__(self, parent=None):
+		self.checkBox = QtGui.QCheckBox()
+		ResizableWidget.__init__(self, self.checkBox,  parent)	
 		
-		ResizableWidget.__init__(self, QtGui.QLabel(),  parent)	
 
 #-------------------------------------------------------------------------------------
-class ResizableEdit(ResizableWidget):
+class ResizableComboBox(ResizableWidget):
 	def __init__(self, parent=None):
+		self.ComboBox = QtGui.QComboBox()
+		ResizableWidget.__init__(self, self.ComboBox,  parent)	
+
+#-------------------------------------------------------------------------------------
+class ResizableGroupBox(ResizableWidget):
+	def __init__(self, parent=None):
+		self.GroupBox = QtGui.QGroupBox()
+		ResizableWidget.__init__(self, self.GroupBox,  parent)	
+
+
+#-------------------------------------------------------------------------------------
+class ResizableListView(ResizableWidget):
+	def __init__(self, parent=None):
+		self.ListView = QtGui.QListView()
+		ResizableWidget.__init__(self, self.ListView,  parent)	
+
+
+#-------------------------------------------------------------------------------------
+#Associar com um QButtonGroup....
+class ResizableRadioButton(ResizableWidget):
+	def __init__(self, parent=None):
+		self.RadioButton = QtGui.QRadioButton()
+		ResizableWidget.__init__(self, self.RadioButton,  parent)	
+			
+
+#-------------------------------------------------------------------------------------
+class ResizableTabBar(ResizableWidget):
+	def __init__(self, parent=None):
+		self.TabBar = QtGui.QTabBar()
+		ResizableWidget.__init__(self, self.TabBar,  parent)
 		
-		ResizableWidget.__init__(self, QtGui.QTextEdit(),  parent)	
+	def addTab(self, text):
+		self.TabBar.addTab(text)
+ 
+#-------------------------------------------------------------------------------------
+class ResizableTreeView(ResizableWidget):
+	def __init__(self, parent=None):
+		self.TreeView = QtGui.QTreeView()
+		ResizableWidget.__init__(self, self.TreeView,  parent)
+ 
+
+#-------------------------------------------------------------------------------------
+class ResizableToolBar(ResizableWidget):
+	def __init__(self, parent=None):
+		self.ToolBar = QtGui.QToolBar()
+		ResizableWidget.__init__(self, self.ToolBar,  parent)
 
 
-
-
+#-------------------------------------------------------------------------------------
+class ResizableDialogWindow(ResizableWidget):
+	def __init__(self, parent=None):
+		self.DialogWindow = QtGui.QDialog()
+		ResizableWidget.__init__(self, self.DialogWindow,  parent)
 #(..... CONTINUAR WIDGETS)
 
 
@@ -373,15 +511,21 @@ class MainWidget(QtGui.QMainWindow):
 		#childWidget = QtGui.QLabel(self)
 		
 		#self.resizableBtn = ResizableButton(self)
-		self.w = ResizableEdit(self)
-		"""Btn = QtGui.QPushButton(self)
-		Btn.setGeometry(21, self.resizableWidget.getHeight(), 10,10)
+		self.w = ResizableLabel(self)
+		
+		
+		Btn = QtGui.QPushButton(self)
+		Btn.setGeometry(21, self.w.getHeight(), 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
 					self.info)
-		"""
+		
 		
 	def info(self):
-		print(self.resizableWidget.getWidth())
+		#print(self.resizableWidget.getWidth())
+		self.w.setText("teste")
+		self.w.setAlignLeft()
+		
+		
 #-------------------------------------------------------------------------------------
 
 #main 
