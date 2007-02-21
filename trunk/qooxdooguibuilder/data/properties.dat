@@ -49,10 +49,6 @@ checkable
 checked
 autoRepeat
 autoExclusive
-QPushButton
-autoDefault
-default
-flat
 QCheckBox
 tristate
 QComboBox
@@ -132,6 +128,10 @@ modelColumn
 uniformItemSizes
 QListWidget
 currentRow
+QPushButton
+autoDefault
+default
+flat
 QAbstractSpinBox
 wrapping
 frame
