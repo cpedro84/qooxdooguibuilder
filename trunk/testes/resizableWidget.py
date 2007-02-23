@@ -337,11 +337,38 @@ class ResizableWidget(QtGui.QWidget):
 	def setFont(self, Font):
 		self.childWidget.setFont(Font)
 
+
 #-------------------------------------------------------------------------------------
-class ResizableButton(ResizableWidget):
+class ResizableAbstractButton(ResizableWidget):
+	def __init__(self, widget = None, parent=None):
+		self.AbstractButtonWidget = widget
+		ResizableWidget.__init__(self, self.AbstractButtonWidget,  parent)
+		
+	def setText(self, strText):
+		self.AbstractButtonWidget.setText(strText)
+				
+	def getText(self):
+		return self.AbstractButtonWidget.text()	
+		
+
+class ResizableAbstractIO(ResizableWidget):
+
+	def __init__(self, widget = None, parent=None):
+		self.AbstractIOWidget = widget
+		ResizableWidget.__init__(self, self.AbstractIOWidget,  parent)
+		
+	def setText(self, strText):
+		self.AbstractIOWidget.setText(strText)
+				
+	def getText(self):
+		return self.AbstractIOWidget.text()	
+		
+
+#-------------------------------------------------------------------------------------
+class ResizableButton(ResizableAbstractButton):
 	def __init__(self, parent=None):
 		self.Button = QtGui.QPushButton()
-		ResizableWidget.__init__(self, self.Button,  parent)	
+		ResizableAbstractButton.__init__(self, self.Button,  parent)	
 	
 	"""def __init__(self, strText, parent=None):
 		self.Button = QtGui.QPushButton(strText)
@@ -356,18 +383,32 @@ class ResizableButton(ResizableWidget):
 		self.Button.setIcon(Icon)
 
 
-	def setText(self, strText):
-		self.Button.setText(strText)
+#-------------------------------------------------------------------------------------
+class ResizableCheckBox(ResizableAbstractButton):
+	def __init__(self, parent=None):
+		self.checkBox = QtGui.QCheckBox()
+		ResizableAbstractButton.__init__(self, self.checkBox,  parent)	
+	
+	def setChecked(self):
+		self.checkBox.setCheckedState(QtCore.Qt.Checked)
+	
+	def setUnchecked(self):
+		self.checkBox.setCheckedState(QtCore.Qt.Unchecked)
 		
-
-
+	def isChecked(self):
+		checked = bool(0)		
+		
+		if self.checkBox.checkState() == QtCore.Qt.Checked:
+			checked = bool(1)
+		
+		return checked
 
 
 #-------------------------------------------------------------------------------------
-class ResizableLabel(ResizableWidget):
+class ResizableLabel(ResizableAbstractIO):
 	def __init__(self, parent=None):
 		self.Label = QtGui.QLabel()
-		ResizableWidget.__init__(self, self.Label,  parent)
+		ResizableAbstractIO.__init__(self, self.Label,  parent)
 	
 	def setAlign(self, Alignment):
 		self.Label.setAlignment(Alignment)
@@ -384,8 +425,9 @@ class ResizableLabel(ResizableWidget):
 	def setAlignJustify(self):
 		self.Label.setAlignment(QtCore.Qt.AlignJustify)
 	
+	
 	def setText(self, strText):
-		self.Label.setText(strText)
+		self.Label.setText(strText)	
 	
 	def enabledWordWrap(self):
 		self.Label.setWordWrap(bool(1))
@@ -395,12 +437,12 @@ class ResizableLabel(ResizableWidget):
 		
 		
 #-------------------------------------------------------------------------------------
-class ResizableLineEdit(ResizableWidget):
+class ResizableLineEdit(ResizableAbstractIO):
 	def __init__(self, parent=None):
 		self.LineEdit = QtGui.QLineEdit()
-		ResizableWidget.__init__(self, self.LineEdit, parent)
+		ResizableAbstractIO.__init__(self, self.LineEdit, parent)
 	
-	def setLength(self, lenght)
+	def setLength(self, lenght):
 		self.LineEdit.setMaxLenght(lenght)
 		
 	def enableReadOnly(self):
@@ -411,12 +453,12 @@ class ResizableLineEdit(ResizableWidget):
 
 	def getText(self):
 		return self.LineEdit.text()
-		
+	
 
-class ResizableTextEdit(ResizableWidget):
+class ResizableTextEdit(ResizableAbstractIO):
 	def __init__(self, parent=None):
 		self.TextEdit = QtGui.QTextEdit()
-		ResizableWidget.__init__(self, self.TextEdit, parent)	
+		ResizableAbstractIO.__init__(self, self.TextEdit, parent)	
 	
 	def enableReadOnly(self):
 		self.TextEdit.setReadOnly(bool(1))
@@ -427,17 +469,14 @@ class ResizableTextEdit(ResizableWidget):
 	def enableWordWrap(self):
 		self.TextEdit.setWordWrapMode(QtCore.QTextOption.WordWrap)
 	
-	def getText(self):
+	"""def getText(self):
 		return self.TextEdit.toPlainText()
+	"""
 
 
-#-------------------------------------------------------------------------------------
-class ResizableCheckBox(ResizableWidget):
-	def __init__(self, parent=None):
-		self.checkBox = QtGui.QCheckBox()
-		ResizableWidget.__init__(self, self.checkBox,  parent)	
 		
-
+	
+	
 #-------------------------------------------------------------------------------------
 class ResizableComboBox(ResizableWidget):
 	def __init__(self, parent=None):
@@ -500,6 +539,9 @@ class ResizableDialogWindow(ResizableWidget):
 
 
 
+
+
+
 #-------------------------------------------------------------------------------------
 class MainWidget(QtGui.QMainWindow):
 	
@@ -511,7 +553,7 @@ class MainWidget(QtGui.QMainWindow):
 		#childWidget = QtGui.QLabel(self)
 		
 		#self.resizableBtn = ResizableButton(self)
-		self.w = ResizableLabel(self)
+		self.w = ResizableCheckBox(self)
 		
 		
 		Btn = QtGui.QPushButton(self)
@@ -523,8 +565,8 @@ class MainWidget(QtGui.QMainWindow):
 	def info(self):
 		#print(self.resizableWidget.getWidth())
 		self.w.setText("teste")
-		self.w.setAlignLeft()
-		
+		#self.w.setAlignLeft()
+		print(self.w.isChecked())
 		
 #-------------------------------------------------------------------------------------
 
