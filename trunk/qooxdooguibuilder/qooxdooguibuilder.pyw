@@ -8,16 +8,42 @@ from PyQt4 import QtCore, QtGui
 
 
 
-class DrawArea(QtGui.QFrame):
+class DrawArea(QtGui.QWidget):
 
 
     def __init__(self, parent = None):
 
-        QtGui.QFrame.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent)
+
+        self.setBackgroundRole(QtGui.QPalette.Light)
         
         self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
-        self.setFrameStyle(QtGui.QFrame.Sunken | QtGui.QFrame.StyledPanel)
         self.setAcceptDrops(True)
+
+        layout = QtGui.QVBoxLayout()
+
+        myComboBox = QtGui.QComboBox()
+        myComboBox.addItem("Combo Box")
+
+        myFrame = QtGui.QFrame(self)
+        myFrame.setFrameStyle(QtGui.QFrame.Sunken | QtGui.QFrame.Box)
+        myFrame.setBackgroundRole(QtGui.QPalette.Dark)
+
+        myMenuBar = QtGui.QMenuBar()
+        myMenuBar.addMenu("Menu Bar")
+
+        myToolBar = QtGui.QToolBar("Tool Bar")
+        myToolBar.addAction(QtGui.QAction(QtGui.QIcon("icons/file_new.png"), self.tr("Tool Bar Action"), self))
+        layout.addWidget(QtGui.QCheckBox("Check Box"))
+        layout.addWidget(myComboBox)
+        layout.addWidget(myFrame)
+        layout.addWidget(QtGui.QGroupBox(self.tr("Group Box")))
+        layout.addWidget(QtGui.QLabel("Label"))
+        layout.addWidget(myMenuBar)
+        layout.addWidget(myToolBar)
+        layout.addWidget(QtGui.QPushButton("Button"))
+
+        self.setLayout(layout)
 
 
 
@@ -28,8 +54,6 @@ class PropertiesWidget(QtGui.QTableWidget):
 
         QtGui.QTableWidget.__init__(self, parent)
 
-        self.verticalHeader().hide()
-
 
     def preload(self):
 
@@ -37,11 +61,13 @@ class PropertiesWidget(QtGui.QTableWidget):
         self.setColumnCount(2)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+        self.verticalHeader().hide()
 
 
     def load(self, filePath):
 
         i = 0
+        """
         f1 = file(filePath, 'r')
         f2 = file("data/properties.dat", 'r')
 
@@ -65,6 +91,7 @@ class PropertiesWidget(QtGui.QTableWidget):
 
         f2.close()
         f1.close()
+        """
 
 
 
