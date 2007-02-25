@@ -13,19 +13,53 @@ class ResizableWidget(QtGui.QWidget):
     
 	def __init__(self, widget=None, parent=None):
 		
-		QtGui.QWidget.__init__(self, parent)				
-		
+		QtGui.QWidget.__init__(self, parent)
+				
 		self.childWidget = widget
 		self.childWidget.setParent(self)
-		#self.childWidget = QtGui.QPushButton(self)		
-		#self.childWidget.setEnabled(bool(0))
 		
 		self.setSizeIncrement(10,10)
 		self.setMouseTracking(bool(1))
 		
+		#DEFINIÇÃO De ANCORAS (CLIPING)
+		self.clipHeight = bool(0)
+		self.clipWidth = bool(0)
+		self.clipLeft = bool(0)
+		self.clipTop = bool(0)
+		
+		#DEFINIÇÃO DO POSICIONAMENTO (x->left; y->top)
+		self.left = 0.0
+		self.top = 0.0
+		
+		#DEFINIÇÃO DAS DIMENSÕES da WIDGET resizable (width, height)		
+		self.height = 0.0
+		self.maxHeight = 0.0
+		self.minHeight = 0.0
+				
+		self.width = 0.0
+		self.maxWidth = 0.0
+		self.minWidth = 0.0
+				
+		#DEFINIÇÃO DAS MARGENS
+		self.marginTop = 0.0
+		self.marginBotton = 0.0
+		self.marginLeft = 0.0
+		self.marginRight= 0.0
+		
+		#DEFINIÇÃO ORIENTAÇÃO
+		self.horizontal = 1
+		self.vertical = 2		
+		self.orientation = self.horizontal
+		
+		#DEFINIÇÃO DA PALETTE
+		self.palette = QtGui.QPalette()
+		self.childWidget.setPalette(self.palette)
+		self.childWidget.setUpdatesEnabled(bool(1))
+			
 		#DEFINIÇÃO DE TAMANHOS
 		self.PenWidth = 2 
-		self.RectSize = 4
+		self.RectSize = 4	
+		
 		
 		#DEFINIÇÃO DAS VARIAVEIS PARA OS RECT DE RESIZE
 		self.RectLT = QtCore.QRect(0,0,0,0) #LEFT TOP
@@ -134,9 +168,11 @@ class ResizableWidget(QtGui.QWidget):
 	#-------EVENTOS----------------------------------------------------------------	
 	def paintEvent(self, event):
 		
-				
 		#DEFINIR CURSOR DO RATO
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+		
+		#DEFINIR PALETTE
+		#self.childWidget.paletteChange(self.palette)
 		
 		self.widgetRect = self.geometry()
 		WidgetWidth = self.widgetRect.width()
@@ -329,15 +365,106 @@ class ResizableWidget(QtGui.QWidget):
 	def saveTemplateAsAct(self):
 		print("")
 
-
+#*******************************************************************
 	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
-	"""def setText(self,text):
-		self.childWidget.setText(text)
-	"""
+	
 	def setFont(self, Font):
 		self.childWidget.setFont(Font)
 
+	def disable(self):
+		self.childWidget.setDisable(bool(1))
+	
+	def enable(self):
+		self.childWidget.setEnable(bool(1))
+	
+	def enableVisible(self):
+		self.childWidget.setVisible(bool(1))
+	
+	def disableVisible(self):
+		self.childWidget.setVisible(bool(0))
+	
 
+	def clipHeight(self):
+		self.clipHeight = bool(1)
+		
+	def clipWidth(self):
+		self.clipWidth = bool(1)		
+		
+	def clipLeft(self):
+		self.clipLeft = bool(1)
+		
+	def clipTop(self):
+		self.clipTop = bool(1)
+		
+	#def removeClip(self, clipName):
+	
+	def removeAllClips(self):
+		self.clipHeight = bool(0)
+		self.clipWidth = bool(0)
+		self.clipLeft = bool(0)
+		self.clipTop = bool(0)
+		
+		
+	#************DEFINIÇÃO DE CORES************???
+	#BackGround Color
+	def setBaseColor(self, color):
+		self.palette.setColor( QtGui.QPalette.Base, color)		
+		self.childWidget.update()
+		
+		
+	def setTextColor(self, color):
+		self.palette.setColor(QtGui.QPalette.Text, color)		
+		self.childWidget.update()
+		
+	
+	def setWindowColor(self, color):
+		self.palette.setColor(QtGui.QPalette.Window, color)
+		#self.childWidget.setAutoFillBackground(bool(1))
+		self.childWidget.update()
+	
+	#************************************************
+	
+	def setHeight(self, height):
+		self.height = height
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
+
+	def setWidth(self, width):
+		self.width = width
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
+		
+	def setLeft(self, left):
+		self.left = left
+		widgetRect = self.geometry()
+		self.setGeometry(left, widgetRect.y(), widgetRect.width(), widgetRect.height())
+		
+	def setTop(self, top):
+		self.top = top
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), top, widgetRect.width(), widgetRect.height())
+	
+	def setMaxHeight(self, maxHeight):
+		self.maxHeight = maxHeight
+	
+	def setMinHeight(self, minHeight):
+		self.minHeight = minHeight
+		
+	def setMaxWidth(self, maxWidth):
+		self.maxWidth = maxWidth
+	
+	def setMinWidth(self, minWidth):
+		self.minWidth = minWidth
+		
+	#função que através da indicação da margem, e registado o seu tamanho (FAZER)
+	#def setMarginSize():
+
+	
+	
+#*******************************************************************
+
+
+	
 #-------------------------------------------------------------------------------------
 class ResizableAbstractButton(ResizableWidget):
 	def __init__(self, widget = None, parent=None):
@@ -365,10 +492,10 @@ class ResizableAbstractIO(ResizableWidget):
 		
 
 #-------------------------------------------------------------------------------------
-class ResizableButton(ResizableAbstractButton):
+class ResizableButton(ResizableAbstractIO):
 	def __init__(self, parent=None):
 		self.Button = QtGui.QPushButton()
-		ResizableAbstractButton.__init__(self, self.Button,  parent)	
+		ResizableAbstractIO.__init__(self, self.Button,  parent)	
 	
 	"""def __init__(self, strText, parent=None):
 		self.Button = QtGui.QPushButton(strText)
@@ -425,10 +552,6 @@ class ResizableLabel(ResizableAbstractIO):
 	def setAlignJustify(self):
 		self.Label.setAlignment(QtCore.Qt.AlignJustify)
 	
-	
-	def setText(self, strText):
-		self.Label.setText(strText)	
-	
 	def enabledWordWrap(self):
 		self.Label.setWordWrap(bool(1))
 		
@@ -437,10 +560,11 @@ class ResizableLabel(ResizableAbstractIO):
 		
 		
 #-------------------------------------------------------------------------------------
-class ResizableLineEdit(ResizableAbstractIO):
-	def __init__(self, parent=None):
+class ResizableTextField(ResizableAbstractIO):
+	def __init__(self, parent=None, interactiveMode = QtGui.QLineEdit.Normal):
 		self.LineEdit = QtGui.QLineEdit()
 		ResizableAbstractIO.__init__(self, self.LineEdit, parent)
+		self.LineEdit.setEchoMode(interactiveMode)
 	
 	def setLength(self, lenght):
 		self.LineEdit.setMaxLenght(lenght)
@@ -451,11 +575,8 @@ class ResizableLineEdit(ResizableAbstractIO):
 	def disableReadOnly(self):
 		self.LineEdit.setReadOnly(bool(0))
 
-	def getText(self):
-		return self.LineEdit.text()
-	
 
-class ResizableTextEdit(ResizableAbstractIO):
+class ResizableTextArea(ResizableAbstractIO):
 	def __init__(self, parent=None):
 		self.TextEdit = QtGui.QTextEdit()
 		ResizableAbstractIO.__init__(self, self.TextEdit, parent)	
@@ -469,19 +590,90 @@ class ResizableTextEdit(ResizableAbstractIO):
 	def enableWordWrap(self):
 		self.TextEdit.setWordWrapMode(QtCore.QTextOption.WordWrap)
 	
-	"""def getText(self):
-		return self.TextEdit.toPlainText()
-	"""
 
-
-		
-	
-	
 #-------------------------------------------------------------------------------------
 class ResizableComboBox(ResizableWidget):
 	def __init__(self, parent=None):
 		self.ComboBox = QtGui.QComboBox()
 		ResizableWidget.__init__(self, self.ComboBox,  parent)	
+
+	def addItem(self, strText):
+		self.ComboBox.addItem(strText)
+		
+	def addItemIcon(self, strText, Icon):
+		self.ComboBox.addItem(Icon, strText)
+		
+	def addItems(self, vTexts):
+		self.ComboBox.addItems(self, vTexts)
+	
+	def insertItem(self, index, strText):
+		self.ComboBox.insertItem(index, strText)
+	
+	def insertItem(self, index, strText, icon):
+		self.ComboBox.insertItem(index, icon, strText)
+
+	def insertItems(self, index, vTexts):
+		self.ComboBox.insertItems(index, vTexts)
+
+		
+	def enableEditable(self):
+		self.ComboBox.setEditable(bool(1))
+		
+	def disableEditable(self):
+		self.ComboBox.setEditable(bool(0))
+		
+	def isEditable(self):
+		return self.ComboBox.isEditable()
+		
+	def setCurrentIndex(self, index):
+		self.ComboBox.setCurrentIndex(index)
+
+	def setEditText(self, strText):
+		self.ComboBox.setEditText(strText)
+	
+	def setItemText(self, index, strText):
+		self.ComboBox.setItemText(self, index, strText)
+	
+	def setItemIcon(self, index, icon):
+		self.ComboBox.setItemIcon(self, index, icon)
+
+	def count(self):
+		self.ComboBox.count()
+
+	
+	def getItemText(self, index):
+		return self.ComboBox.itemText(index)
+		
+	def getItemIcon(self, index):
+		return self.ComboBox.itemIcon(index)
+		
+	"""def getItems(self):
+		#(...) - conjunto de todos os item de texto...
+	"""
+	
+	def getSelectedItem(self):
+		return self.ComboBox.currentIndex()
+	
+	
+
+#-------------------------------------------------------------------------------------
+class ResizableList(ResizableWidget):
+	def __init__(self, parent=None):
+		self.ListView = QtGui.QListWidget()
+		ResizableWidget.__init__(self, self.ListView,  parent)
+
+		#PROPREIDADES
+		self.selectable = bool(1)
+
+	def enableSelectable(self):
+		self.selectable = bool(1)
+		
+	def disableSelectable(self):
+		self.selectable = bool(0)
+		
+	#def setBackgroundImage(strPath):
+		
+	
 
 #-------------------------------------------------------------------------------------
 class ResizableGroupBox(ResizableWidget):
@@ -489,12 +681,6 @@ class ResizableGroupBox(ResizableWidget):
 		self.GroupBox = QtGui.QGroupBox()
 		ResizableWidget.__init__(self, self.GroupBox,  parent)	
 
-
-#-------------------------------------------------------------------------------------
-class ResizableListView(ResizableWidget):
-	def __init__(self, parent=None):
-		self.ListView = QtGui.QListView()
-		ResizableWidget.__init__(self, self.ListView,  parent)	
 
 
 #-------------------------------------------------------------------------------------
@@ -506,7 +692,7 @@ class ResizableRadioButton(ResizableWidget):
 			
 
 #-------------------------------------------------------------------------------------
-class ResizableTabBar(ResizableWidget):
+class ResizableTabView(ResizableWidget):
 	def __init__(self, parent=None):
 		self.TabBar = QtGui.QTabBar()
 		ResizableWidget.__init__(self, self.TabBar,  parent)
@@ -515,7 +701,7 @@ class ResizableTabBar(ResizableWidget):
 		self.TabBar.addTab(text)
  
 #-------------------------------------------------------------------------------------
-class ResizableTreeView(ResizableWidget):
+class ResizableTree(ResizableWidget):
 	def __init__(self, parent=None):
 		self.TreeView = QtGui.QTreeView()
 		ResizableWidget.__init__(self, self.TreeView,  parent)
@@ -529,6 +715,7 @@ class ResizableToolBar(ResizableWidget):
 
 
 #-------------------------------------------------------------------------------------
+#??????
 class ResizableDialogWindow(ResizableWidget):
 	def __init__(self, parent=None):
 		self.DialogWindow = QtGui.QDialog()
@@ -553,7 +740,7 @@ class MainWidget(QtGui.QMainWindow):
 		#childWidget = QtGui.QLabel(self)
 		
 		#self.resizableBtn = ResizableButton(self)
-		self.w = ResizableCheckBox(self)
+		self.w = ResizableLabel(self)
 		
 		
 		Btn = QtGui.QPushButton(self)
@@ -563,10 +750,16 @@ class MainWidget(QtGui.QMainWindow):
 		
 		
 	def info(self):
+		#self.w.setAutoFillBackground(bool(1))
+		
+		self.w.setText("teste")				
+		self.w.setWindowColor(QtGui.QColor(QtCore.Qt.blue))
+		self.w.setTextColor(QtGui.QColor(QtCore.Qt.green))
 		#print(self.resizableWidget.getWidth())
-		self.w.setText("teste")
+		#self.w.addItem("teste")
 		#self.w.setAlignLeft()
-		print(self.w.isChecked())
+		#print(self.w.isChecked())
+			
 		
 #-------------------------------------------------------------------------------------
 
