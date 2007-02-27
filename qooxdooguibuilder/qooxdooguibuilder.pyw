@@ -15,10 +15,9 @@ class DrawArea(QtGui.QWidget):
 
         QtGui.QWidget.__init__(self, parent)
 
-        self.setBackgroundRole(QtGui.QPalette.Light)
-        
-        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
         self.setAcceptDrops(True)
+        self.setBackgroundRole(QtGui.QPalette.Light)
+        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
 
 
 
@@ -29,20 +28,18 @@ class PropertiesWidget(QtGui.QTableWidget):
 
         QtGui.QTableWidget.__init__(self, parent)
 
-
-    def preload(self):
-
         self.setAlternatingRowColors(True)
         self.setColumnCount(2)
         self.setHorizontalHeaderLabels(QtCore.QStringList(["Property", "Value"]))
+
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
 
 
     def load(self, filePath):
 
-        i = 0
         """
+        i = 0
         f1 = file(filePath, 'r')
         f2 = file("data/properties.dat", 'r')
 
@@ -70,198 +67,131 @@ class PropertiesWidget(QtGui.QTableWidget):
 
 
 
-class ControlsWidget(QtGui.QFrame):
+class ControlsWidget(QtGui.QListWidget):
 
-
-    def __init__(self, parent = None):
-
-        QtGui.QFrame.__init__(self, parent)
-
-        self.setAcceptDrops(False)
-        self.setFrameStyle(QtGui.QFrame.Sunken | QtGui.QFrame.StyledPanel)
-        
-        self.load()
-
-
-    def load(self):
-
-        itemButton = QtGui.QLabel(self)
-        itemButton.setPixmap(QtGui.QPixmap("controls/Button.png"))
-        itemButton.move(2, 2)
-        itemButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemButton.show()
-
-        itemCheckBox = QtGui.QLabel(self)
-        itemCheckBox.setPixmap(QtGui.QPixmap("controls/CheckBox.png"))
-        itemCheckBox.move(2, 28)
-        itemCheckBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemCheckBox.show()
-
-        itemComboBox = QtGui.QLabel(self)
-        itemComboBox.setPixmap(QtGui.QPixmap("controls/ComboBox.png"))
-        itemComboBox.move(2, 54)
-        itemComboBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemComboBox.show()
-
-        itemGroupBox = QtGui.QLabel(self)
-        itemGroupBox.setPixmap(QtGui.QPixmap("controls/GroupBox.png"))
-        itemGroupBox.move(2, 80)
-        itemGroupBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemGroupBox.show()
-
-        itemIframe = QtGui.QLabel(self)
-        itemIframe.setPixmap(QtGui.QPixmap("controls/Iframe.png"))
-        itemIframe.move(2, 106)
-        itemIframe.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemIframe.show()
-
-        itemLabel = QtGui.QLabel(self)
-        itemLabel.setPixmap(QtGui.QPixmap("controls/Label.png"))
-        itemLabel.move(2, 132)
-        itemLabel.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemLabel.show()
-
-        itemList = QtGui.QLabel(self)
-        itemList.setPixmap(QtGui.QPixmap("controls/List.png"))
-        itemList.move(2, 158)
-        itemList.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemList.show()
-
-        itemMenuBar = QtGui.QLabel(self)
-        itemMenuBar.setPixmap(QtGui.QPixmap("controls/MenuBar.png"))
-        itemMenuBar.move(2, 184)
-        itemMenuBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemMenuBar.show()
-
-        itemPasswordField = QtGui.QLabel(self)
-        itemPasswordField.setPixmap(QtGui.QPixmap("controls/PasswordField.png"))
-        itemPasswordField.move(2, 210)
-        itemPasswordField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemPasswordField.show()
-
-        itemRadioButton = QtGui.QLabel(self)
-        itemRadioButton.setPixmap(QtGui.QPixmap("controls/RadioButton.png"))
-        itemRadioButton.move(2, 236)
-        itemRadioButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemRadioButton.show()
-
-        itemSpinner = QtGui.QLabel(self)
-        itemSpinner.setPixmap(QtGui.QPixmap("controls/Spinner.png"))
-        itemSpinner.move(2, 262)
-        itemSpinner.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemSpinner.show()
-
-        itemTabView = QtGui.QLabel(self)
-        itemTabView.setPixmap(QtGui.QPixmap("controls/TabView.png"))
-        itemTabView.move(2, 288)
-        itemTabView.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTabView.show()
-
-        itemTable = QtGui.QLabel(self)
-        itemTable.setPixmap(QtGui.QPixmap("controls/Table.png"))
-        itemTable.move(2, 314)
-        itemTable.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTable.show()
-
-        itemTextArea = QtGui.QLabel(self)
-        itemTextArea.setPixmap(QtGui.QPixmap("controls/TextArea.png"))
-        itemTextArea.move(2, 340)
-        itemTextArea.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTextArea.show()
-
-        itemTextField = QtGui.QLabel(self)
-        itemTextField.setPixmap(QtGui.QPixmap("controls/TextField.png"))
-        itemTextField.move(2, 366)
-        itemTextField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTextField.show()
-
-        itemToolBar = QtGui.QLabel(self)
-        itemToolBar.setPixmap(QtGui.QPixmap("controls/ToolBar.png"))
-        itemToolBar.move(2, 392)
-        itemToolBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemToolBar.show()
-
-        itemTree = QtGui.QLabel(self)
-        itemTree.setPixmap(QtGui.QPixmap("controls/Tree.png"))
-        itemTree.move(2, 418)
-        itemTree.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTree.show()
-
-
-
-"""
-class ControlsList(QtGui.QListWidget):
 
     def __init__(self, parent = None):
 
         QtGui.QListWidget.__init__(self, parent)
 
-        self.setDragEnabled(True)
-        self.setAcceptDrops(False)
-        self.setViewMode(QtGui.QListView.IconMode)
-        self.setIconSize(QtCore.QSize(200, 20))
+        itemButton = QtGui.QPushButton(self)
+        itemButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemButton.setGeometry(self.x(), self.y(), 250, 20)
+        itemButton.setIcon(QtGui.QIcon("controls/Button.png"))
+        itemButton.setIconSize(QtCore.QSize(250, 20))
+        itemButton.move(2, 2)
 
-        self.load()
+        itemCheckBox = QtGui.QPushButton(self)
+        itemCheckBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemCheckBox.setGeometry(self.x(), self.y(), 250, 20)
+        itemCheckBox.setIcon(QtGui.QIcon("controls/CheckBox.png"))
+        itemCheckBox.setIconSize(QtCore.QSize(250, 20))
+        itemCheckBox.move(2, 23)
 
+        itemComboBox = QtGui.QPushButton(self)
+        itemComboBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemComboBox.setGeometry(self.x(), self.y(), 250, 20)
+        itemComboBox.setIcon(QtGui.QIcon("controls/ComboBox.png"))
+        itemComboBox.setIconSize(QtCore.QSize(250, 20))
+        itemComboBox.move(2, 44)
 
-    def load(self):
+        itemGroupBox = QtGui.QPushButton(self)
+        itemGroupBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemGroupBox.setGeometry(self.x(), self.y(), 250, 20)
+        itemGroupBox.setIcon(QtGui.QIcon("controls/GroupBox.png"))
+        itemGroupBox.setIconSize(QtCore.QSize(250, 20))
+        itemGroupBox.move(2, 65)
 
-        itemCheckBox = QtGui.QListWidgetItem(self)
-        itemCheckBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemCheckBox.setIcon(QtGui.QIcon(self.tr("controls/check_box.png")))
+        itemIframe = QtGui.QPushButton(self)
+        itemIframe.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemIframe.setGeometry(self.x(), self.y(), 250, 20)
+        itemIframe.setIcon(QtGui.QIcon("controls/Iframe.png"))
+        itemIframe.setIconSize(QtCore.QSize(250, 20))
+        itemIframe.move(2, 86)
 
-        itemComboBox = QtGui.QListWidgetItem(self)
-        itemComboBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemComboBox.setIcon(QtGui.QIcon(self.tr("controls/combo_box.png")))
+        itemLabel = QtGui.QPushButton(self)
+        itemLabel.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemLabel.setGeometry(self.x(), self.y(), 250, 20)
+        itemLabel.setIcon(QtGui.QIcon("controls/Label.png"))
+        itemLabel.setIconSize(QtCore.QSize(250, 20))
+        itemLabel.move(2, 107)
 
-        itemFrame = QtGui.QListWidgetItem(self)
-        itemFrame.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemFrame.setIcon(QtGui.QIcon(self.tr("controls/frame.png")))
+        itemList = QtGui.QPushButton(self)
+        itemList.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemList.setGeometry(self.x(), self.y(), 250, 20)
+        itemList.setIcon(QtGui.QIcon("controls/List.png"))
+        itemList.setIconSize(QtCore.QSize(250, 20))
+        itemList.move(2, 128)
 
-        itemGroupBox = QtGui.QListWidgetItem(self)
-        itemGroupBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemGroupBox.setIcon(QtGui.QIcon(self.tr("controls/group_box.png")))
+        itemMenuBar = QtGui.QPushButton(self)
+        itemMenuBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemMenuBar.setGeometry(self.x(), self.y(), 250, 20)
+        itemMenuBar.setIcon(QtGui.QIcon("controls/MenuBar.png"))
+        itemMenuBar.setIconSize(QtCore.QSize(250, 20))
+        itemMenuBar.move(2, 149)
 
-        itemLabel = QtGui.QListWidgetItem(self)
-        itemLabel.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemLabel.setIcon(QtGui.QIcon(self.tr("controls/label.png")))
+        itemPasswordField = QtGui.QPushButton(self)
+        itemPasswordField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemPasswordField.setGeometry(self.x(), self.y(), 250, 20)
+        itemPasswordField.setIcon(QtGui.QIcon("controls/PasswordField.png"))
+        itemPasswordField.setIconSize(QtCore.QSize(250, 20))
+        itemPasswordField.move(2, 170)
 
-        itemLineEdit = QtGui.QListWidgetItem(self)
-        itemLineEdit.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemLineEdit.setIcon(QtGui.QIcon(self.tr("controls/line_edit.png")))
+        itemRadioButton = QtGui.QPushButton(self)
+        itemRadioButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemRadioButton.setGeometry(self.x(), self.y(), 250, 20)
+        itemRadioButton.setIcon(QtGui.QIcon("controls/RadioButton.png"))
+        itemRadioButton.setIconSize(QtCore.QSize(250, 20))
+        itemRadioButton.move(2, 191)
 
-        itemListWidget = QtGui.QListWidgetItem(self)
-        itemListWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemListWidget.setIcon(QtGui.QIcon(self.tr("controls/list_widget.png")))
+        itemSpinner = QtGui.QPushButton(self)
+        itemSpinner.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemSpinner.setGeometry(self.x(), self.y(), 250, 20)
+        itemSpinner.setIcon(QtGui.QIcon("controls/Spinner.png"))
+        itemSpinner.setIconSize(QtCore.QSize(250, 20))
+        itemSpinner.move(2, 212)
 
-        itemPushButton = QtGui.QListWidgetItem(self)
-        itemPushButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemPushButton.setIcon(QtGui.QIcon(self.tr("controls/push_button.png")))
+        itemTabView = QtGui.QPushButton(self)
+        itemTabView.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemTabView.setGeometry(self.x(), self.y(), 250, 20)
+        itemTabView.setIcon(QtGui.QIcon("controls/TabView.png"))
+        itemTabView.setIconSize(QtCore.QSize(250, 20))
+        itemTabView.move(2, 233)
 
-        itemRadioButton = QtGui.QListWidgetItem(self)
-        itemRadioButton.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemRadioButton.setIcon(QtGui.QIcon(self.tr("controls/radio_button.png")))
+        itemTable = QtGui.QPushButton(self)
+        itemTable.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemTable.setGeometry(self.x(), self.y(), 250, 20)
+        itemTable.setIcon(QtGui.QIcon("controls/Table.png"))
+        itemTable.setIconSize(QtCore.QSize(250, 20))
+        itemTable.move(2, 254)
 
-        itemSpinBox = QtGui.QListWidgetItem(self)
-        itemSpinBox.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemSpinBox.setIcon(QtGui.QIcon(self.tr("controls/spin_box.png")))
+        itemTextArea = QtGui.QPushButton(self)
+        itemTextArea.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemTextArea.setGeometry(self.x(), self.y(), 250, 20)
+        itemTextArea.setIcon(QtGui.QIcon("controls/TextArea.png"))
+        itemTextArea.setIconSize(QtCore.QSize(250, 20))
+        itemTextArea.move(2, 275)
 
-        itemTabWidget = QtGui.QListWidgetItem(self)
-        itemTabWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemTabWidget.setIcon(QtGui.QIcon(self.tr("controls/tab_widget.png")))
+        itemTextField = QtGui.QPushButton(self)
+        itemTextField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemTextField.setGeometry(self.x(), self.y(), 250, 20)
+        itemTextField.setIcon(QtGui.QIcon("controls/TextField.png"))
+        itemTextField.setIconSize(QtCore.QSize(250, 20))
+        itemTextField.move(2, 296)
 
-        itemTableWidget = QtGui.QListWidgetItem(self)
-        itemTableWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemTableWidget.setIcon(QtGui.QIcon(self.tr("controls/table_widget.png")))
+        itemToolBar = QtGui.QPushButton(self)
+        itemToolBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemToolBar.setGeometry(self.x(), self.y(), 250, 20)
+        itemToolBar.setIcon(QtGui.QIcon("controls/ToolBar.png"))
+        itemToolBar.setIconSize(QtCore.QSize(250, 20))
+        itemToolBar.move(2, 317)
 
-        itemTextEdit = QtGui.QListWidgetItem(self)
-        itemTextEdit.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemTextEdit.setIcon(QtGui.QIcon(self.tr("controls/text_edit.png")))
-
-        itemTreeWidget = QtGui.QListWidgetItem(self)
-        itemTreeWidget.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled)
-        itemTreeWidget.setIcon(QtGui.QIcon(self.tr("controls/tree_widget.png")))
-"""
+        itemTree = QtGui.QPushButton(self)
+        itemTree.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        itemTree.setGeometry(self.x(), self.y(), 250, 20)
+        itemTree.setIcon(QtGui.QIcon("controls/Tree.png"))
+        itemTree.setIconSize(QtCore.QSize(250, 20))
+        itemTree.move(2, 338)
 
 
 
@@ -452,7 +382,7 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
         self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.controlsDock.setFixedWidth(254)
-        self.controlsDock.setFixedHeight(467)
+        self.controlsDock.setFixedHeight(382)
 
         self.controlsWidget = ControlsWidget()
 
