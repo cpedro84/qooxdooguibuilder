@@ -149,22 +149,6 @@ class ResizableWidget(QtGui.QWidget):
 		self.setPixmap(QtGui.QPixmap.fromImage(image))
 		self.labelText = text"""
 	
-	
-	def getChildWidget(self):
-		return self.childWidget
-
-	def getX(self):
-		return self.x()
-		
-	def getY(self):
-		return self.y()
-		
-	def getWidth(self):
-		return self.width()
-		
-	def getHeight(self):
-		return self.height()		
-	
 	#-------EVENTOS----------------------------------------------------------------	
 	def paintEvent(self, event):
 		
@@ -367,6 +351,21 @@ class ResizableWidget(QtGui.QWidget):
 
 #*******************************************************************
 	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
+	def getChildWidget(self):
+		return self.childWidget
+
+	def getX(self):
+		return self.childWidget.x()
+		
+	def getY(self):
+		return self.childWidget.y()
+		
+	def getWidth(self):
+		return self.childWidget.width()
+		
+	def getHeight(self):
+		return self.childWidget.height()	
+	
 	
 	def setFont(self, Font):
 		self.childWidget.setFont(Font)
@@ -661,7 +660,7 @@ class ResizableList(ResizableWidget):
 	def __init__(self, parent=None):
 		self.ListView = QtGui.QListWidget()
 		ResizableWidget.__init__(self, self.ListView,  parent)
-
+		self.items = []
 		#PROPREIDADES
 		self.selectable = bool(1)
 
@@ -672,7 +671,9 @@ class ResizableList(ResizableWidget):
 		self.selectable = bool(0)
 		
 	#def setBackgroundImage(strPath):
-		
+	
+	def addItem(self, item):
+		self.append(item)
 	
 
 #-------------------------------------------------------------------------------------
@@ -744,7 +745,7 @@ class MainWidget(QtGui.QMainWindow):
 		
 		
 		Btn = QtGui.QPushButton(self)
-		Btn.setGeometry(21, self.w.getHeight(), 100,30)
+		Btn.setGeometry(21, 49, 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
 					self.info)
 		
