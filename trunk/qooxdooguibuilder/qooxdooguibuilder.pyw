@@ -20,6 +20,69 @@ class DrawArea(QtGui.QWidget):
         self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
 
 
+    def dragEnterEvent(self, event):
+
+        if event.mimeData().hasFormat("application/x-dnditemdata"):
+            if event.source() == self:
+                event.setDropAction(QtCore.Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+
+
+    def dropEvent(self, event):
+        
+        if event.mimeData().hasFormat("application/x-dnditemdata"):
+            itemData = event.mimeData().data("application/x-dnditemdata")
+            dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)
+
+            pixmap = QtGui.QPixmap()
+            offset = QtCore.QPoint()
+            dataStream >> pixmap >> offset
+
+            newIcon = QtGui.QLabel(self)
+            newIcon.setPixmap(pixmap)
+            newIcon.move(event.pos() - offset)
+            newIcon.show()
+
+            if event.source() == self:
+                event.setDropAction(QtCore.Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+
+
+    def mousePressEvent(self, event):
+        
+        child = self.childAt(event.pos())
+        if not child:
+            return
+
+        pixmap = child.pixmap()
+
+        itemData = QtCore.QByteArray()
+        dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
+        dataStream << pixmap << QtCore.QPoint(event.pos() - child.pos())
+
+        mimeData = QtCore.QMimeData()
+        mimeData.setData("application/x-dnditemdata", itemData)
+
+        drag = QtGui.QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(event.pos() - child.pos())
+
+        if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+            child.close()
+        else:
+            child.show()
+            child.setPixmap(pixmap)
+
+
 
 class PropertiesWidget(QtGui.QTableWidget):
 
@@ -38,160 +101,241 @@ class PropertiesWidget(QtGui.QTableWidget):
 
     def load(self, filePath):
 
-        """
-        i = 0
-        f1 = file(filePath, 'r')
-        f2 = file("data/properties.dat", 'r')
+        return
 
-        for line1 in f1:
-            fetch = False
-            f2 = file("data/properties.dat", 'r')
-            for line2 in f2:
-                if "Q" in line2:
-                    if fetch:
-                        break
-                    elif line1 == line2:
-                        fetch = True
-                else:
-                    if fetch:
-                        self.setRowCount(self.rowCount() + 1)
-                        self.setRowHeight(i, 20)
-                        item = QtGui.QTableWidgetItem(self.tr(line2))
-                        item.setFlags(QtCore.Qt.ItemIsEnabled)
-                        self.setItem(i, 0, item)
-                        i = i + 1
+##        i = 0
+##        f1 = file(filePath, 'r')
+##        f2 = file("data/properties.dat", 'r')
+##
+##        for line1 in f1:
+##            fetch = False
+##            f2 = file("data/properties.dat", 'r')
+##            for line2 in f2:
+##                if "Q" in line2:
+##                    if fetch:
+##                        break
+##                    elif line1 == line2:
+##                        fetch = True
+##                else:
+##                    if fetch:
+##                        self.setRowCount(self.rowCount() + 1)
+##                        self.setRowHeight(i, 20)
+##                        item = QtGui.QTableWidgetItem(self.tr(line2))
+##                        item.setFlags(QtCore.Qt.ItemIsEnabled)
+##                        self.setItem(i, 0, item)
+##                        i = i + 1
+##
+##        f2.close()
+##        f1.close()
 
-        f2.close()
-        f1.close()
-        """
 
 
-
-class ControlsWidget(QtGui.QListWidget):
+class ControlsWidget(QtGui.QWidget):
 
 
     def __init__(self, parent = None):
 
         QtGui.QListWidget.__init__(self, parent)
 
-        itemButton = QtGui.QPushButton(self)
-        itemButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemButton.setGeometry(self.x(), self.y(), 250, 20)
-        itemButton.setIcon(QtGui.QIcon("controls/Button.png"))
-        itemButton.setIconSize(QtCore.QSize(250, 20))
+        self.setGeometry(self.x(), self.y(), 254, 360)
+
+        itemButton = QtGui.QLabel(self)
+        itemButton.setPixmap(QtGui.QPixmap("controls/Button.png"))
         itemButton.move(2, 2)
 
-        itemCheckBox = QtGui.QPushButton(self)
-        itemCheckBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemCheckBox.setGeometry(self.x(), self.y(), 250, 20)
-        itemCheckBox.setIcon(QtGui.QIcon("controls/CheckBox.png"))
-        itemCheckBox.setIconSize(QtCore.QSize(250, 20))
+        itemCheckBox = QtGui.QLabel(self)
+        itemCheckBox.setPixmap(QtGui.QPixmap("controls/CheckBox.png"))
         itemCheckBox.move(2, 23)
 
-        itemComboBox = QtGui.QPushButton(self)
-        itemComboBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemComboBox.setGeometry(self.x(), self.y(), 250, 20)
-        itemComboBox.setIcon(QtGui.QIcon("controls/ComboBox.png"))
-        itemComboBox.setIconSize(QtCore.QSize(250, 20))
+        itemComboBox = QtGui.QLabel(self)
+        itemComboBox.setPixmap(QtGui.QPixmap("controls/ComboBox.png"))
         itemComboBox.move(2, 44)
 
-        itemGroupBox = QtGui.QPushButton(self)
-        itemGroupBox.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemGroupBox.setGeometry(self.x(), self.y(), 250, 20)
-        itemGroupBox.setIcon(QtGui.QIcon("controls/GroupBox.png"))
-        itemGroupBox.setIconSize(QtCore.QSize(250, 20))
+        itemGroupBox = QtGui.QLabel(self)
+        itemGroupBox.setPixmap(QtGui.QPixmap("controls/GroupBox.png"))
         itemGroupBox.move(2, 65)
 
-        itemIframe = QtGui.QPushButton(self)
-        itemIframe.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemIframe.setGeometry(self.x(), self.y(), 250, 20)
-        itemIframe.setIcon(QtGui.QIcon("controls/Iframe.png"))
-        itemIframe.setIconSize(QtCore.QSize(250, 20))
+        itemIframe = QtGui.QLabel(self)
+        itemIframe.setPixmap(QtGui.QPixmap("controls/Iframe.png"))
         itemIframe.move(2, 86)
 
-        itemLabel = QtGui.QPushButton(self)
-        itemLabel.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemLabel.setGeometry(self.x(), self.y(), 250, 20)
-        itemLabel.setIcon(QtGui.QIcon("controls/Label.png"))
-        itemLabel.setIconSize(QtCore.QSize(250, 20))
+        itemLabel = QtGui.QLabel(self)
+        itemLabel.setPixmap(QtGui.QPixmap("controls/Label.png"))
         itemLabel.move(2, 107)
 
-        itemList = QtGui.QPushButton(self)
-        itemList.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemList.setGeometry(self.x(), self.y(), 250, 20)
-        itemList.setIcon(QtGui.QIcon("controls/List.png"))
-        itemList.setIconSize(QtCore.QSize(250, 20))
+        itemList = QtGui.QLabel(self)
+        itemList.setPixmap(QtGui.QPixmap("controls/List.png"))
         itemList.move(2, 128)
 
-        itemMenuBar = QtGui.QPushButton(self)
-        itemMenuBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemMenuBar.setGeometry(self.x(), self.y(), 250, 20)
-        itemMenuBar.setIcon(QtGui.QIcon("controls/MenuBar.png"))
-        itemMenuBar.setIconSize(QtCore.QSize(250, 20))
+        itemMenuBar = QtGui.QLabel(self)
+        itemMenuBar.setPixmap(QtGui.QPixmap("controls/MenuBar.png"))
         itemMenuBar.move(2, 149)
 
-        itemPasswordField = QtGui.QPushButton(self)
-        itemPasswordField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemPasswordField.setGeometry(self.x(), self.y(), 250, 20)
-        itemPasswordField.setIcon(QtGui.QIcon("controls/PasswordField.png"))
-        itemPasswordField.setIconSize(QtCore.QSize(250, 20))
+        itemPasswordField = QtGui.QLabel(self)
+        itemPasswordField.setPixmap(QtGui.QPixmap("controls/PasswordField.png"))
         itemPasswordField.move(2, 170)
 
-        itemRadioButton = QtGui.QPushButton(self)
-        itemRadioButton.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemRadioButton.setGeometry(self.x(), self.y(), 250, 20)
-        itemRadioButton.setIcon(QtGui.QIcon("controls/RadioButton.png"))
-        itemRadioButton.setIconSize(QtCore.QSize(250, 20))
+        itemRadioButton = QtGui.QLabel(self)
+        itemRadioButton.setPixmap(QtGui.QPixmap("controls/RadioButton.png"))
         itemRadioButton.move(2, 191)
 
-        itemSpinner = QtGui.QPushButton(self)
-        itemSpinner.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemSpinner.setGeometry(self.x(), self.y(), 250, 20)
-        itemSpinner.setIcon(QtGui.QIcon("controls/Spinner.png"))
-        itemSpinner.setIconSize(QtCore.QSize(250, 20))
+        itemSpinner = QtGui.QLabel(self)
+        itemSpinner.setPixmap(QtGui.QPixmap("controls/Spinner.png"))
         itemSpinner.move(2, 212)
 
-        itemTabView = QtGui.QPushButton(self)
-        itemTabView.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTabView.setGeometry(self.x(), self.y(), 250, 20)
-        itemTabView.setIcon(QtGui.QIcon("controls/TabView.png"))
-        itemTabView.setIconSize(QtCore.QSize(250, 20))
+        itemTabView = QtGui.QLabel(self)
+        itemTabView.setPixmap(QtGui.QPixmap("controls/TabView.png"))
         itemTabView.move(2, 233)
 
-        itemTable = QtGui.QPushButton(self)
-        itemTable.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTable.setGeometry(self.x(), self.y(), 250, 20)
-        itemTable.setIcon(QtGui.QIcon("controls/Table.png"))
-        itemTable.setIconSize(QtCore.QSize(250, 20))
+        itemTable = QtGui.QLabel(self)
+        itemTable.setPixmap(QtGui.QPixmap("controls/Table.png"))
         itemTable.move(2, 254)
 
-        itemTextArea = QtGui.QPushButton(self)
-        itemTextArea.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTextArea.setGeometry(self.x(), self.y(), 250, 20)
-        itemTextArea.setIcon(QtGui.QIcon("controls/TextArea.png"))
-        itemTextArea.setIconSize(QtCore.QSize(250, 20))
+        itemTextArea = QtGui.QLabel(self)
+        itemTextArea.setPixmap(QtGui.QPixmap("controls/TextArea.png"))
         itemTextArea.move(2, 275)
 
-        itemTextField = QtGui.QPushButton(self)
-        itemTextField.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTextField.setGeometry(self.x(), self.y(), 250, 20)
-        itemTextField.setIcon(QtGui.QIcon("controls/TextField.png"))
-        itemTextField.setIconSize(QtCore.QSize(250, 20))
+        itemTextField = QtGui.QLabel(self)
+        itemTextField.setPixmap(QtGui.QPixmap("controls/TextField.png"))
         itemTextField.move(2, 296)
 
-        itemToolBar = QtGui.QPushButton(self)
-        itemToolBar.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemToolBar.setGeometry(self.x(), self.y(), 250, 20)
-        itemToolBar.setIcon(QtGui.QIcon("controls/ToolBar.png"))
-        itemToolBar.setIconSize(QtCore.QSize(250, 20))
+        itemToolBar = QtGui.QLabel(self)
+        itemToolBar.setPixmap(QtGui.QPixmap("controls/ToolBar.png"))
         itemToolBar.move(2, 317)
 
-        itemTree = QtGui.QPushButton(self)
-        itemTree.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        itemTree.setGeometry(self.x(), self.y(), 250, 20)
-        itemTree.setIcon(QtGui.QIcon("controls/Tree.png"))
-        itemTree.setIconSize(QtCore.QSize(250, 20))
+        itemTree = QtGui.QLabel(self)
+        itemTree.setPixmap(QtGui.QPixmap("controls/Tree.png"))
         itemTree.move(2, 338)
+
+        
+##        itemButton = QtGui.QPushButton(self)
+##        itemButton.setGeometry(self.x(), self.y(), 250, 20)
+##        itemButton.setIcon(QtGui.QIcon("controls/Button.png"))
+##        itemButton.setIconSize(QtCore.QSize(250, 20))
+##        itemButton.move(2, 2)
+##
+##        itemCheckBox = QtGui.QPushButton(self)
+##        itemCheckBox.setGeometry(self.x(), self.y(), 250, 20)
+##        itemCheckBox.setIcon(QtGui.QIcon("controls/CheckBox.png"))
+##        itemCheckBox.setIconSize(QtCore.QSize(250, 20))
+##        itemCheckBox.move(2, 23)
+##
+##        itemComboBox = QtGui.QPushButton(self)
+##        itemComboBox.setGeometry(self.x(), self.y(), 250, 20)
+##        itemComboBox.setIcon(QtGui.QIcon("controls/ComboBox.png"))
+##        itemComboBox.setIconSize(QtCore.QSize(250, 20))
+##        itemComboBox.move(2, 44)
+##
+##        itemGroupBox = QtGui.QPushButton(self)
+##        itemGroupBox.setGeometry(self.x(), self.y(), 250, 20)
+##        itemGroupBox.setIcon(QtGui.QIcon("controls/GroupBox.png"))
+##        itemGroupBox.setIconSize(QtCore.QSize(250, 20))
+##        itemGroupBox.move(2, 65)
+##
+##        itemIframe = QtGui.QPushButton(self)
+##        itemIframe.setGeometry(self.x(), self.y(), 250, 20)
+##        itemIframe.setIcon(QtGui.QIcon("controls/Iframe.png"))
+##        itemIframe.setIconSize(QtCore.QSize(250, 20))
+##        itemIframe.move(2, 86)
+##
+##        itemLabel = QtGui.QPushButton(self)
+##        itemLabel.setGeometry(self.x(), self.y(), 250, 20)
+##        itemLabel.setIcon(QtGui.QIcon("controls/Label.png"))
+##        itemLabel.setIconSize(QtCore.QSize(250, 20))
+##        itemLabel.move(2, 107)
+##
+##        itemList = QtGui.QPushButton(self)
+##        itemList.setGeometry(self.x(), self.y(), 250, 20)
+##        itemList.setIcon(QtGui.QIcon("controls/List.png"))
+##        itemList.setIconSize(QtCore.QSize(250, 20))
+##        itemList.move(2, 128)
+##
+##        itemMenuBar = QtGui.QPushButton(self)
+##        itemMenuBar.setGeometry(self.x(), self.y(), 250, 20)
+##        itemMenuBar.setIcon(QtGui.QIcon("controls/MenuBar.png"))
+##        itemMenuBar.setIconSize(QtCore.QSize(250, 20))
+##        itemMenuBar.move(2, 149)
+##
+##        itemPasswordField = QtGui.QPushButton(self)
+##        itemPasswordField.setGeometry(self.x(), self.y(), 250, 20)
+##        itemPasswordField.setIcon(QtGui.QIcon("controls/PasswordField.png"))
+##        itemPasswordField.setIconSize(QtCore.QSize(250, 20))
+##        itemPasswordField.move(2, 170)
+##
+##        itemRadioButton = QtGui.QPushButton(self)
+##        itemRadioButton.setGeometry(self.x(), self.y(), 250, 20)
+##        itemRadioButton.setIcon(QtGui.QIcon("controls/RadioButton.png"))
+##        itemRadioButton.setIconSize(QtCore.QSize(250, 20))
+##        itemRadioButton.move(2, 191)
+##
+##        itemSpinner = QtGui.QPushButton(self)
+##        itemSpinner.setGeometry(self.x(), self.y(), 250, 20)
+##        itemSpinner.setIcon(QtGui.QIcon("controls/Spinner.png"))
+##        itemSpinner.setIconSize(QtCore.QSize(250, 20))
+##        itemSpinner.move(2, 212)
+##
+##        itemTabView = QtGui.QPushButton(self)
+##        itemTabView.setGeometry(self.x(), self.y(), 250, 20)
+##        itemTabView.setIcon(QtGui.QIcon("controls/TabView.png"))
+##        itemTabView.setIconSize(QtCore.QSize(250, 20))
+##        itemTabView.move(2, 233)
+##
+##        itemTable = QtGui.QPushButton(self)
+##        itemTable.setGeometry(self.x(), self.y(), 250, 20)
+##        itemTable.setIcon(QtGui.QIcon("controls/Table.png"))
+##        itemTable.setIconSize(QtCore.QSize(250, 20))
+##        itemTable.move(2, 254)
+##
+##        itemTextArea = QtGui.QPushButton(self)
+##        itemTextArea.setGeometry(self.x(), self.y(), 250, 20)
+##        itemTextArea.setIcon(QtGui.QIcon("controls/TextArea.png"))
+##        itemTextArea.setIconSize(QtCore.QSize(250, 20))
+##        itemTextArea.move(2, 275)
+##
+##        itemTextField = QtGui.QPushButton(self)
+##        itemTextField.setGeometry(self.x(), self.y(), 250, 20)
+##        itemTextField.setIcon(QtGui.QIcon("controls/TextField.png"))
+##        itemTextField.setIconSize(QtCore.QSize(250, 20))
+##        itemTextField.move(2, 296)
+##
+##        itemToolBar = QtGui.QPushButton(self)
+##        itemToolBar.setGeometry(self.x(), self.y(), 250, 20)
+##        itemToolBar.setIcon(QtGui.QIcon("controls/ToolBar.png"))
+##        itemToolBar.setIconSize(QtCore.QSize(250, 20))
+##        itemToolBar.move(2, 317)
+##
+##        itemTree = QtGui.QPushButton(self)
+##        itemTree.setGeometry(self.x(), self.y(), 250, 20)
+##        itemTree.setIcon(QtGui.QIcon("controls/Tree.png"))
+##        itemTree.setIconSize(QtCore.QSize(250, 20))
+##        itemTree.move(2, 338)
+
+
+    def mousePressEvent(self, event):
+        
+        child = self.childAt(event.pos())
+        if not child:
+            return
+
+        pixmap = child.pixmap()
+
+        itemData = QtCore.QByteArray()
+        dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
+        dataStream << pixmap << QtCore.QPoint(event.pos() - child.pos())
+
+        mimeData = QtCore.QMimeData()
+        mimeData.setData("application/x-dnditemdata", itemData)
+
+        drag = QtGui.QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(event.pos() - child.pos())
+
+        if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+            child.close()
+        else:
+            child.show()
+            child.setPixmap(pixmap)
 
 
 
@@ -380,18 +524,24 @@ class MainWindow(QtGui.QMainWindow):
     def createDockWindows(self):
 
         self.controlsDock = QtGui.QDockWidget(self.tr("Controls"), self)
-        self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.controlsDock.setFixedWidth(254)
-        self.controlsDock.setFixedHeight(382)
+        self.controlsDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        self.controlsDock.setFeatures(QtGui.QDockWidget.DockWidgetClosable)
+        self.controlsDock.setFixedWidth(273)
+        self.controlsDock.setMaximumHeight(384)
 
         self.controlsWidget = ControlsWidget()
 
-        self.controlsDock.setWidget(self.controlsWidget)
+        self.intermediateWidget = QtGui.QScrollArea(self)
+        self.intermediateWidget.setBackgroundRole(QtGui.QPalette.Light)
+        self.intermediateWidget.setWidget(self.controlsWidget)
+
+        self.controlsDock.setWidget(self.intermediateWidget)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDock, QtCore.Qt.Vertical)
 
         self.propertiesDock = QtGui.QDockWidget(self.tr("Properties"), self)
-        self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.propertiesDock.setFixedWidth(254)
+        self.propertiesDock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        self.propertiesDock.setFeatures(QtGui.QDockWidget.DockWidgetClosable)
+        self.propertiesDock.setFixedWidth(273)
 
         self.propertiesWidget = PropertiesWidget()
 
@@ -406,72 +556,72 @@ class MainWindow(QtGui.QMainWindow):
 
     def newInterfaceAct(self):
 
-        print("")
+        return
 
 
     def openInterfaceAct(self):
 
-        print("")
+        return
 
 
     def openTemplateAct(self):
 
-        print("")
+        return
 
 
     def saveInterfaceAct(self):
 
-        print("")
+        return
 
 
     def saveInterfaceAsAct(self):
 
-        print("")
+        return
 
 
     def configureAct(self):
 
-        print("")
+        return
 
 
     def undoAct(self):
 
-        print("")
+        return
 
 
     def redoAct(self):
 
-        print("")
+        return
 
 
     def cutAct(self):
 
-        print("")
+        return
 
 
     def copyAct(self):
 
-        print("")
+        return
 
 
     def pasteAct(self):
 
-        print("")
+        return
 
 
     def deleteAct(self):
 
-        print("")
+        return
 
 
     def previewInApplicationAct(self):
 
-        print("")
+        return
 
 
     def previewInBrowserAct(self):
 
-        print("")
+        return
 
 
     def aboutAct(self):
@@ -481,12 +631,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def applyTemplateAct(self):
 
-        print("")
+        return
 
 
     def saveTemplateAsAct(self):
 
-        print("")
+        return
 
 
 
