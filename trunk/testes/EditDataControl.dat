@@ -1,1 +1,1 @@
-Txt:Text:Edit
+Txt:Text:Edit:setText($1)

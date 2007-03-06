@@ -1,1 +1,1 @@
-Txt:Text:CheckBox
+Txt:Text:CheckBox:setText($1)
