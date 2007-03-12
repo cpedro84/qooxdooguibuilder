@@ -1,0 +1,17 @@
+BTN:Button_Properties.dat
+CKB:CheckBox_Properties.dat
+CMB:ComboBox_Properties.dat
+GRB:GroupBox_Properties.dat
+IFR:Iframe_Properties.dat
+LBL:Label_Properties.dat
+LST:List_Properties.dat
+MBR:MenuBar_Properties.dat
+PWF:PasswordField_Properties.dat
+RDB:RadioButton_Properties.dat
+SPR:Spinner_Properties.dat
+TBV:TabView_Properties.dat
+TBL:Table_Properties.dat
+TXV:TextArea_Properties.dat
+TXF:TextField_Properties.dat
+TLB:ToolBar_Properties.dat
+TRE:Tree_Properties.dat
