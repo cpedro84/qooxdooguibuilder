@@ -1,1 +1,3 @@
-Txt:Text:CheckBox:setText($1)
+01:EnableInlineFind:true:setEnableInlineFind($1)
+02:MarkLeadingItem:false:setMarkLeadingItem($1)
+03:Items:null:setItems($1)

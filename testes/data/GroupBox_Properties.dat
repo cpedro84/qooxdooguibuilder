@@ -1,1 +1,2 @@
-Txt:Text:CheckBox:setText($1)
+01:Legend:Group Box:setLegend($1)
+02:Icon:null:setIcon($1)

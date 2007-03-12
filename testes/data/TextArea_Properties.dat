@@ -1,1 +1,2 @@
-Txt:Text:CheckBox:setText($1)
+01:Text:Text Area:setText($1)
+02:Wrap:false:setWrap($1)

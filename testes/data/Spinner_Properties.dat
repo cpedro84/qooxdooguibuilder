@@ -1,1 +1,2 @@
-Txt:Text:CheckBox:setText($1)
+01:Min:0:setMin($1)
+02:Max:100:setMax($1)

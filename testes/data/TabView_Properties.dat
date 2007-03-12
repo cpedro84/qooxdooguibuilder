@@ -1,1 +1,2 @@
-Txt:Text:CheckBox:setText($1)
+01:AlignTabsToLeft:true:setAlignTabsToLeft($1)
+02:PlaceBarOnTop:true:setPlaceBarOnTop($1)

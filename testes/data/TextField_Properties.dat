@@ -1,1 +1,3 @@
-Txt:Text:CheckBox:setText($1)
+01:Text:Text Field:setText($1)
+02:MaxLength:null:setMaxLength($1)
+03:ReadOnly:false:setReadOnly($1)

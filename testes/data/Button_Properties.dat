@@ -1,1 +1,4 @@
-Txt:Text:CheckBox:setText($1)
+01:Text:Button:setText($1)
+02:Icon:null:setIcon($1)
+03:IconWidth:null:setIconWidth($1)
+04:IconHeight:null:setIconHeight($1)
