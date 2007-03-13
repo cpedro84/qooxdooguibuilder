@@ -1,5 +1,4 @@
 01:Label:Tree:setLabel($1)
-02:Icon:null:setIcon($1)
-03:IconSelected:null:setIconSelected($1)
-04:UseDoubleClick:false:setUseDoubleClick($1)
-05:UseTreeLines:true:setUseTreeLines($1)
+02:UseDoubleClick:false/true:setUseDoubleClick($1)
+03:UseTreeLines:true/false:setUseTreeLines($1)
+04:Items:null:setItems($1)

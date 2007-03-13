@@ -1,4 +1,4 @@
 01:HTML:Label:setHTML($1)
 02:Mnemonic:null:setMnemonic($1)
 03:TextAlign:left/center/right/justify:setTextAlign($1)
-04:Wrap:true:setWrap($1)
+04:Wrap:true/false:setWrap($1)

@@ -1,2 +1,2 @@
 01:Text:Text Area:setText($1)
-02:Wrap:false:setWrap($1)
+02:Wrap:false/true:setWrap($1)
