@@ -11,12 +11,16 @@ from PyQt4 import QtCore, QtGui
 
 class ResizableWidget(QtGui.QWidget):
     
-	def __init__(self, widget=None, parent=None):
+	def __init__(self, typeControl, Id, widget=None, parent=None):
 		
 		QtGui.QWidget.__init__(self, parent)
 				
 		self.childWidget = widget
 		self.childWidget.setParent(self)
+		
+		#ID DE IDENTIFICAÇÃO DA WIDGET
+		self.IdControl = Id
+		self.typeControl = typeControl
 		
 		self.setSizeIncrement(10,10)
 		self.setMouseTracking(bool(1))
@@ -218,8 +222,7 @@ class ResizableWidget(QtGui.QWidget):
 		mouseYpos = event.y()
 		
 		#PONTOS DE REFERÊNCIA
-		point = QtCore.QPoint(mouseXpos, mouseYpos)
-		
+		point = QtCore.QPoint(mouseXpos, mouseYpos)		
 	
 		if self.MouseState == self.MouseRelease:			
 			#VALIDAR POSICAO DO RATO DE ACORDO COM OS PONTOS DE REF. 
@@ -295,8 +298,12 @@ class ResizableWidget(QtGui.QWidget):
 			
 	def mousePressEvent(self, event):
 		#ACTUALIZAR O ESTADO DO RATO
-		self.MouseState = self.MouseClicked		
+		self.MouseState = self.MouseClicked
+
 		
+		self.emit(QtCore.SIGNAL("clicked_(const QString &)"), 'benfica')
+
+	
 	def mouseReleaseEvent(self, event):
 		#ACTUALIZAR O ESTADO DO RATO
 		self.MouseState = self.MouseRelease
@@ -376,11 +383,14 @@ class ResizableWidget(QtGui.QWidget):
 	def enable(self):
 		self.childWidget.setEnable(bool(1))
 	
-	def enableVisible(self):
-		self.childWidget.setVisible(bool(1))
 	
-	def disableVisible(self):
-		self.childWidget.setVisible(bool(0))
+	def setVisibility(self, isVisible):
+		
+		if isVisible == "true":
+			self.childWidget.setVisible(bool(1))
+		else:
+			self.childWidget.setVisible(bool(0))
+		
 	
 
 	def clipHeight(self):
@@ -466,9 +476,9 @@ class ResizableWidget(QtGui.QWidget):
 	
 #-------------------------------------------------------------------------------------
 class ResizableAbstractButton(ResizableWidget):
-	def __init__(self, widget = None, parent=None):
+	def __init__(self, id, widget = None, parent=None):
 		self.AbstractButtonWidget = widget
-		ResizableWidget.__init__(self, self.AbstractButtonWidget,  parent)
+		ResizableWidget.__init__(self, id, self.AbstractButtonWidget,  parent)
 		
 	def setText(self, strText):
 		self.AbstractButtonWidget.setText(strText)
@@ -479,9 +489,9 @@ class ResizableAbstractButton(ResizableWidget):
 
 class ResizableAbstractIO(ResizableWidget):
 
-	def __init__(self, widget = None, parent=None):
+	def __init__(self, typeControl, id, widget = None, parent=None):
 		self.AbstractIOWidget = widget
-		ResizableWidget.__init__(self, self.AbstractIOWidget,  parent)
+		ResizableWidget.__init__(self, typeControl, id, self.AbstractIOWidget,  parent)
 		
 	def setText(self, strText):
 		self.AbstractIOWidget.setText(strText)
@@ -492,9 +502,9 @@ class ResizableAbstractIO(ResizableWidget):
 
 #-------------------------------------------------------------------------------------
 class ResizableButton(ResizableAbstractIO):
-	def __init__(self, parent=None):
+	def __init__(self, id, parent=None):
 		self.Button = QtGui.QPushButton()
-		ResizableAbstractIO.__init__(self, self.Button,  parent)	
+		ResizableAbstractIO.__init__(self, id, self.Button,  parent)	
 	
 	"""def __init__(self, strText, parent=None):
 		self.Button = QtGui.QPushButton(strText)
@@ -559,10 +569,10 @@ class ResizableLabel(ResizableAbstractIO):
 		
 		
 #-------------------------------------------------------------------------------------
-class ResizableTextField(ResizableAbstractIO):
-	def __init__(self, parent=None, interactiveMode = QtGui.QLineEdit.Normal):
+class resizableTextField(ResizableAbstractIO):
+	def __init__(self, typeControl, id, parent=None, interactiveMode = QtGui.QLineEdit.Normal):
 		self.LineEdit = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, self.LineEdit, parent)
+		ResizableAbstractIO.__init__(self, typeControl, id, self.LineEdit, parent)
 		self.LineEdit.setEchoMode(interactiveMode)
 	
 	def setLength(self, lenght):
@@ -573,7 +583,7 @@ class ResizableTextField(ResizableAbstractIO):
 		
 	def disableReadOnly(self):
 		self.LineEdit.setReadOnly(bool(0))
-
+		
 
 class ResizableTextArea(ResizableAbstractIO):
 	def __init__(self, parent=None):
@@ -723,45 +733,24 @@ class ResizableDialogWindow(ResizableWidget):
 		ResizableWidget.__init__(self, self.DialogWindow,  parent)
 #(..... CONTINUAR WIDGETS)
 
-
-
-
-
-
-
-
 #-------------------------------------------------------------------------------------
+
+
+
 class MainWidget(QtGui.QMainWindow):
 	
 	def __init__(self, parent=None):
 		QtGui.QWidget.__init__(self, parent)
-		#widgetRect = self.geometry()
+		
+		self.w = resizableTextField("12","12", self)
+		
+		QtCore.QObject.connect(self.w, QtCore.SIGNAL("clicked_(const QString &)"), self.SignalReceive)
+		
 
-                #childWidget = QtGui.QPushButton(self)
-		#childWidget = QtGui.QLabel(self)
+	def SignalReceive(self, text):		
 		
-		#self.resizableBtn = ResizableButton(self)
-		self.w = ResizableLabel(self)
-		
-		
-		Btn = QtGui.QPushButton(self)
-		Btn.setGeometry(21, 49, 100,30)
-		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
-					self.info)
-		
-		
-	def info(self):
-		#self.w.setAutoFillBackground(bool(1))
-		
-		self.w.setText("teste")				
-		self.w.setWindowColor(QtGui.QColor(QtCore.Qt.blue))
-		self.w.setTextColor(QtGui.QColor(QtCore.Qt.green))
-		#print(self.resizableWidget.getWidth())
-		#self.w.addItem("teste")
-		#self.w.setAlignLeft()
-		#print(self.w.isChecked())
-			
-		
+		print text
+	
 #-------------------------------------------------------------------------------------
 
 #main 
@@ -769,3 +758,5 @@ app = QtGui.QApplication(sys.argv)
 widget = MainWidget()
 widget.show()
 sys.exit(app.exec_())
+
+
