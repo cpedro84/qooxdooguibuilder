@@ -13,18 +13,22 @@ class DragLabel(QtGui.QLabel):
 
     def __init__(self, text, parent=None):
 
-        QtGui.QLabel.__init__(self, "Text", parent)
+        QtGui.QLabel.__init__(self, text, parent)
+
+        self.setFrameShape(QtGui.QFrame.Panel)
+        self.setFrameShadow(QtGui.QFrame.Raised)
 
 
     def mousePressEvent(self, event):
-        plainText = self.text()
+
+        itemData = QtCore.QByteArray()
 
         mimeData = QtCore.QMimeData()
-        mimeData.setText(plainText)
+        mimeData.setData("application/x-dnditemdata", itemData)
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
-        drag.setHotSpot(event.pos() - child.pos())
+        drag.setHotSpot(event.pos() - self.rect().topLeft())
 
         dropAction = drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
 
@@ -49,11 +53,7 @@ class DrawArea(QtGui.QWidget):
     def dragEnterEvent(self, event):
 
         if event.mimeData().hasFormat("application/x-dnditemdata"):
-            if event.source() == self:
-                event.setDropAction(QtCore.Qt.MoveAction)
-                event.accept()
-            else:
-                event.acceptProposedAction()
+            event.acceptProposedAction()
         else:
             event.ignore()
 
@@ -61,53 +61,50 @@ class DrawArea(QtGui.QWidget):
     def dropEvent(self, event):
         
         if event.mimeData().hasFormat("application/x-dnditemdata"):
-            itemData = event.mimeData().data("application/x-dnditemdata")
-            dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)
+            if main_window.control_beeing_added == 1:
+                self.newIcon = DragLabel("Button", self)
+            elif main_window.control_beeing_added == 2:
+                self.newIcon = DragLabel("Check Box", self)
+            elif main_window.control_beeing_added == 3:
+                self.newIcon = DragLabel("Combo Box", self)
+            elif main_window.control_beeing_added == 4:
+                self.newIcon = DragLabel("Group Box", self)
+            elif main_window.control_beeing_added == 5:
+                self.newIcon = DragLabel("Iframe", self)
+            elif main_window.control_beeing_added == 6:
+                self.newIcon = DragLabel("Label", self)
+            elif main_window.control_beeing_added == 7:
+                self.newIcon = DragLabel("List", self)
+            elif main_window.control_beeing_added == 8:
+                self.newIcon = DragLabel("Menu Bar", self)
+            elif main_window.control_beeing_added == 9:
+                self.newIcon = DragLabel("Password Field", self)
+            elif main_window.control_beeing_added == 10:
+                self.newIcon = DragLabel("Radio Button", self)
+            elif main_window.control_beeing_added == 11:
+                self.newIcon = DragLabel("Spinner", self)
+            elif main_window.control_beeing_added == 12:
+                self.newIcon = DragLabel("Tab View", self)
+            elif main_window.control_beeing_added == 13:
+                self.newIcon = DragLabel("Table", self)
+            elif main_window.control_beeing_added == 14:
+                self.newIcon = DragLabel("Text Area", self)
+            elif main_window.control_beeing_added == 15:
+                self.newIcon = DragLabel("Text Field", self)
+            elif main_window.control_beeing_added == 16:
+                self.newIcon = DragLabel("Tool Bar", self)
+            elif main_window.control_beeing_added == 17:
+                self.newIcon = DragLabel("Tree", self)
+            self.newIcon.move(event.pos())
+            self.newIcon.show()
 
-            pixmap = QtGui.QPixmap()
-            offset = QtCore.QPoint()
-            dataStream >> pixmap >> offset
-
-            newIcon = QtGui.QLabel(self)
-            newIcon.setPixmap(pixmap)
-            newIcon.move(event.pos() - offset)
-            newIcon.show()
-
-            if event.source() == self:
+            if event.source() in self.children():
                 event.setDropAction(QtCore.Qt.MoveAction)
                 event.accept()
             else:
                 event.acceptProposedAction()
         else:
             event.ignore()
-
-
-    def mousePressEvent(self, event):
-        
-        child = self.childAt(event.pos())
-        if not child:
-            return
-
-        pixmap = child.pixmap()
-        child.close()
-
-        itemData = QtCore.QByteArray()
-        dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
-        dataStream << pixmap << QtCore.QPoint(event.pos() - child.pos())
-
-        mimeData = QtCore.QMimeData()
-        mimeData.setData("application/x-dnditemdata", itemData)
-
-        drag = QtGui.QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setPixmap(pixmap)
-        drag.setHotSpot(event.pos() - child.pos())
-
-        if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
-            child.close()
-        else:
-            child.show()
-            child.setPixmap(pixmap)
 
 
 
@@ -143,11 +140,6 @@ class PropertiesWidget(QtGui.QTableWidget):
 
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
-
-
-    def load(self, filePath):
-
-        return
 
 
 
@@ -246,135 +238,61 @@ class ControlsWidget(QtGui.QWidget):
         itemTree.setPixmap(QtGui.QPixmap("controls/Tree.png"))
         itemTree.move(2, 338)
 
-        
-##        itemButton = QtGui.QPushButton(self)
-##        itemButton.setGeometry(self.x(), self.y(), 250, 20)
-##        itemButton.setIcon(QtGui.QIcon("controls/Button.png"))
-##        itemButton.setIconSize(QtCore.QSize(250, 20))
-##        itemButton.move(2, 2)
-##
-##        itemCheckBox = QtGui.QPushButton(self)
-##        itemCheckBox.setGeometry(self.x(), self.y(), 250, 20)
-##        itemCheckBox.setIcon(QtGui.QIcon("controls/CheckBox.png"))
-##        itemCheckBox.setIconSize(QtCore.QSize(250, 20))
-##        itemCheckBox.move(2, 23)
-##
-##        itemComboBox = QtGui.QPushButton(self)
-##        itemComboBox.setGeometry(self.x(), self.y(), 250, 20)
-##        itemComboBox.setIcon(QtGui.QIcon("controls/ComboBox.png"))
-##        itemComboBox.setIconSize(QtCore.QSize(250, 20))
-##        itemComboBox.move(2, 44)
-##
-##        itemGroupBox = QtGui.QPushButton(self)
-##        itemGroupBox.setGeometry(self.x(), self.y(), 250, 20)
-##        itemGroupBox.setIcon(QtGui.QIcon("controls/GroupBox.png"))
-##        itemGroupBox.setIconSize(QtCore.QSize(250, 20))
-##        itemGroupBox.move(2, 65)
-##
-##        itemIframe = QtGui.QPushButton(self)
-##        itemIframe.setGeometry(self.x(), self.y(), 250, 20)
-##        itemIframe.setIcon(QtGui.QIcon("controls/Iframe.png"))
-##        itemIframe.setIconSize(QtCore.QSize(250, 20))
-##        itemIframe.move(2, 86)
-##
-##        itemLabel = QtGui.QPushButton(self)
-##        itemLabel.setGeometry(self.x(), self.y(), 250, 20)
-##        itemLabel.setIcon(QtGui.QIcon("controls/Label.png"))
-##        itemLabel.setIconSize(QtCore.QSize(250, 20))
-##        itemLabel.move(2, 107)
-##
-##        itemList = QtGui.QPushButton(self)
-##        itemList.setGeometry(self.x(), self.y(), 250, 20)
-##        itemList.setIcon(QtGui.QIcon("controls/List.png"))
-##        itemList.setIconSize(QtCore.QSize(250, 20))
-##        itemList.move(2, 128)
-##
-##        itemMenuBar = QtGui.QPushButton(self)
-##        itemMenuBar.setGeometry(self.x(), self.y(), 250, 20)
-##        itemMenuBar.setIcon(QtGui.QIcon("controls/MenuBar.png"))
-##        itemMenuBar.setIconSize(QtCore.QSize(250, 20))
-##        itemMenuBar.move(2, 149)
-##
-##        itemPasswordField = QtGui.QPushButton(self)
-##        itemPasswordField.setGeometry(self.x(), self.y(), 250, 20)
-##        itemPasswordField.setIcon(QtGui.QIcon("controls/PasswordField.png"))
-##        itemPasswordField.setIconSize(QtCore.QSize(250, 20))
-##        itemPasswordField.move(2, 170)
-##
-##        itemRadioButton = QtGui.QPushButton(self)
-##        itemRadioButton.setGeometry(self.x(), self.y(), 250, 20)
-##        itemRadioButton.setIcon(QtGui.QIcon("controls/RadioButton.png"))
-##        itemRadioButton.setIconSize(QtCore.QSize(250, 20))
-##        itemRadioButton.move(2, 191)
-##
-##        itemSpinner = QtGui.QPushButton(self)
-##        itemSpinner.setGeometry(self.x(), self.y(), 250, 20)
-##        itemSpinner.setIcon(QtGui.QIcon("controls/Spinner.png"))
-##        itemSpinner.setIconSize(QtCore.QSize(250, 20))
-##        itemSpinner.move(2, 212)
-##
-##        itemTabView = QtGui.QPushButton(self)
-##        itemTabView.setGeometry(self.x(), self.y(), 250, 20)
-##        itemTabView.setIcon(QtGui.QIcon("controls/TabView.png"))
-##        itemTabView.setIconSize(QtCore.QSize(250, 20))
-##        itemTabView.move(2, 233)
-##
-##        itemTable = QtGui.QPushButton(self)
-##        itemTable.setGeometry(self.x(), self.y(), 250, 20)
-##        itemTable.setIcon(QtGui.QIcon("controls/Table.png"))
-##        itemTable.setIconSize(QtCore.QSize(250, 20))
-##        itemTable.move(2, 254)
-##
-##        itemTextArea = QtGui.QPushButton(self)
-##        itemTextArea.setGeometry(self.x(), self.y(), 250, 20)
-##        itemTextArea.setIcon(QtGui.QIcon("controls/TextArea.png"))
-##        itemTextArea.setIconSize(QtCore.QSize(250, 20))
-##        itemTextArea.move(2, 275)
-##
-##        itemTextField = QtGui.QPushButton(self)
-##        itemTextField.setGeometry(self.x(), self.y(), 250, 20)
-##        itemTextField.setIcon(QtGui.QIcon("controls/TextField.png"))
-##        itemTextField.setIconSize(QtCore.QSize(250, 20))
-##        itemTextField.move(2, 296)
-##
-##        itemToolBar = QtGui.QPushButton(self)
-##        itemToolBar.setGeometry(self.x(), self.y(), 250, 20)
-##        itemToolBar.setIcon(QtGui.QIcon("controls/ToolBar.png"))
-##        itemToolBar.setIconSize(QtCore.QSize(250, 20))
-##        itemToolBar.move(2, 317)
-##
-##        itemTree = QtGui.QPushButton(self)
-##        itemTree.setGeometry(self.x(), self.y(), 250, 20)
-##        itemTree.setIcon(QtGui.QIcon("controls/Tree.png"))
-##        itemTree.setIconSize(QtCore.QSize(250, 20))
-##        itemTree.move(2, 338)
-
 
     def mousePressEvent(self, event):
-        
+
         child = self.childAt(event.pos())
+
         if not child:
             return
-
-        pixmap = child.pixmap()
+        elif event.y() >= 2 and event.y() < 23:
+            main_window.control_beeing_added = 1
+        elif event.y() >= 23 and event.y() < 44:
+            main_window.control_beeing_added = 2
+        elif event.y() >= 44 and event.y() < 65:
+            main_window.control_beeing_added = 3
+        elif event.y() >= 65 and event.y() < 86:
+            main_window.control_beeing_added = 4
+        elif event.y() >= 86 and event.y() < 107:
+            main_window.control_beeing_added = 5
+        elif event.y() >= 107 and event.y() < 128:
+            main_window.control_beeing_added = 6
+        elif event.y() >= 128 and event.y() < 149:
+            main_window.control_beeing_added = 7
+        elif event.y() >= 149 and event.y() < 170:
+            main_window.control_beeing_added = 8
+        elif event.y() >= 170 and event.y() < 191:
+            main_window.control_beeing_added = 9
+        elif event.y() >= 191 and event.y() < 212:
+            main_window.control_beeing_added = 10
+        elif event.y() >= 212 and event.y() < 233:
+            main_window.control_beeing_added = 11
+        elif event.y() >= 233 and event.y() < 254:
+            main_window.control_beeing_added = 12
+        elif event.y() >= 254 and event.y() < 275:
+            main_window.control_beeing_added = 13
+        elif event.y() >= 275 and event.y() < 296:
+            main_window.control_beeing_added = 14
+        elif event.y() >= 296 and event.y() < 317:
+            main_window.control_beeing_added = 15
+        elif event.y() >= 317 and event.y() < 338:
+            main_window.control_beeing_added = 16
+        elif event.y() >= 338 and event.y() < 359:
+            main_window.control_beeing_added = 17
 
         itemData = QtCore.QByteArray()
-        dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
-        dataStream << pixmap << QtCore.QPoint(event.pos() - child.pos())
 
         mimeData = QtCore.QMimeData()
         mimeData.setData("application/x-dnditemdata", itemData)
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
-        drag.setPixmap(pixmap)
-        drag.setHotSpot(event.pos() - child.pos())
+        drag.setHotSpot(event.pos())
 
         if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
             child.close()
         else:
             child.show()
-            child.setPixmap(pixmap)
 
 
 
@@ -703,6 +621,9 @@ class MainWindow(QtGui.QMainWindow):
     def saveTemplateAsAct(self):
 
         return
+
+
+    control_beeing_added = 0
 
 
 
