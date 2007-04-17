@@ -1,0 +1,3 @@
+TXF:TextFieldDataControl.dat:resizableTextField(typeControl,id,parent)
+CMB:ComboBox_Properties.dat:ResizableComboBox(typeControl,id,parent)
+LST:List_Properties.dat:ResizableList(typeControl,id,parent)

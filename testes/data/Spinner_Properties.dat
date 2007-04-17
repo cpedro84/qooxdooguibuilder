@@ -1,2 +1,3 @@
-01:Min:0:setMin($1)
-02:Max:100:setMax($1)
+01:Min:0:-
+02:Max:100:-
+03:StepBy:1:-

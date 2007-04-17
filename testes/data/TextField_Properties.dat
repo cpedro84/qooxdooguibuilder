@@ -1,3 +1,3 @@
-01:Text:Text Field:setText($1)
-02:MaxLength:null:setMaxLength($1)
-03:ReadOnly:false/true:setReadOnly($1)
+01:Text:Text Field:setText(param)
+02:MaxLength:100:-
+03:ReadOnly:false/true:-

@@ -1,5 +1,6 @@
-01:HeaderCellHeight:16:setHeaderCellHeight($1)
-02:RowHeight:15:setRowHeight($1)
-03:RowCount:0:setRowCount($1)
-04:ColumnCount:0:setColumnCount($1)
-05:Items:null:setItems($1)
+01:HeaderCellHeight:16:setHeaderCellHeight(param)
+02:RowsHeight:15:setRowsHeight(param)
+03:ColumnsWidth:15:setColumnsWidth(param)
+04:RowCount:0:setRowCount(param)
+05:ColumnCount:0:setColumnCount(param)
+06:Items:null:-

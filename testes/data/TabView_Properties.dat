@@ -1,3 +1,1 @@
-01:AlignTabsToLeft:true/false:setAlignTabsToLeft($1)
-02:PlaceBarOnTop:true/false:setPlaceBarOnTop($1)
-03:Tabs:null:setTabs($1)
+01:Tabs:-:-
