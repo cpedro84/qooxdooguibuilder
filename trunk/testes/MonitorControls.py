@@ -8,6 +8,8 @@ import sys
 from resizableWidget import *
 from string import Template
 from PyQt4 import QtCore, QtGui
+from const import *
+from projectExceptions import *
 
 #****************************************************************************
 #***************COLOCAR NOUTRO FICHEIRO*****
@@ -61,51 +63,35 @@ def formatProcedureCall(procedure):
 	
 def callProcedureResizableConstructor(memRefName, procedure, DparametersValues = { }):
 	
-	#formatedProcedure = formatProcedureCall(procedure)
-	
+	#formatedProcedure = formatProcedureCall(procedure)	
 	exec memRefName+" = "+procedure in DparametersValues, globals()
-	#exec "widget = "+procedure in DparametersValues, globals()
+	exec "widget = "+memRefName
+	return widget
 	
-	#return widget
+	
+	#exec "widget = "+procedure in DparametersValues, globals()
 	#return memRefName#???
 	#exec "return "+memRefName
 
-def callProcedureResizableProperty(procedure, DparametersValues = { }):
-	
+def callProcedureResizableProperty(procedure, DparametersValues = { }):	
 	#formatedProcedure = formatProcedureCall(procedure)		
-		
 	exec procedure in DparametersValues, globals()
 	
 #**********************************************************
 
 
 
-class MonitorControls:
+class MonitorControls(QtCore.QObject):
 	
 	#******************************************************************************
 	#**************DEFINIÇÃO DE CONSTANTES**********************************
 	#******************************************************************************
-	TButton = "BTN"
-	TCheckBox = "CKB"
-	TCombo = "CMB"
-	TGroupBox = "GRB"
-	TIframe = "IFR"
-	TLabel = "LBL"
-	TList = "LST"
-	TMenuBar = "MBR"
-	TPasswordField = "PWF"
-	TRadioButton = "RDB"
-	TSpinner = "SPR"
-	TTabView = "TBV"
-	TTextArea = "TXV"
-	TTextField = "TXF"
-	TToolBar = "TLB"
-	TTree = "TRE"
-	
+		
 	#NOMES DOS INDICES DO MAPA DAS PROPRIEDADES DOS CONTROLOS
 	PropertyValue = "PropertyValue"
 	Property = "Property"
 	Options = "Options"
+	TypeProperty = "TypeProperty"
 	
 	#NOMES DOS INDICES DO MAPA SOBRE AS REFERÊNCIAS PARA MEMÓRIA DOS CONTROLOS
 	nameMemRef = "nameMemRef"
@@ -119,6 +105,7 @@ class MonitorControls:
 	
 	newControlName = "widget"	
 	emptyPropertyMethod = "-"
+	emptyParamValue = "-"
 	
 	#POSIÇÕES NO TUPLO (!em forma de mapa!) RELATIVAS ÁS INFORMAÇÔES DOS CONTROLOS
 	positionProperties = "PropertiesData"
@@ -128,14 +115,11 @@ class MonitorControls:
 	deletedControl = -1
 	error = -1
 	errorMethodCall = -1
+	errorEmptyMethod = 0
+	errorEmptyParamValue = 0
 	errorControlMissing = -1
-	
-	true = bool(1)
-	false = bool(0)
-	
-	#MENSAGENS DE ERRO
-	ERROR_OPEN_FILE = "Erro na abertura do ficheiro."	
-
+		
+		
 	#***********************************************************************************
 	#***********************************************************************************
 	#***********************************************************************************
@@ -146,8 +130,6 @@ class MonitorControls:
 		#Mapa Associativo para armazenamento dos controlos e suas informações
 		self.DControlsInfo = { }
 		
-		
-		
 		#MAPAS DE CONSULTA DE INFORMAÇÃO
 		#Mapa associativo para armazenamento das propriedades dos controlos
 		self.DControlDefaultProperties = { }
@@ -155,55 +137,62 @@ class MonitorControls:
 		self.DPropertiesMethods = { }
 		#Mapa associativo para armazenamento do nome dos  metodos construtores de cada classe resizable respectiva a cada tipo de controlo
 		self.DResizableInitMethods = { }
-
+		
 		#Ler propriedades
-		self.loadPropertiesFromFile("ControlsDataTypes.dat")
+		self.loadPropertiesFromFile(FILE_CONTROLS_PROPERTIES)
+		self.loadGlobalProperties(FILE_GLOBAL_PROPERTIES)
 			
 		
-	def haveTypeControls(self, TypeControl):
-		if self.DControlsInfo.has_key(TypeControl) == self.false:
-			return self.false
+	def haveTypeControls(self, typeControl):
+		if self.DControlsInfo.has_key(typeControl) == false:
+			return false
 		else:
-			return self.true
+			return true
 	
-	def haveIdControl(self, TypeControl, IdControl):
-		if self.haveTypeControls(TypeControl) and self.DControlsInfo[TypeControl].has_key(IdControl) and self.DControlsInfo[TypeControl][IdControl] != self.deletedControl:
-			return self.true
+	def haveIdControl(self, typeControl, idControl):
+		typeControl = str(typeControl)
+		idControl = idControl
+		
+		if self.haveTypeControls(typeControl) and self.DControlsInfo[typeControl].has_key(idControl) and self.DControlsInfo[typeControl][idControl] != self.deletedControl:
+			return true
 		else:
-			return self.false
+			return false
 	
 	
 	
-	
-	def getNewIDControl(self, TypeControl):
+	def getNewIDControl(self, typeControl):
 
-		if self.haveTypeControls(TypeControl) == self.false:				
-			return 0
+		if self.haveTypeControls(typeControl) == false:				
+			return str(0)
 		else:				
 			try:				
-				return self.DControlsInfo[TypeControl].values().index(self.deletedControl)			
+				return self.DControlsInfo[typeControl].values().index(self.deletedControl)			
 			except ValueError:
-				return len(self.DControlsInfo[TypeControl].keys())
+				return str(len(self.DControlsInfo[typeControl].keys()))
 
 	
-	def getDefaultProperties(self, TypeControl):
+	def getDefaultProperties(self, typeControl):
 		
-		if self.DControlDefaultProperties.has_key(TypeControl):
-			return self.DControlDefaultProperties[TypeControl]
+		if self.DControlDefaultProperties.has_key(typeControl):
+			return self.DControlDefaultProperties[typeControl]
 		
 		return self.error	
 		
 	
-	def getPropertyMethod(self, TypeControl, idProperty):
-		return self.DPropertiesMethods[TypeControl][idProperty]
+	def getPropertyMethod(self, typeControl, idProperty):
+		return self.DPropertiesMethods[typeControl][idProperty]
 		
 	
-	def getDefaultPropertyValue(self, TypeControl, idProperty):
-		return self.DControlDefaultProperties[TypeControl][idProperty][self.PropertyValue]
+	def getDefaultPropertyValue(self, typeControl, idProperty):
+		return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
 	
 	
 	def getNameMemRef(self, typeControl, idControl):
 		#verificar se em memória existe o controlo
+		
+		typeControl = str(typeControl)
+		idControl = idControl
+		
 		if self.haveIdControl(typeControl, idControl):			
 			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.nameMemRef]
 		else:
@@ -211,55 +200,65 @@ class MonitorControls:
 	
 	
 	def getControlsFromType(self, TypeControl):
-		if self.haveTypeControls(TypeControl) == self.false:
+		if self.haveTypeControls(TypeControl) == false:
 			return self.error
 		return self.DControlsInfo[TypeControl]
 	
-	def getAllControls(self):
-		print self.DControlsInfo		
+	def getAllControls(self): #(...)
+		print self.DControlsInfo	
 		
-	
-	
-	
+		
 	def generateMemRefWidgetName(self, typeControl, idControl):
 		return  self.newControlName+str(typeControl)+str(idControl)
-	
-	def addNewControl(self, TypeControl, parentWidget):
+		
+	def getTypeProperty(self,  typeControl, idControl, idProperty):
+		if  self.haveTypeControls(typeControl) == false:
+			return self.error
+		
+		try:
+			return self.Dcontrols[typeControl][idControl][self.positionProperties][self.TypeProperty]
+		except:
+			return self.error
+			
+			
+	def addNewControl(self, typeControl, parentWidget):
 		
 		DPropertiesControls = {}
-		DPropertiesControls = self.getDefaultProperties(TypeControl)
+		DPropertiesControls = self.getDefaultProperties(typeControl)
 						
 		#verificar se existem propriedades default para o controlo a ser adicionado
 		if DPropertiesControls == self.error:
 			return self.error
 		
 		#calcular um Id para o control		
-		IdControl = self.getNewIDControl(TypeControl)
+		IdControl = self.getNewIDControl(typeControl)
 		#adicionar o novo controlo ao mapa
 		DControl = { }
 		DControl[IdControl] = { self.positionProperties : DPropertiesControls, self.positionMemRef : { } }
 		
 		#verificar se já existe algum controlo do tipo de dados do controlo a inserir
-		if self.haveTypeControls(TypeControl) == self.false:			
-			self.DControlsInfo[TypeControl] = { }
-		
-		
-		
+		if self.haveTypeControls(typeControl) == false:			
+			self.DControlsInfo[typeControl] = { }
+			
 		#********INICIALIZAÇÃO GRÁFICA DO NOVO CONTROLO*********
 		#criação do controlo na parentWidget		
-		constructorMethod =  self.DResizableInitMethods[TypeControl]
-		memRefName = self.generateMemRefWidgetName(TypeControl, IdControl)		
-		params = {self.paramTypeControl : TypeControl, self.paramIDResizable : IdControl, self.paramParentResizable : parentWidget }		
+		constructorMethod =  self.DResizableInitMethods[typeControl]
+		memRefName = self.generateMemRefWidgetName(typeControl, IdControl)		
+		params = {self.paramTypeControl : typeControl, self.paramIDResizable : IdControl, self.paramParentResizable : parentWidget }		
 			
 		#criar ResizableWidget
 		widget = callProcedureResizableConstructor(memRefName, constructorMethod, params)		
+		#QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
+		#QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SendResizableSignal)
+		#QtCore.QObject.connect(widget, QtCore.SIGNAL("sinal()"), self.SendResizableSignal)
+		
 		#widget.setVisibility("true")
 		#print widget
 		#Armazenar no tupo as informações relativas ás referencias em memória da widget criada		
 		DControl[IdControl][self.positionMemRef] = {self.nameMemRef : memRefName, self.valueMemRef : widget}
 		
 		#Armazenar informações sobre o controlo na estrutura
-		self.DControlsInfo[TypeControl].update(DControl)
+		self.DControlsInfo[typeControl].update(DControl)
 		
 		#Alteração das propriedades por defeito do controlo criado
 		#(...) - o metodo changeProperty vai ser chamado n vezes, onde n é igual ao nº de propriedades a alterar	
@@ -269,59 +268,75 @@ class MonitorControls:
 			#Obter o valor a propriedade por defeito 			
 			#paramProperty = {self.paramPropertiesResizable : self.getDefaultPropertyValue(TypeControl, idProperty) }
 			#Executar o metodo para alteração da propriedade do controlo
-			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)
-			self.changeProperty(TypeControl, IdControl, idProperty, self.getDefaultPropertyValue(TypeControl, idProperty))
+			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
+			if self.getTypeProperty(typeControl, IdControl, idProperty) == TDEFAULT: #Só as propriedades do tipo TDEFAULT é que serão inicialmente ser inicializadas
+				self.changeProperty(typeControl, IdControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
 			
 			
 		#**********************************************************************************
 		
-		return IdControl
+		return widget
 	
 	
 	def delControl(self, TypeControl, IDControl):
 				
-		if self.haveTypeControls(TypeControl) == self.false:
+		if self.haveTypeControls(TypeControl) == false:
 			return self.deletedControl
 		else:				
-			if self.DControlsInfo[TypeControl].has_key(IDControl) == self.true:
+			if self.DControlsInfo[TypeControl].has_key(IDControl) == true:
 				self.DControlsInfo[TypeControl][IDControl] = self.deletedControl
 			return IDControl
-			
 
-	
-		
-	def changeProperty(self, typeControl, idControl, idProperty, value):
-		if self.haveIdControl(typeControl, idControl) == self.false:
-			return error
+
+	def changeProperty(self, typeControl, idControl, idProperty, value = None):
+		if self.haveIdControl(typeControl, idControl) == false:
+			return self.error
 		else:
 			#Alteração da propreidade na estrutura de dados
 			self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.PropertyValue] = value
 			
-			#Executar metodo na classe resizable (...)
+			#Executar metodo na classe resizable (...)		
 			resizablePropertyMethodCall = self.getPropertyMethod(typeControl, idProperty) #carregar metodo a ser executado
+				
 			#validar string com o metodo a ser chamado
 			if resizablePropertyMethodCall == self.emptyPropertyMethod or len(resizablePropertyMethodCall) == 0:
-				return self.errorMethodCall
+				return self.errorEmptyMethod
 			
 			#obter o nome da instancia que referencia a widget Resizable em memória
 			widgetName = self.getNameMemRef(typeControl, idControl)			
 			if widgetName == self.errorControlMissing:
 				return self.errorMethodCall
 			
+			#Para propriedades do tipo TBOOLEAN é necessário converter o valor (value) para um tipo booleano
+			if self.getTypeProperty(typeControl, idControl, idProperty) == TBOOLEAN:
+				#transformar o conteudo do valor
+				if value == 'false':
+					value = false
+				elif value == 'true':
+					value = true
+			#*************************************************************************************
+			
 			#Construir mapa com os valores dos parametros
 			paramProperty = {self.paramPropertiesResizable : value }
+			if paramProperty == self.emptyParamValue:
+				return self.errorEmptyParamValue
 			
 			#Antes de executar o metodo é necessário saber qual a referencia ao controlo (....)
 			callProcedureResizableProperty(widgetName+"."+resizablePropertyMethodCall, paramProperty)
 			
+	def disableSelectedResizable(self, typeControl, idControl):
+			
+		procedureInfo = "disableSelected()"
+		widgetName = self.getNameMemRef(str(typeControl), str(idControl))		
+		if widgetName == self.errorControlMissing:
+				return self.errorMethodCall		
+		callProcedureResizableProperty(str(widgetName)+"."+procedureInfo)
 	
-	
-	
+		
 	def loadTypeControlProperties(self, TypeControl, filePath):
 		
-		DControlDefaultProperties = { }
-		
 		try:
+			DControlDefaultPropertiesInfo = { }
 			fcontrol=open(filePath)
 			#Ler conteudo do ficheiro
 			for line in fcontrol:
@@ -330,21 +345,59 @@ class MonitorControls:
 				IdProperty = line[0]
 				property = line[1]				
 				options = line[2].split('/')
-				defaultValue = options[0]
+				defaultValue = options[0]				
 				resizablePropertyMethodCall = line[3]
+				typeProperty = line[4]
 				#Armazenar o metodo de chamada à classe resizable no mapa associativo
 				if not self.DPropertiesMethods.has_key(TypeControl):
 					self.DPropertiesMethods[TypeControl] = { }
 				
+				#Armazenar metodo respectivo que é executado na classe Resizable
 				self.DPropertiesMethods[TypeControl][IdProperty] = resizablePropertyMethodCall
-								
-				#Armazenar propriedade no mapa associativo
-				DControlDefaultProperties[IdProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options}
 				
-			return DControlDefaultProperties		
+				#Armazenar propriedade no mapa associativo
+				DControlDefaultPropertiesInfo[IdProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
+				
+			return DControlDefaultPropertiesInfo
 			
 		except IOError:
-			print str(self.ERROR_OPEN_FILE+" File:"+filePath)
+			print str(ERROR_OPEN_FILE+" File:"+filePath)
+		
+	
+	def loadGlobalProperties(self, filePath):
+		
+		try:
+			DControlDefaultPropertiesInfo = { }
+			DPropertiesMethodsInfo = { } 
+			fproperties = open(filePath)
+			#Ler conteudo do ficheiro
+			for line in fproperties:
+				line = line.replace('\n', '')	
+				line = line.split(':')
+				idProperty = line[0]
+				property = line[1]				
+				options = line[2].split('/')
+				defaultValue = options[0]
+				resizablePropertyMethodCall = line[3]				
+				typeProperty = line[4]
+				#Armazenar as caracteristicas globais na estrutura que armazerna as propriedades globais de todos os tipos de controlos				
+				DControlDefaultPropertiesInfo[idProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
+				
+				DPropertiesMethodsInfo[idProperty] = resizablePropertyMethodCall
+
+			#adicionar a todos os controlos as propriedades globais
+			for typeControl in self.DControlDefaultProperties.keys():				
+				#Armazenar as propreidades Globais
+				D = self.DControlDefaultProperties[typeControl]
+				D.update(DControlDefaultPropertiesInfo)
+		
+				#Armazenar os metodos da propriedades globais
+				D = self.DPropertiesMethods[typeControl]
+				D.update(DPropertiesMethodsInfo)
+			
+		except IOError:
+			str(ERROR_OPEN_FILE+" File:"+filePath)
+		
 		
 	
 	def loadPropertiesFromFile(self, filePath):
@@ -367,12 +420,22 @@ class MonitorControls:
 				DControlDefaultProperties = self.loadTypeControlProperties(typeControl, filePathTypeControl)
 				#Associar ao mapa das caracteristicas dos controlos, as informações sobre as descrições (em forma de mapa associativo)
 				self.DControlDefaultProperties[typeControl] = DControlDefaultProperties				
-		
+			
 		except IOError:
-			str(self.ERROR_OPEN_FILE+" File:"+filePath)
-
-
-
+			str(ERROR_OPEN_FILE+" File:"+filePath)
+		
+	
+	#SIGNALS
+	"""def SendResizableSignal(self, typeControl, idControl):
+		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
+		print "teste monitor signal"
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), typeControl, idControl)
+	"""
+	
+	
+	def SendResizableSignal(self, typeControl, idControl):
+		print "valor"
+		
 
 #***********************************************************************************************************
 #***********************************************************************************************************
@@ -402,25 +465,57 @@ class MainWidget(QtGui.QMainWindow):
 	
 	def __init__(self, parent=None):
 		QtGui.QWidget.__init__(self, parent)
+		
+		self.actualTypeControl = ""
+		self.actualIdControl = -1
 		#widgetRect = self.geometry()
-
+		self.abola = 4
                 #childWidget = QtGui.QPushButton(self)
 		#childWidget = QtGui.QLabel(self)
 		
 		#self.resizableBtn = ResizableButton(self)
-		monitor = MonitorControls()
-		id0 = monitor.addNewControl(MonitorControls.TTextField, self)		
+		self.monitor = MonitorControls()
+		widget = self.monitor.addNewControl(TCombo, self)		
+		widget.setGeometry(40,40,80,20)
+		QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
+		QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.SignalProcess_itemsChanged)
+		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		
-		QtCore.QObject.connect(monitor, QtCore.SIGNAL("PySig"), self.SignalReceive)
-
+		widget2 = self.monitor.addNewControl(TTabView, self)		
+		QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
+		QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.SignalProcess_itemsChanged)
 		
-		Btn = QtGui.QPushButton(self)
+		
+		
+		#widget2 = self.monitor.addNewControl(TTextField, self)		
+		#QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
+		
+		
+		"""Btn = QtGui.QPushButton(self)
 		Btn.setGeometry(21, 49, 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
 					self.info)
+		"""
 		
-	def SignalReceive(self):
-		print "sinal recebido da resizable"
+	#COLOCAR ESTE SINAL NA PROPRIA CLASSE MONITOR?????
+	def SignalProcess_resizableCliked(self, typeControl, idControl):				
+		#self.monitor.disableSelectedResizable(typeControl, idControl)		
+		typeControl = str(typeControl)
+		idControl = idControl
+		
+		if (self.actualTypeControl == typeControl) and (self.actualIdControl == idControl):
+			return
+		else:			
+			#Armazenar informações do controlo actualmente seleccionado
+			self.monitor.disableSelectedResizable(self.actualTypeControl, self.actualIdControl)
+			self.actualTypeControl = typeControl
+			self.actualIdControl = idControl
+	
+	def SignalProcess_itemsChanged(self, typeControl, idControl, qtList):
+		list = []
+		list = QStringListToList(qtList)
+		print list
+	
 	
 	def info(self):
 		#self.w.setAutoFillBackground(bool(1))

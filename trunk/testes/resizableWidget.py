@@ -5,8 +5,10 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
-
-
+from const import *
+from editItemsWidget import *
+from generalFunctions import *
+from projectExceptions import *
 
 
 class ResizableWidget(QtGui.QWidget):
@@ -16,10 +18,21 @@ class ResizableWidget(QtGui.QWidget):
 		QtGui.QWidget.__init__(self, parent)
 				
 		self.childWidget = widget
-		self.childWidget.setParent(self)
+		self.childWidget.setParent(self)		
+				
+		#Formatar output da Widget que representa o controlo
+		self.childWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+		self.childWidget.setEnabled(bool(0))
+		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
+		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
+		#self.childWidget.setFrameShadow(QtGui.QFrame.Raised)
+		
+		self.havePopUpMenusExtra = false
+		self.popUpMenusExtraList = []
+		
 		
 		#ID DE IDENTIFICAÇÃO DA WIDGET
-		self.IdControl = Id
+		self.idControl = Id
 		self.typeControl = typeControl
 		
 		self.setSizeIncrement(10,10)
@@ -95,9 +108,11 @@ class ResizableWidget(QtGui.QWidget):
 		#posicionamento anterior
 		self.MouseLastXpos = 0
 		self.MouseLastYpos = 0
-		
-		
-		#POP-UP MENU (definição de acções)		
+				
+		#VARIAVEL QUE CONTROLA SE A WIDGET ESTÁ SELECCIONADA
+		self.isSelected = bool(0)
+				
+		#*************POP-UP MENU (definição de acções)************************		
 		self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
 		self.cutAction.setShortcut(self.tr("Ctrl+X"))
 		self.cutAction.setStatusTip(self.tr("Cut the current selection"))
@@ -126,6 +141,12 @@ class ResizableWidget(QtGui.QWidget):
 		self.saveTemplateAsAction.setStatusTip(self.tr("Save the template"))
 		self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
 		
+		#Menus adicionais
+		self.setExtraPopUpMenus(self.typeControl)
+		
+		#*************************************************
+		
+		
 		"""text = "teste"
 		
 		fm = QtGui.QFontMetrics(self.font())
@@ -153,6 +174,47 @@ class ResizableWidget(QtGui.QWidget):
 		self.setPixmap(QtGui.QPixmap.fromImage(image))
 		self.labelText = text"""
 	
+	
+	#**********GESTÃO DOS MENUS EXTRA DO POP-UP MENU DA WIDGET********************
+	def setExtraPopUpMenus(self, typeControl):
+		if self.isItemsControl(typeControl):			
+			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Items..."), self)
+			self.editItemsAction.setStatusTip(self.tr("Edit Items"))
+			self.connect(self.editItemsAction, QtCore.SIGNAL("triggered()"), self.editItems)			
+			
+			#Adicionar o pop-up menu extra á lista
+			self.popUpMenusExtraList.append(self.editItemsAction)
+			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
+		
+		elif self.isTabsControl(typeControl):
+			self.editTabsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Tabs..."), self)
+			self.editTabsAction.setStatusTip(self.tr("Edit Tabs"))
+			self.connect(self.editTabsAction, QtCore.SIGNAL("triggered()"), self.editTabs)			
+			
+			#Adicionar o pop-up menu extra á lista
+			self.popUpMenusExtraList.append(self.editTabsAction)
+			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
+		
+		#IMPLEMENTAR PARA MAIS TIPOS DE ITEMS (caso existam) ...
+
+	
+	def isItemsControl(self, typeControl):		
+		try:
+			itemsControls.index(typeControl) 
+			return true
+		except ValueError:
+			return false
+	
+	def isTabsControl(self, typeControl):		
+		try:
+			tabsControls.index(typeControl) 
+			return true
+		except ValueError:
+			return false
+	#****************************************************************************************
+	
+	
+	
 	#-------EVENTOS----------------------------------------------------------------	
 	def paintEvent(self, event):
 		
@@ -165,50 +227,54 @@ class ResizableWidget(QtGui.QWidget):
 		self.widgetRect = self.geometry()
 		WidgetWidth = self.widgetRect.width()
 		WidgetHeight = self.widgetRect.height()
-						
-		#DEFINIÇÃO DAS FERRAMENTAS DE PINTURA
-		#************FONT*****************
-		font = QtGui.QFont()
-		font.setStyleStrategy(QtGui.QFont.ForceOutline)
-		#**********PEN*********************
 		
-		penDotLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.DotLine)
-		penSolidLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.SolidLine)
+		#DESENHO DO REBORDO DE SELECÇÃO/ALTERAÇÃO DE TAMANHO
 		
-		#PINTAR		
-		painter = QtGui.QPainter()		
-		painter.begin(self)			
-		
-		painter.setBrush(QtCore.Qt.black)
-		painter.setFont(font)
-		painter.setPen(penDotLine)
-		#LINHAS
-		painter.drawLine(0,0, self.widgetRect.width(),0) #TOP LINE
-		painter.drawLine(0,self.widgetRect.height(), self.widgetRect.width(),self.widgetRect.height()) #BOTTOM LINE
-		painter.drawLine(0,0,0,self.widgetRect.height()) #LEFT LINE		
-		painter.drawLine(self.widgetRect.width(),0,self.widgetRect.width(),self.widgetRect.height()) #RIGHT LINE
-		
-		#RECTÂNGULOS		
-		painter.setPen(penSolidLine)
-		self.RectLT.setRect(0,0,self.RectSize,self.RectSize) #LEFT TOP
-		self.RectCT.setRect(WidgetWidth/2.0,0,self.RectSize,self.RectSize) #CENTER TOP
-		self.RectRT.setRect(WidgetWidth-self.RectSize,0,self.RectSize,self.RectSize) #RIGHT TOP
-		self.RectLB.setRect(0,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #LEFT BOTTOM
-		self.RectCB.setRect(WidgetWidth/2.0,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #CENTER BOTTOM
-		self.RectRB.setRect(WidgetWidth-self.RectSize,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #RIGHT BOTTOM
-		self.RectL.setRect(0, WidgetHeight/2.0, self.RectSize, self.RectSize)
-		self.RectR.setRect(WidgetWidth-self.RectSize, WidgetHeight/2.0, self.RectSize, self.RectSize)
-		
-		painter.drawRect(self.RectLT)
-		painter.drawRect(self.RectCT)
-		painter.drawRect(self.RectRT)
-		painter.drawRect(self.RectLB)
-		painter.drawRect(self.RectCB)
-		painter.drawRect(self.RectRB)
-		painter.drawRect(self.RectL)
-		painter.drawRect(self.RectR)
-		
-		painter.end()
+		if self.isSelected: #verificar se a widget foi seleccionada
+			
+			#DEFINIÇÃO DAS FERRAMENTAS DE PINTURA
+			#************FONT*****************
+			font = QtGui.QFont()
+			font.setStyleStrategy(QtGui.QFont.ForceOutline)
+			#**********PEN*********************
+			
+			penDotLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.DotLine)
+			penSolidLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.SolidLine)
+			
+			#PINTAR		
+			painter = QtGui.QPainter()		
+			painter.begin(self)			
+			
+			painter.setBrush(QtCore.Qt.black)
+			painter.setFont(font)
+			painter.setPen(penDotLine)
+			#LINHAS
+			painter.drawLine(0,0, self.widgetRect.width(),0) #TOP LINE
+			painter.drawLine(0,self.widgetRect.height(), self.widgetRect.width(),self.widgetRect.height()) #BOTTOM LINE
+			painter.drawLine(0,0,0,self.widgetRect.height()) #LEFT LINE		
+			painter.drawLine(self.widgetRect.width(),0,self.widgetRect.width(),self.widgetRect.height()) #RIGHT LINE
+			
+			#RECTÂNGULOS		
+			painter.setPen(penSolidLine)
+			self.RectLT.setRect(0,0,self.RectSize,self.RectSize) #LEFT TOP
+			self.RectCT.setRect(WidgetWidth/2.0,0,self.RectSize,self.RectSize) #CENTER TOP
+			self.RectRT.setRect(WidgetWidth-self.RectSize,0,self.RectSize,self.RectSize) #RIGHT TOP
+			self.RectLB.setRect(0,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #LEFT BOTTOM
+			self.RectCB.setRect(WidgetWidth/2.0,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #CENTER BOTTOM
+			self.RectRB.setRect(WidgetWidth-self.RectSize,WidgetHeight-self.RectSize,self.RectSize,self.RectSize) #RIGHT BOTTOM
+			self.RectL.setRect(0, WidgetHeight/2.0, self.RectSize, self.RectSize)
+			self.RectR.setRect(WidgetWidth-self.RectSize, WidgetHeight/2.0, self.RectSize, self.RectSize)
+			
+			painter.drawRect(self.RectLT)
+			painter.drawRect(self.RectCT)
+			painter.drawRect(self.RectRT)
+			painter.drawRect(self.RectLB)
+			painter.drawRect(self.RectCB)
+			painter.drawRect(self.RectRB)
+			painter.drawRect(self.RectL)
+			painter.drawRect(self.RectR)
+			
+			painter.end()
 						
 		#REDIMENSIONAR TAMANHO DA WIDGET
 		self.childWidget.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
@@ -297,12 +363,18 @@ class ResizableWidget(QtGui.QWidget):
 			
 			
 	def mousePressEvent(self, event):
+		
+		#INDICAR QUE A WIDGET FOI SELECCIONADA
+		self.isSelected = bool(1)
+		
 		#ACTUALIZAR O ESTADO DO RATO
 		self.MouseState = self.MouseClicked
-
 		
-		self.emit(QtCore.SIGNAL("clicked_(const QString &)"), 'benfica')
-
+		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))		
+		#self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_Selected))		
+		
+		self.repaint()
 	
 	def mouseReleaseEvent(self, event):
 		#ACTUALIZAR O ESTADO DO RATO
@@ -327,13 +399,18 @@ class ResizableWidget(QtGui.QWidget):
 
 
 	def contextMenuEvent(self, event):
-
 		menu = QtGui.QMenu(self)
+		#Adicionar os pop-up menus extra ao menu	
+		if self.havePopUpMenusExtra:
+			for menuExtra in self.popUpMenusExtraList:
+				menu.addAction(menuExtra)
+				menu.addSeparator()
+		
 		menu.addAction(self.cutAction)
 		menu.addAction(self.copyAction)
 		menu.addAction(self.pasteAction)
 		menu.addAction(self.deleteAction)
-		menu.addSeparator();
+		menu.addSeparator()
 		menu.addAction(self.applyTemplateAction)
 		menu.addAction(self.saveTemplateAsAction)
 		menu.exec_(event.globalPos())
@@ -356,6 +433,7 @@ class ResizableWidget(QtGui.QWidget):
 	def saveTemplateAsAct(self):
 		print("")
 
+	
 #*******************************************************************
 	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
 	def getChildWidget(self):
@@ -390,7 +468,6 @@ class ResizableWidget(QtGui.QWidget):
 			self.childWidget.setVisible(bool(1))
 		else:
 			self.childWidget.setVisible(bool(0))
-		
 	
 
 	def clipHeight(self):
@@ -432,27 +509,30 @@ class ResizableWidget(QtGui.QWidget):
 		self.childWidget.update()
 	
 	#************************************************
-	
-	def setHeight(self, height):
-		self.height = height
-		widgetRect = self.geometry()
-		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
-
-	def setWidth(self, width):
-		self.width = width
-		widgetRect = self.geometry()
-		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
-		
 	def setLeft(self, left):
+		left = float(left)
 		self.left = left
 		widgetRect = self.geometry()
 		self.setGeometry(left, widgetRect.y(), widgetRect.width(), widgetRect.height())
 		
 	def setTop(self, top):
+		top = float(top)
 		self.top = top
 		widgetRect = self.geometry()
 		self.setGeometry(widgetRect.x(), top, widgetRect.width(), widgetRect.height())
 	
+	def setHeight(self, height):		
+		height = float(height)
+		self.height = height
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
+
+	def setWidth(self, width):
+		width = float(width)
+		self.width = width
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
+			
 	def setMaxHeight(self, maxHeight):
 		self.maxHeight = maxHeight
 	
@@ -464,14 +544,86 @@ class ResizableWidget(QtGui.QWidget):
 	
 	def setMinWidth(self, minWidth):
 		self.minWidth = minWidth
+	
+	
+	def setMarginBottom(self, bottom):
+		bottom = int(bottom)
+		widgetRect = self.contentsRect()
+		self.setContentsMargins(widgetRect.x(),  widgetRect.y(), widgetRect.width(), bottom) 
 		
+	def setMarginLeft(self, left):
+		left = int(left)
+		widgetRect = self.contentsRect()
+		self.setContentsMargins(left,  widgetRect.y(), widgetRect.width(), widgetRect.height()) 
+	
+	def setMarginRight(self, right):
+		right = int(right)
+		widgetRect = self.contentsRect()
+		self.setContentsMargins(widgetRect.x(),  widgetRect.y(), right, widgetRect.height()) 
+	
+	def setMarginTop(self, top):
+		top = int(top)
+		widgetRect = self.contentsRect()
+		self.setContentsMargins(widgetRect.x(),  top, widgetRect.width(), bottom) 
+	
+
 	#função que através da indicação da margem, e registado o seu tamanho (FAZER)
 	#def setMarginSize():
 
+	def disableSelected(self):
+		self.isSelected = bool(0)		
+		self.repaint()
 	
+	
+	#****************PROCEDIMENTOS ESPECIAS SOBRE ACÇÕES DE POP-UP MENUS*******************
+	#TCOMBO;TLIST
+	def editItems(self):
+		try:
+			list = []
+			list = self.getItems()
+			widgetItems = editItemsWidget(TITLE_EDIT_ITEMS, self, list)
+			if widgetItems.exec_() == QtGui.QDialog.Accepted:				 
+				list = widgetItems.getItemsList()
+				#Alterar na resizable respectiva do controlo os items escolhidos
+				self.setItems(list)
+								
+				#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
+				self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), str(self.typeControl), str(self.idControl), ListToQStringList(list))		
+		
+		except structureError_Exception, e:		
+			return e.errorId
+	
+	#TTABVIEW
+	def editTabs(self):
+		try:
+			list = []
+			list = self.getTabs() # (....) ? 
+			widgetItems = editItemsWidget(TITLE_EDIT_TABS, self, list, "Tabs")
+			if widgetItems.exec_() == QtGui.QDialog.Accepted:				 
+				list = widgetItems.getItemsList()
+				
+				#vai ser criadas as widgets dos novos items criados (...) widget = none => criação
+				nelems = len(list)
+				elem = 0
+				while elem < nelems:					
+					if list[elem].getWidget() == None:
+						list[elem].setWidget(QtGui.QWidget())
+					elem+=1
+				
+				#Alterar na resizable respectiva do controlo os items escolhidos
+				self.setTabs(list)
+				
+				#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
+				self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), str(self.typeControl), str(self.idControl), ListToQStringList(list))		
+
+		except structureError_Exception, e:		
+			return e.errorId
+	
+	#********************************************************************
 	
 #*******************************************************************
-
+#*******************************************************************
+#*******************************************************************
 
 	
 #-------------------------------------------------------------------------------------
@@ -502,35 +654,42 @@ class ResizableAbstractIO(ResizableWidget):
 
 #-------------------------------------------------------------------------------------
 class ResizableButton(ResizableAbstractIO):
-	def __init__(self, id, parent=None):
-		self.Button = QtGui.QPushButton()
-		ResizableAbstractIO.__init__(self, id, self.Button,  parent)	
-	
-	"""def __init__(self, strText, parent=None):
-		self.Button = QtGui.QPushButton(strText)
-		ResizableWidget.__init__(self, self.Button,  parent)	
+	def __init__(self, typeControl, id, parent=None):
 		
-	def __init__(self, strText, Icon, parent=None):
-		self.Button = QtGui.QPushButton(strText, Icon)
-		ResizableWidget.__init__(self, self.Button,  parent)	
-	"""
-	
+		self.Button = QtGui.QPushButton()		
+		ResizableAbstractIO.__init__(self, typeControl, id, self.Button, parent)
+		
 	def setIcon(self, Icon):
 		self.Button.setIcon(Icon)
 
-
+	def setIconWidth(self, width):		
+		height = self.iconSize.height()
+		self.setIconSize(QtCore.QSize(width, height))
+	
+	def setIconHeight(self, height):
+		width = self.iconSize.width()
+		self.setIconSize(QtCore.QSize(width, height))
+	
+		
 #-------------------------------------------------------------------------------------
 class ResizableCheckBox(ResizableAbstractButton):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.checkBox = QtGui.QCheckBox()
-		ResizableAbstractButton.__init__(self, self.checkBox,  parent)	
+		ResizableAbstractButton.__init__(self, typeControl, id, self.checkBox, parent)
 	
+	def setChecked(self, enable):		
+		if enable:
+			self.checkBox.setCheckedState(QtCore.Qt.Checked)
+		else:
+			self.checkBox.setCheckedState(QtCore.Qt.Unchecked)
+		
 	def setChecked(self):
 		self.checkBox.setCheckedState(QtCore.Qt.Checked)
 	
 	def setUnchecked(self):
 		self.checkBox.setCheckedState(QtCore.Qt.Unchecked)
-		
+	
+			
 	def isChecked(self):
 		checked = bool(0)		
 		
@@ -542,11 +701,11 @@ class ResizableCheckBox(ResizableAbstractButton):
 
 #-------------------------------------------------------------------------------------
 class ResizableLabel(ResizableAbstractIO):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.Label = QtGui.QLabel()
-		ResizableAbstractIO.__init__(self, self.Label,  parent)
+		ResizableAbstractIO.__init__(self, typeControl, id, self.Label, parent)
 	
-	def setAlign(self, Alignment):
+	def setTextAlign(self, Alignment):
 		self.Label.setAlignment(Alignment)
 	
 	def setAlignLeft(self):
@@ -561,6 +720,13 @@ class ResizableLabel(ResizableAbstractIO):
 	def setAlignJustify(self):
 		self.Label.setAlignment(QtCore.Qt.AlignJustify)
 	
+	def setWrap(self, enable):
+		
+		if enable:
+			self.Label.setWordWrap(bool(1))
+		else:
+			self.Label.setWordWrap(bool(0))
+		
 	def enabledWordWrap(self):
 		self.Label.setWordWrap(bool(1))
 		
@@ -570,25 +736,25 @@ class ResizableLabel(ResizableAbstractIO):
 		
 #-------------------------------------------------------------------------------------
 class resizableTextField(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None, interactiveMode = QtGui.QLineEdit.Normal):
-		self.LineEdit = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.LineEdit, parent)
-		self.LineEdit.setEchoMode(interactiveMode)
-	
-	def setLength(self, lenght):
-		self.LineEdit.setMaxLenght(lenght)
+	def __init__(self, typeControl, id, parent=None):
+		self.TextField = QtGui.QLineEdit()
+		ResizableAbstractIO.__init__(self, typeControl, id, self.TextField, parent)
+		self.TextField.setEchoMode(QtGui.QLineEdit.Normal)
 		
-	def enableReadOnly(self):
-		sself.LineEdit.setReadOnly(bool(1))
-		
-	def disableReadOnly(self):
-		self.LineEdit.setReadOnly(bool(0))
 		
 
 class ResizableTextArea(ResizableAbstractIO):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.TextEdit = QtGui.QTextEdit()
-		ResizableAbstractIO.__init__(self, self.TextEdit, parent)	
+		ResizableAbstractIO.__init__(self, typeControl, id, self.TextEdit, parent)
+	
+	def setWrap(self, enable):
+		
+		if enable:
+			self.Label.setWordWrap(bool(1))
+		else:
+			self.Label.setWordWrap(bool(0))
+		
 	
 	def enableReadOnly(self):
 		self.TextEdit.setReadOnly(bool(1))
@@ -598,39 +764,60 @@ class ResizableTextArea(ResizableAbstractIO):
 	
 	def enableWordWrap(self):
 		self.TextEdit.setWordWrapMode(QtCore.QTextOption.WordWrap)
-	
 
+
+class ResizablePasswordField(ResizableAbstractIO):
+	def __init__(self, typeControl, id, parent=None):
+		self.PasswordEdit = QtGui.QTextEdit()
+		ResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
+		self.LineEdit.setEchoMode(QtGui.QLineEdit.Password)
+				
+		
 #-------------------------------------------------------------------------------------
 class ResizableComboBox(ResizableWidget):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.ComboBox = QtGui.QComboBox()
-		ResizableWidget.__init__(self, self.ComboBox,  parent)	
-
-	def addItem(self, strText):
-		self.ComboBox.addItem(strText)
+		ResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
+	
+	#??????????????????????????????????
+	def addItemText(self, item):
+		self.ComboBox.addItem(item)
+	
+	# textItemsList -> ELEMENT TYPE: editItem
+	def setItems(self, textItemsList):
+		self.ComboBox.clear()
+		for item in textItemsList:			
+			self.addItemText(item.getText())
+	
+	def countItems(self):
+		self.ComboBox.count()
+	
+	def getItemText(self, index):		
+		if indexValidation(index, self.countItems()):
+			return str(self.ComboBox.itemText(index))
 		
+		return structureError
+		
+		
+	def getItems(self):
+		items = []
+		nElements = self.countItems()
+		elem = 0		
+		while elem < nElements:
+			textItems.append(editItem(self.getItemText(elem)))
+			elem = elem + 1
+		
+		return items
+	
+	
+	
+	
 	def addItemIcon(self, strText, Icon):
 		self.ComboBox.addItem(Icon, strText)
-		
-	def addItems(self, vTexts):
-		self.ComboBox.addItems(self, vTexts)
 	
 	def insertItem(self, index, strText):
-		self.ComboBox.insertItem(index, strText)
-	
-	def insertItem(self, index, strText, icon):
-		self.ComboBox.insertItem(index, icon, strText)
-
-	def insertItems(self, index, vTexts):
-		self.ComboBox.insertItems(index, vTexts)
-
-		
-	def enableEditable(self):
-		self.ComboBox.setEditable(bool(1))
-		
-	def disableEditable(self):
-		self.ComboBox.setEditable(bool(0))
-		
+		self.ComboBox.insertItem(index, strText)		
+			
 	def isEditable(self):
 		return self.ComboBox.isEditable()
 		
@@ -646,117 +833,249 @@ class ResizableComboBox(ResizableWidget):
 	def setItemIcon(self, index, icon):
 		self.ComboBox.setItemIcon(self, index, icon)
 
-	def count(self):
-		self.ComboBox.count()
-
 	
-	def getItemText(self, index):
-		return self.ComboBox.itemText(index)
 		
 	def getItemIcon(self, index):
 		return self.ComboBox.itemIcon(index)
 		
-	"""def getItems(self):
-		#(...) - conjunto de todos os item de texto...
-	"""
-	
 	def getSelectedItem(self):
 		return self.ComboBox.currentIndex()
-	
+
 	
 
 #-------------------------------------------------------------------------------------
 class ResizableList(ResizableWidget):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.ListView = QtGui.QListWidget()
-		ResizableWidget.__init__(self, self.ListView,  parent)
+		ResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
 		self.items = []
 		#PROPREIDADES
 		self.selectable = bool(1)
 
-	def enableSelectable(self):
-		self.selectable = bool(1)
 		
-	def disableSelectable(self):
-		self.selectable = bool(0)
-		
-	#def setBackgroundImage(strPath):
+	def addItemText(self, item):
+		self.ListView.addItem(item)
 	
-	def addItem(self, item):
-		self.append(item)
+	# textItemsList -> ELEMENT TYPE: editItem 
+	def setItems(self, textItemsList):
+		self.ListView.clear()
+		for item in textItemsList:			
+			self.addItemText(item.getText())
+
+	def countItems(self):
+		return self.ListView.count()
+
+	def getItemText(self, index):		
+		if indexValidation(index, self.countItems()):
+			return str(self.ListView.item(index).text())
+	
+		return structureError
+		
+		
+	def getItems(self):
+		textItems = []
+		nElements = self.countItems()
+		elem = 0		
+		while elem < nElements:
+			textItems.append(editItem(self.getItemText(elem)))
+			elem = elem + 1
+		
+		return textItems
 	
 
 #-------------------------------------------------------------------------------------
 class ResizableGroupBox(ResizableWidget):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.GroupBox = QtGui.QGroupBox()
-		ResizableWidget.__init__(self, self.GroupBox,  parent)	
+		ResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
 
+	def setLegend(self, text):
+		self.setTitle(text)
 
+	def setWindowIcon(self, icon):
+		self.setWindowIcon(icon)
 
 #-------------------------------------------------------------------------------------
 #Associar com um QButtonGroup....
 class ResizableRadioButton(ResizableWidget):
-	def __init__(self, parent=None):
-		self.RadioButton = QtGui.QRadioButton()
-		ResizableWidget.__init__(self, self.RadioButton,  parent)	
-			
+	def __init__(self, typeControl, id, parent=None):
+		self.RadioButton = QtGui.QRadioButton()			
+		ResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
 
+	def setChecked(self, enable):		
+		self.checkBox.setChecked(enable)
+		
 #-------------------------------------------------------------------------------------
 class ResizableTabView(ResizableWidget):
-	def __init__(self, parent=None):
-		self.TabBar = QtGui.QTabBar()
-		ResizableWidget.__init__(self, self.TabBar,  parent)
+	def __init__(self, typeControl, id, parent=None):
+		self.TabView = QtGui.QTabWidget()
+		ResizableWidget.__init__(self, typeControl, id, self.TabView, parent)
+		self.TabView.setEnabled(true)
 		
-	def addTab(self, text):
-		self.TabBar.addTab(text)
- 
+	def addTab(self, tab):
+		widget = QtGui.QWidget()
+		self.TabView.addTab(widget, tab.getText())
+	
+	def removeTab(self, tabIndex):
+		self.TabView.removeTab(tabIndex)
+		
+	def removeTabs(self):
+		nTabs = self.TabView.count()		
+		tab = 0
+		while tab < nTabs:			
+			self.TabView.removeTab(0)			
+			tab = tab + 1			
+		
+	def setTabs(self, tabsList):
+		self.removeTabs()
+		for tab in tabsList:			
+			self.addTab(tab)
+	
+	def countTabs(self):
+		return self.TabView.count()	
+	
+	def getTabText(self, index):
+		if indexValidation(index, self.countTabs()):
+			return self.TabView.tabText(index)
+		
+		return structureError
+	
+	def getTabWidget(self, index):
+		if indexValidation(index, self.countTabs()):
+			return self.TabView.widget(index)
+		
+		return structureError
+	
+	def getTabs(self):
+		tabsList = []
+		nElements = self.countTabs()
+		elem = 0		
+		while elem < nElements:
+			tabsList.append(editItem(self.getTabText(elem), self.getTabWidget(elem)))
+			elem = elem + 1
+		
+		return tabsList	
+		
 #-------------------------------------------------------------------------------------
 class ResizableTree(ResizableWidget):
-	def __init__(self, parent=None):
-		self.TreeView = QtGui.QTreeView()
-		ResizableWidget.__init__(self, self.TreeView,  parent)
- 
+	def __init__(self, typeControl, id, parent=None):
+		self.Tree = QtGui.QTreeView()
+		ResizableWidget.__init__(self, typeControl, id, self.Tree, parent)
+
 
 #-------------------------------------------------------------------------------------
 class ResizableToolBar(ResizableWidget):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.ToolBar = QtGui.QToolBar()
-		ResizableWidget.__init__(self, self.ToolBar,  parent)
+		ResizableWidget.__init__(self, typeControl, id, self.ToolBar, parent)
 
 
 #-------------------------------------------------------------------------------------
 #??????
 class ResizableDialogWindow(ResizableWidget):
-	def __init__(self, parent=None):
+	def __init__(self, typeControl, id, parent=None):
 		self.DialogWindow = QtGui.QDialog()
-		ResizableWidget.__init__(self, self.DialogWindow,  parent)
+		ResizableWidget.__init__(self, typeControl, id, self.DialogWindow, parent)
+
+
+
+
+class editMenu(QtGui.QMenu):
+	def __init__(self, app, parent=None):
+		#QtGui.QMenu.__init__(self, "teste", parent)
+		
+		QtGui.QLineEdit.__init__(self, "edit",  parent)
+		#self.activateWindow()
+		#edit.setText("merda")
+		#edit = QtGui.QLineEdit("edit",  self)	
+		"""edit.selectAll()
+		edit.setGeometry(self.geometry())
+		edit.show()
+		app.setActiveWindow(edit) 
+		edit.setFocus()
+		edit.grabKeyboard()
+			
+		self.setTitle("")
+"""
+#-------------------------------------------------------------------------------------
+class ResizableMenuBar(ResizableWidget):	
+	def __init__(self, typeControl, id, app, parent=None):
+		self.MenuBar = QtGui.QMenuBar()
+		ResizableWidget.__init__(self, typeControl, id, self.MenuBar, parent)
+		
+		self.MenuBar.setEnabled(true)
+		
+			
+		menuHelp = editMenu(app, self.MenuBar)
+		#edit = QtGui.QLineEdit("edit",  menuHelp)
+		#edit.setGeometry(menuHelp.geometry().x(), menuHelp.geometry().y(), menuHelp.geometry().width(), menuHelp.geometry().height())
+				
+		self.MenuBar.addMenu(menuHelp)
+		
+
+class ResizableSpinner(ResizableWidget):
+	def __init__(self, typeControl, id, parent=None):
+		self.Spinner = QtGui.QSpinBox()
+		ResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)
+
+
+class ResizableTable(ResizableWidget):
+	def __init__(self, typeControl, id, widget = None, parent=None):
+		self.Table = QtGui.QTableWidget()
+		ResizableWidget.__init__(self, typeControl, id, self.Table, parent)
+	
+	
+	"""def setHeaderCellHeight(self, height):
+		self.table.
+	"""
+	
+	def setRowsHeight(self, height):		
+		for row in self.table.rowCount():
+			self.table.setRowHeight(row, height)
+
+	def setColumsWidth(self, width):		
+		for row in self.table.columnCount():
+			self.table.setColumnWidth(row, width)
+
+	def setRowCount(self, count):
+		self.table.setRowCount(count)
+		
+	def setColumnCount(self, count):
+		self.table.setColumnCount(count)
+
 #(..... CONTINUAR WIDGETS)
 
 #-------------------------------------------------------------------------------------
 
-
-
+#TESTES
 class MainWidget(QtGui.QMainWindow):
 	
-	def __init__(self, parent=None):
+	def __init__(self, app, parent=None):
 		QtGui.QWidget.__init__(self, parent)
 		
-		self.w = resizableTextField("12","12", self)
+		#self.w = ResizableButton("12","12", self)
+		self.w = ResizableTabView(TTabView,"12", self)
+		#self.w = ResizableMenuBar(TMenuBar,"12", app, self)		
+		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		
-		QtCore.QObject.connect(self.w, QtCore.SIGNAL("clicked_(const QString &)"), self.SignalReceive)
-		
+		#self.w.addTab(editItem("1", QtGui.QWidget()))
+		#self.w.addTab(editItem("2", QtGui.QWidget()))
 
-	def SignalReceive(self, text):		
-		
-		print text
+		Btn = QtGui.QPushButton(self)
+		Btn.setGeometry(21, 49, 100,30)
+		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
+					self.info)
 	
+	def info(self):
+		self.w.removeTab(0)
+	
+	def SignalReceive(self, text, text2):		
+		print "teste"
+		#print text+" = "+text2
 #-------------------------------------------------------------------------------------
 
-#main 
+#main
 app = QtGui.QApplication(sys.argv)
-widget = MainWidget()
+widget = MainWidget(app)
 widget.show()
 sys.exit(app.exec_())
-
-

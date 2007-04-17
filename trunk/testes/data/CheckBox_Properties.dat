@@ -1,2 +1,2 @@
-01:Text:Check Box:setText($1)
-02:Checked:false/true:setChecked($1)
+01:Text:Check Box:setText(param)
+02:Checked:false/true:setChecked(param)

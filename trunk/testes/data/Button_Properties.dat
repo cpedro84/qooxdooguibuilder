@@ -1,4 +1,4 @@
-01:Text:Button:setText($1)
-02:Icon:null:setIcon($1)
-03:IconWidth:null:setIconWidth($1)
-04:IconHeight:null:setIconHeight($1)
+01:Text:Button:setText(param)
+02:Icon:-:setIcon(param)
+03:IconWidth:-:setIconWidth(param)
+04:IconHeight:-:setIconHeight(param)
