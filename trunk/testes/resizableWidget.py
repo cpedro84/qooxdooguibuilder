@@ -978,8 +978,6 @@ class ResizableDialogWindow(ResizableWidget):
 		ResizableWidget.__init__(self, typeControl, id, self.DialogWindow, parent)
 
 
-
-
 class editMenu(QtGui.QMenu):
 	def __init__(self, app, parent=None):
 		#QtGui.QMenu.__init__(self, "teste", parent)
@@ -1042,7 +1040,17 @@ class ResizableTable(ResizableWidget):
 		
 	def setColumnCount(self, count):
 		self.table.setColumnCount(count)
-
+		
+		
+	def getTableData(self):
+		#(...) - fazer o carregamento dos dados construindo um objecto do tipo tableData
+		return getTableData(self.Table)
+	
+	def setTable(self, tableData):
+		
+		setTableWidget(self.Table, tableData)
+		
+	
 #(..... CONTINUAR WIDGETS)
 
 #-------------------------------------------------------------------------------------

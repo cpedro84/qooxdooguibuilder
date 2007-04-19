@@ -123,7 +123,6 @@ class editItemsWidget(QtGui.QDialog):
 		#focar na ListWidget o novo Item
 		self.setSelectedListItem(self.itemsListView.count()-1)
 		
-			
 	def deleteTextItem(self):		
 		currentRow = self.itemsListView.currentRow()
 		if currentRow  != self.noItem:
@@ -215,9 +214,7 @@ class editItemsWidget(QtGui.QDialog):
 			#Alterar/Acrescentar futuros tipos de items (ex: icones)
 			
 			elem+=1
-		
-		
-		
+			
 		self.accept()
 		
 #main
