@@ -8,17 +8,25 @@ from PyQt4 import QtCore, QtGui
 from const import *
 from projectExceptions import *
 from editItem import *
+from generalFunctions import *
+from tableData import *
 
 
 class editTableItemsWidget(QtGui.QDialog):
 		
-	def __init__(self, windowTitle, parent=None):
+	def __init__(self, windowTitle, parent=None, inicialTableData = { }):
 		
 		QtGui.QDialog.__init__(self, parent)		
 		
 		self.setWindowTitle(windowTitle)
 		#FIXAR O TAMANHO DA WIDGET AO TAMANHO ACTUAL
 		self.setFixedSize(513, 292)
+		
+		self.originalTableData = { }
+		self.originalItemsList = inicialTableData
+		self.tableData = { }
+		self.tableData = inicialTableData
+		
 		
 		self.newItemText = "New Item"
 		self.newColumnText = "New Column"
@@ -35,11 +43,10 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.RenameState = "Rename"		
 		self.btnColumnState = self.ApplyState
 		self.btnRowState = self.ApplyState
-		#*************CONTROLOS DA INTERFACE*********************
-		
+		#*************CONTROLOS DA INTERFACE*********************		
 		#definição das posições iniciais e seuas tamanhos
 		self.RTableItemsGroupBox = QtCore.QRect(10,10,271,241)
-		self.RTableItems = QtCore.QRect(10,30,251,152)
+		self.RTableItems = QtCore.QRect(10,30,251,200)
 		self.RLabelText = QtCore.QRect(10, 190,221,20)
 		self.RLineEdit = QtCore.QRect(40,190,221,20)
 		
@@ -62,19 +69,21 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.ROkButton = QtCore.QRect(350,260,77,25)
 		self.RCancelButton = QtCore.QRect(430,260,77,25)
 		
-		
 		#GROUPBOX TABLE ITEMS
 		self.TableItemsGroupBox = QtGui.QGroupBox("Table Items:", self)
 		self.TableItemsGroupBox.setGeometry(self.RTableItemsGroupBox)		
 		#table Items
 		self.TableItems = QtGui.QTableWidget(self.TableItemsGroupBox)
 		self.TableItems.setGeometry(self.RTableItems)		
+		#self.connect(self.TableItems, QtCore.SIGNAL("itemClicked(QTableWidgetItem *)"), self.SLOT_setLineEditText)
+		
+		
 		#Label Text
-		self.LabelText = QtGui.QLabel("Text:", self.TableItemsGroupBox)
-		self.LabelText.setGeometry(self.RLabelText)
+		#self.LabelText = QtGui.QLabel("Text:", self.TableItemsGroupBox)
+		#self.LabelText.setGeometry(self.RLabelText)
 		#Line Edit
-		self.textInput = QtGui.QLineEdit(self.TableItemsGroupBox)
-		self.textInput.setGeometry(self.RLineEdit)
+		#self.textInput = QtGui.QLineEdit(self.TableItemsGroupBox)
+		#self.textInput.setGeometry(self.RLineEdit)		
 		
 		
 		#GROUPBOX COLUMNS
@@ -140,8 +149,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.renameRowsButton.setGeometry(self.RRowsBtnRename)
 		self.renameRowsButton.setEnabled(false)
 		self.connect(self.renameRowsButton, QtCore.SIGNAL("clicked()"), self.SLOT_changeStateBtnRow)
-		
-		
+				
 		#BtnOK
 		self.okButton = QtGui.QPushButton("OK", self)		
 		self.okButton.setGeometry(self.ROkButton)
@@ -150,7 +158,10 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.cancelButton = QtGui.QPushButton("Cancel", self)		
 		self.cancelButton.setGeometry(self.RCancelButton)
 		self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self.SLOT_cancelChanges)
-
+	
+			
+		#carregar dados iniciais para a tabela
+		self.inicializeTableData(inicialTableData)
 
 	
 	#TRATAMENTO DOS SINAIS
@@ -163,8 +174,6 @@ class editTableItemsWidget(QtGui.QDialog):
 		if self.removeListItem(self.ColumnTypeItem, self.ListColumns):
 			#Caso o nº de items após remoção seja igual a 0 então alguns controlos ficaram inactivos
 			self.renameColumnsButton.setEnabled(false)
-		
-
 		
 	def SLOT_addRowItem(self):
 		self.addListItem(self.RowTypeItem, self.ListRows)
@@ -266,6 +275,10 @@ class editTableItemsWidget(QtGui.QDialog):
 			self.renameRowsButton.setText(self.RenameState)
 			self.btnRowState = self.RenameState
 	
+	def SLOT_setLineEditText(self, itemTable):
+		self.textInput.setText(itemTable.text())
+		self.textInput.setFocus()
+	
 	def SLOT_cancelChanges(self):
 		#self.ItemsList = self.originalItemsList
 		self.reject()
@@ -339,13 +352,70 @@ class editTableItemsWidget(QtGui.QDialog):
 		currentRow = listWidget.currentRow()
 		nElements =  listWidget.count()
 		if currentRow == self.noItem or currentRow == nElements-1 or nElements == 1:
-			return
+			return false
 		
 		#nextItem = QtGui.QListWidgetItem(self.itemsListView.item(currentRow+1))
 		nextItem = listWidget.item(currentRow+1)
 
 		listWidget.takeItem(currentRow+1)
 		listWidget.insertItem(currentRow, nextItem)
+
+
+
+		if itemType == self.ColumnTypeItem:
+			#****Mover os items da tableWidget - COLUMN
+			previousColumnItem = QtGui.QTableWidgetItem(self.TableItems.horizontalHeaderItem(currentRow+1))
+			
+			listTableItems = []			
+			itr = 0
+			#copiar todos os items da tableWidget relativo à coluna anterior
+			while itr < self.TableItems.columnCount():
+				tableItem = self.TableItems.item(itr, currentRow+1)
+				if tableItem == None: #para o caso de o item ser None (quando as celulas da tabela estão vazias) então serão criados items 
+					tableItem = QtGui.QTableWidgetItem("")				
+				listTableItems.append(QtGui.QTableWidgetItem(tableItem))
+				itr =itr + 1
+			
+			#eliminar coluna na tabela
+			self.TableItems.removeColumn(currentRow+1)
+			#inserir a coluna anterior na posição corrente
+			self.TableItems.insertColumn(currentRow)			
+			self.TableItems.setHorizontalHeaderItem(currentRow, previousColumnItem)
+			#adicionar os items à tabela
+			itr=0
+			for item in listTableItems:
+				self.TableItems.setItem(itr, currentRow, item)
+				itr =itr + 1
+			#********************************************
+			
+			
+		elif itemType == self.RowTypeItem:
+			#****Mover os items da tableWidget - ROW
+			previousRowItem = QtGui.QTableWidgetItem(self.TableItems.verticalHeaderItem(currentRow+1))
+			
+			listTableItems = []			
+			itr = 0
+			#copiar todos os items da tableWidget relativo à coluna anterior
+			while itr < self.TableItems.rowCount():
+				tableItem = self.TableItems.item(currentRow+1, itr)
+				if tableItem == None: #para o caso de o item ser None (quando as celulas da tabela estão vazias) então serão criados items 
+					tableItem = QtGui.QTableWidgetItem("")
+				listTableItems.append(QtGui.QTableWidgetItem(tableItem))			
+				itr =itr + 1
+
+			#eliminar coluna na tabela
+			self.TableItems.removeRow(currentRow+1)
+			#inserir a coluna anterior na posição corrente
+			self.TableItems.insertRow(currentRow)
+			self.TableItems.setVerticalHeaderItem(currentRow, previousRowItem)
+			#adicionar os items à tabela
+			itr=0			
+			for item in listTableItems:
+				self.TableItems.setItem(currentRow, itr, item)				
+				itr = itr + 1
+
+
+		return true
 
 		#ALTERAR ORDENAÇÃO DA LISTA DE REFERÊNCIA
 		#tmpItem = self.ItemsList[currentRow+1]
@@ -377,7 +447,7 @@ class editTableItemsWidget(QtGui.QDialog):
 				tableItem = self.TableItems.item(itr, currentRow-1)
 				if tableItem == None: #para o caso de o item ser None (quando as celulas da tabela estão vazias) então serão criados items 
 					tableItem = QtGui.QTableWidgetItem("")				
-				listTableItems.append(tableItem)			
+				listTableItems.append(QtGui.QTableWidgetItem(tableItem))
 				itr =itr + 1
 			
 			#eliminar coluna na tabela
@@ -391,6 +461,8 @@ class editTableItemsWidget(QtGui.QDialog):
 				self.TableItems.setItem(itr, currentRow, item)
 				itr =itr + 1
 			#********************************************
+			
+			
 		elif itemType == self.RowTypeItem:
 			#****Mover os items da tableWidget - ROW
 			previousRowItem = QtGui.QTableWidgetItem(self.TableItems.verticalHeaderItem(currentRow-1))
@@ -399,10 +471,10 @@ class editTableItemsWidget(QtGui.QDialog):
 			itr = 0
 			#copiar todos os items da tableWidget relativo à coluna anterior
 			while itr < self.TableItems.rowCount():
-				tableItem = self.TableItems.item(currentRow-1, itr)				
+				tableItem = self.TableItems.item(currentRow-1, itr)
 				if tableItem == None: #para o caso de o item ser None (quando as celulas da tabela estão vazias) então serão criados items 
 					tableItem = QtGui.QTableWidgetItem("")
-				listTableItems.append(tableItem)			
+				listTableItems.append(QtGui.QTableWidgetItem(tableItem))			
 				itr =itr + 1
 
 			#eliminar coluna na tabela
@@ -411,9 +483,9 @@ class editTableItemsWidget(QtGui.QDialog):
 			self.TableItems.insertRow(currentRow)
 			self.TableItems.setVerticalHeaderItem(currentRow, previousRowItem)
 			#adicionar os items à tabela
-			itr=0
+			itr=0			
 			for item in listTableItems:
-				self.TableItems.setItem(currentRow, itr, item)
+				self.TableItems.setItem(currentRow, itr, item)				
 				itr = itr + 1
 				
 				
@@ -452,12 +524,30 @@ class editTableItemsWidget(QtGui.QDialog):
 			self.renameRowsButton.setText(self.RenameState)
 			self.btnRowState = self.RenameState
 	
+	def inicializeTableData(self, tableData):
+		setTableWidget(self.TableItems, tableData)
+		setListWidget(self.ListColumns, tableData.getTableColumns())
+		setListWidget(self.ListRows, tableData.getTableRows())
+	
+	def getTableData(self):
+		return getTableData(self.TableItems)
+	
 	
 #main
 app = QtGui.QApplication(sys.argv)
-list = [1,2,3,4,5,'merda']
-widget = editTableItemsWidget("Window Table Items")
-widget.show()
+dataItems = { editItem("c1") : {editItem("r1"):editItem("cell_1_1"), editItem("r2"):editItem("cell_1_2")},   editItem("c2") : {editItem("r1"):editItem("cell_1_1")}}
+
+data = tableData()
+data.setTableItems(dataItems)
+data.setTableRows([editItem("r1"),editItem("r2")])
+data.setTableColumns([editItem("c1"), editItem("c2")])
+
+
+widget = editTableItemsWidget("Window Table Items", None, data )
+widget.exec_()
+print widget.getTableData()
+widget.done(QtGui.QDialog.Accepted)
+
 sys.exit(app.exec_())
 
 
