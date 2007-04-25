@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 # -*- encoding: latin1 -*-
 
+import sys
+from PyQt4 import QtCore, QtGui
+
+#DEFINIÇÃO DAS DIRECTORIAS
+DIR_CONTROLS_REPRESENTATION = "controlsRepresentation/"
+DIR_ICONS = "icons/"
+DIR_CONTROLS_DATA = "controlsData/"
+DIR_MONITOR = "guiMonitor/"
+DIR_WIDGETS = "guiWidgets/"
+DIR_LIBS = "libs/"
+
+
 #DEFINIÇÃO DE SINAIS
 SIGNAL_RESIZABLE_CLICKED = "Resizable_Clicked(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi seleccionada a resizable (para que das outras resizable seja retirado o rebordo)
@@ -57,3 +69,11 @@ ERROR_ACCESS_STRUCTURE = "Erro no acesso á estrutura de dados."
 TITLE_EDIT_ITEMS = "Qooxdoo GUI Builder - Edit Items"
 TITLE_EDIT_TABS = "Qooxdoo GUI Builder - Edit Tabs"
 TITLE_EDIT_TABLE = "Qooxdoo GUI Builder - Edit Table"
+
+#DRAW AREA VIEWPORT MARGINS
+MARGIN = 15
+
+#DEFINIÇÃO DE CORES
+DRAW_AREA_COLOR = QtGui.QPalette.Button
+BACKGROUNDS_COLOR = QtGui.QPalette.Dark
+

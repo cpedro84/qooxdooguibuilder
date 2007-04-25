@@ -6,6 +6,7 @@ from PyQt4 import QtCore, QtGui
 from const import *
 from editItem import *
 from projectExceptions import *
+from tableData import *
 
 def ListToQStringList(pList):
 	try:
@@ -44,32 +45,37 @@ def indexValidation(index, structureCount):
 	if index < 0 or index >= structureCount:
 		return false
 	return true
-	
+
+
+"""
 #FUNÇÕES SOBRE TABLEWIDGETs	
 def getTableData(tableWidget): #alterar função de forma a retornar um objecto do tipo tableData
 		
-	tableData = { }
+	tableItems = { }
 	
-	rowList = []
-	rowList = getRowsFromTableWidget(tableWidget)
-		
+	rowsList = []
+	rowsList = getRowsFromTableWidget(tableWidget)
+	columnsList = []
+	columnsList = getColumnsFromTableWidget(tableWidget)
+	
 	itrColumn = 0
 	itrRow = 0
 	#copiar todos os items da tableWidget
 	while itrColumn < tableWidget.columnCount():
 		columnItem = editItem(QtGui.QTableWidgetItem(tableWidget.horizontalHeaderItem(itrColumn)).text())
 		itrRow = 0 
-		tableData[columnItem] = {}
-		for rowItem in rowList:
+		tableItems[columnItem] = {}
+		for rowItem in rowsList:
 			tableItem = tableWidget.item(itrRow, itrColumn)
 			if tableItem == None:
 				tableItem = QtGui.QTableWidgetItem("")
 			cellItem = editItem(QtGui.QTableWidgetItem(tableItem).text())
-			tableData[columnItem].update({rowItem: cellItem})
+			tableItems[columnItem].update({rowItem: cellItem})
 			itrRow +=1
 			
 		itrColumn +=1
 	
+	tableData = CTableData(rowsList, columnsList, tableItems)
 	return tableData
 
 def setTableWidget(tableWidget, tableData):
@@ -77,8 +83,13 @@ def setTableWidget(tableWidget, tableData):
 	itrColumn = 0
 	itrRow = 0	
 	
+	#LIMPAR OS DADOS DA TABLEWIDGET
+	tableWidget.clear()
+	tableWidget.setRowCount(0)
+	tableWidget.setColumnCount(0)
+	
 	#adicionar as colunas e linhas em primeiro lugar para que as celulas sejam criadas	
-	#COLUNAS
+	#COLUNAS	
 	#adicionar as colunas e linhas em primeiro lugar para que as celulas sejam criadas	
 	for columnItem in tableData.getTableColumns():
 		tableWidget.insertColumn(itrColumn)
@@ -123,10 +134,10 @@ def getColumnsFromTableWidget(tableWidget):
 	itr = 0
 	#armazenar todas as descrições das linhas	da tableWidget	
 	while itr < tableWidget.columnCount():
-		columnList.append(editItem(QtGui.QTableWidgetItem(tableWidget.horizontalHeaderItem(itr)).text()))
+		columnsList.append(editItem(QtGui.QTableWidgetItem(tableWidget.horizontalHeaderItem(itr)).text()))
 		itr +=1
 	
-	return columnList
+	return columnsList
 
 
 #FUNÇÕES SOBRE LISTWIDGETs
@@ -146,3 +157,4 @@ def getListWidgetItems(listWidget):
 		
 	return itemsList
 
+"""

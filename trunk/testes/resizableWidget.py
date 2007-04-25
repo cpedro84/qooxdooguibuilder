@@ -7,8 +7,11 @@ import sys
 from PyQt4 import QtCore, QtGui
 from const import *
 from editItemsWidget import *
+from editTableItemsWidget import *
 from generalFunctions import *
 from projectExceptions import *
+from tableWidget import *
+from listWidget import *
 
 
 class ResizableWidget(QtGui.QWidget):
@@ -195,6 +198,15 @@ class ResizableWidget(QtGui.QWidget):
 			self.popUpMenusExtraList.append(self.editTabsAction)
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
+		elif self.isTableControl(typeControl):
+			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Table..."), self)
+			self.editTableAction.setStatusTip(self.tr("Edit Table"))
+			self.connect(self.editTableAction, QtCore.SIGNAL("triggered()"), self.editTable)			
+			
+			#Adicionar o pop-up menu extra á lista
+			self.popUpMenusExtraList.append(self.editTableAction)
+			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
+		
 		#IMPLEMENTAR PARA MAIS TIPOS DE ITEMS (caso existam) ...
 
 	
@@ -211,6 +223,13 @@ class ResizableWidget(QtGui.QWidget):
 			return true
 		except ValueError:
 			return false
+			
+	def isTableControl(self, typeControl):
+		try:
+			tableControls.index(typeControl)
+			return true
+		except ValueError:
+			return false			
 	#****************************************************************************************
 	
 	
@@ -619,6 +638,21 @@ class ResizableWidget(QtGui.QWidget):
 		except structureError_Exception, e:		
 			return e.errorId
 	
+	#TTABLEVIEW
+	def editTable(self):
+		tableData = self.getTableData()
+		widgetTableItems = CEditTableItemsWidget(TITLE_EDIT_TABLE, self, tableData)
+		if widgetTableItems.exec_() == QtGui.QDialog.Accepted:
+			#carregar as alterações efectuadas sobre a tableWidget
+			tableData = widgetTableItems.getTableData()
+			#modificar o output tableWidget
+			self.setTable(tableData)
+			
+			#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
+			#tableData = QtCore.QObject(tableData)
+			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), str(self.typeControl), str(self.idControl), tableData)
+
+	
 	#********************************************************************
 	
 #*******************************************************************
@@ -810,8 +844,6 @@ class ResizableComboBox(ResizableWidget):
 		return items
 	
 	
-	
-	
 	def addItemIcon(self, strText, Icon):
 		self.ComboBox.addItem(Icon, strText)
 	
@@ -833,8 +865,6 @@ class ResizableComboBox(ResizableWidget):
 	def setItemIcon(self, index, icon):
 		self.ComboBox.setItemIcon(self, index, icon)
 
-	
-		
 	def getItemIcon(self, index):
 		return self.ComboBox.itemIcon(index)
 		
@@ -846,7 +876,7 @@ class ResizableComboBox(ResizableWidget):
 #-------------------------------------------------------------------------------------
 class ResizableList(ResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
-		self.ListView = QtGui.QListWidget()
+		self.ListView = CListWidget()
 		ResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
 		self.items = []
 		#PROPREIDADES
@@ -1018,9 +1048,9 @@ class ResizableSpinner(ResizableWidget):
 
 
 class ResizableTable(ResizableWidget):
-	def __init__(self, typeControl, id, widget = None, parent=None):
-		self.Table = QtGui.QTableWidget()
-		ResizableWidget.__init__(self, typeControl, id, self.Table, parent)
+	def __init__(self, typeControl, id, parent=None):
+		self.tableWidget = CTableWidget()
+		ResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
 	
 	
 	"""def setHeaderCellHeight(self, height):
@@ -1029,32 +1059,33 @@ class ResizableTable(ResizableWidget):
 	
 	def setRowsHeight(self, height):		
 		for row in self.table.rowCount():
-			self.table.setRowHeight(row, height)
+			self.tableWidget.setRowHeight(row, height)
 
 	def setColumsWidth(self, width):		
 		for row in self.table.columnCount():
-			self.table.setColumnWidth(row, width)
+			self.tableWidget.setColumnWidth(row, width)
 
 	def setRowCount(self, count):
-		self.table.setRowCount(count)
+		self.tableWidget.setRowCount(count)
 		
 	def setColumnCount(self, count):
-		self.table.setColumnCount(count)
+		self.tableWidget.setColumnCount(count)
 		
 		
 	def getTableData(self):
-		#(...) - fazer o carregamento dos dados construindo um objecto do tipo tableData
-		return getTableData(self.Table)
+		#(...) - fazer o carregamento dos dados construindo um objecto do tipo tableData				
+		return self.tableWidget.getTableData()
 	
 	def setTable(self, tableData):
-		
-		setTableWidget(self.Table, tableData)
+		#alterar o conteudo da tableWidget de acordo com as alterações efectuadas
+		self.tableWidget.setTableWidget(tableData)
 		
 	
 #(..... CONTINUAR WIDGETS)
 
-#-------------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------------
+"""
 #TESTES
 class MainWidget(QtGui.QMainWindow):
 	
@@ -1062,17 +1093,19 @@ class MainWidget(QtGui.QMainWindow):
 		QtGui.QWidget.__init__(self, parent)
 		
 		#self.w = ResizableButton("12","12", self)
-		self.w = ResizableTabView(TTabView,"12", self)
+		#self.w = ResizableTable(TTable,"12", self)
+		self.w = ResizableList(TList,"12", self)
 		#self.w = ResizableMenuBar(TMenuBar,"12", app, self)		
 		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
-		
+		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.Signal_tableChanged)
 		#self.w.addTab(editItem("1", QtGui.QWidget()))
 		#self.w.addTab(editItem("2", QtGui.QWidget()))
 
 		Btn = QtGui.QPushButton(self)
 		Btn.setGeometry(21, 49, 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
-					self.info)
+	
+	self.info)
 	
 	def info(self):
 		self.w.removeTab(0)
@@ -1080,6 +1113,11 @@ class MainWidget(QtGui.QMainWindow):
 	def SignalReceive(self, text, text2):		
 		print "teste"
 		#print text+" = "+text2
+		
+	def Signal_tableChanged(self, typeControl, idControl, map):
+		print typeControl
+		print idControl
+		print map
 #-------------------------------------------------------------------------------------
 
 #main
@@ -1087,3 +1125,4 @@ app = QtGui.QApplication(sys.argv)
 widget = MainWidget(app)
 widget.show()
 sys.exit(app.exec_())
+"""

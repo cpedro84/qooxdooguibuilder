@@ -10,9 +10,10 @@ from projectExceptions import *
 from editItem import *
 from generalFunctions import *
 from tableData import *
+from tableWidget import *
 
 
-class editTableItemsWidget(QtGui.QDialog):
+class CEditTableItemsWidget(QtGui.QDialog):
 		
 	def __init__(self, windowTitle, parent=None, inicialTableData = { }):
 		
@@ -25,8 +26,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.originalTableData = { }
 		self.originalItemsList = inicialTableData
 		self.tableData = { }
-		self.tableData = inicialTableData
-		
+		self.tableData = inicialTableData		
 		
 		self.newItemText = "New Item"
 		self.newColumnText = "New Column"
@@ -73,7 +73,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.TableItemsGroupBox = QtGui.QGroupBox("Table Items:", self)
 		self.TableItemsGroupBox.setGeometry(self.RTableItemsGroupBox)		
 		#table Items
-		self.TableItems = QtGui.QTableWidget(self.TableItemsGroupBox)
+		self.TableItems = CTableWidget(self.TableItemsGroupBox)
 		self.TableItems.setGeometry(self.RTableItems)		
 		#self.connect(self.TableItems, QtCore.SIGNAL("itemClicked(QTableWidgetItem *)"), self.SLOT_setLineEditText)
 		
@@ -90,7 +90,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.ColumnsGroupBox = QtGui.QGroupBox("Columns:", self)
 		self.ColumnsGroupBox.setGeometry(self.RColumnsGroupBox)		
 		#ListWidget
-		self.ListColumns = QtGui.QListWidget(self.ColumnsGroupBox)
+		self.ListColumns = CListWidget(self.ColumnsGroupBox)
 		self.ListColumns.setGeometry(self.RColumnsList)
 		self.connect(self.ListColumns, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.SLOT_startColumnEditMode)
 		self.connect(self.ListColumns, QtCore.SIGNAL("itemSelectionChanged()"), self.SLOT_endColumnEditMode)
@@ -108,7 +108,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.addItemColumnsButton = QtGui.QPushButton("+", self.ColumnsGroupBox)
 		self.addItemColumnsButton.setGeometry(self.RColumnsBtnAdd)
 		self.connect(self.addItemColumnsButton, QtCore.SIGNAL("clicked()"), self.SLOT_addColumnItem)
-		#BtnAdd
+		#BtnRemove
 		self.removeItemColumnsButton = QtGui.QPushButton("-", self.ColumnsGroupBox)
 		self.removeItemColumnsButton.setGeometry(self.RColumnsBtnRemove)
 		self.connect(self.removeItemColumnsButton, QtCore.SIGNAL("clicked()"), self.SLOT_removeColumnItem)
@@ -122,7 +122,7 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.RowsGroupBox = QtGui.QGroupBox("Rows:", self)
 		self.RowsGroupBox.setGeometry(self.RRowsGroupBox)
 		#ListWidget
-		self.ListRows = QtGui.QListWidget(self.RowsGroupBox)
+		self.ListRows = CListWidget(self.RowsGroupBox)
 		self.ListRows.setGeometry(self.RRowsList)
 		self.connect(self.ListRows, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.SLOT_startRowEditMode)
 		self.connect(self.ListRows, QtCore.SIGNAL("itemSelectionChanged()"), self.SLOT_endRowEditMode)		
@@ -171,8 +171,10 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.renameColumnsButton.setEnabled(true)
 
 	def SLOT_removeColumnItem(self):
-		if self.removeListItem(self.ColumnTypeItem, self.ListColumns):
-			#Caso o nº de items após remoção seja igual a 0 então alguns controlos ficaram inactivos
+		self.removeListItem(self.ColumnTypeItem, self.ListColumns)
+		
+		#Caso o nº de items após remoção seja igual a 0 então alguns controlos ficaram inactivos
+		if self.ListColumns.count() == 0:
 			self.renameColumnsButton.setEnabled(false)
 		
 	def SLOT_addRowItem(self):
@@ -180,8 +182,9 @@ class editTableItemsWidget(QtGui.QDialog):
 		self.renameRowsButton.setEnabled(true)
 
 	def SLOT_removeRowItem(self):
-		if self.removeListItem(self.RowTypeItem, self.ListRows) == false:
-			#Caso o nº de items após remoção seja igual a 0 então alguns controlos ficaram inactivos
+		self.removeListItem(self.RowTypeItem, self.ListRows) 
+		#Caso o nº de items após remoção seja igual a 0 então alguns controlos ficaram inactivos		
+		if self.ListRows.count() == 0:
 			self.renameRowsButton.setEnabled(false)
 
 	def SLOT_moveColumnUp(self):
@@ -206,7 +209,8 @@ class editTableItemsWidget(QtGui.QDialog):
 		
 	def SLOT_endColumnEditMode(self):		
 		self.ListColumns.closePersistentEditor(self.ListColumns.currentItem())		
-		self.changeStateBtnColumn()
+		if self.btnColumnState == self.ApplyState:
+			self.changeStateBtnColumn()
 		
 	def SLOT_startRowEditMode(self, listWidgetItem=None):
 		#self.ListRows.editItem(listWidgetItem)
@@ -218,7 +222,8 @@ class editTableItemsWidget(QtGui.QDialog):
 		
 	def SLOT_endRowEditMode(self):
 		self.ListRows.closePersistentEditor(self.ListRows.currentItem())
-		self.changeStateBtnRow()
+		if self.btnRowState == self.ApplyState:
+			self.changeStateBtnRow()
 		
 	#slot que efectua a alteração do texto da respectiva coluna na tableWidget de acordo com o texto editado na listWidget
 	def SLOT_changeColumnText(self, text):
@@ -252,27 +257,31 @@ class editTableItemsWidget(QtGui.QDialog):
 	
 	
 	def SLOT_changeStateBtnColumn(self):
-		print self.btnColumnState
+		
 		if self.btnColumnState == self.RenameState:			
 			listWidgetItem  = self.ListColumns.currentItem()
 			self.ListColumns.openPersistentEditor(listWidgetItem)
+			self.ListColumns.setFocus()
 			self.renameColumnsButton.setText(self.ApplyState)
 			self.btnColumnState = self.ApplyState
 		elif self.btnColumnState == self.ApplyState:			
 			self.ListColumns.closePersistentEditor(self.ListColumns.currentItem())
 			self.renameColumnsButton.setText(self.RenameState)
+			self.renameColumnsButton.setFocus()
 			self.btnColumnState = self.RenameState
-	
+			
 	def SLOT_changeStateBtnRow(self):
-		print self.btnRowState
+		
 		if self.btnRowState == self.RenameState:			
 			listWidgetItem  = self.ListRows.currentItem()
 			self.ListRows.openPersistentEditor(listWidgetItem)
+			self.ListRows.setFocus()
 			self.renameRowsButton.setText(self.ApplyState)
 			self.btnRowState = self.ApplyState
 		elif self.btnRowState == self.ApplyState:			
 			self.ListRows.closePersistentEditor(self.ListRows.currentItem())
 			self.renameRowsButton.setText(self.RenameState)
+			self.renameRowsButton.setFocus()
 			self.btnRowState = self.RenameState
 	
 	def SLOT_setLineEditText(self, itemTable):
@@ -525,34 +534,35 @@ class editTableItemsWidget(QtGui.QDialog):
 			self.btnRowState = self.RenameState
 	
 	def inicializeTableData(self, tableData):
-		setTableWidget(self.TableItems, tableData)
-		setListWidget(self.ListColumns, tableData.getTableColumns())
-		setListWidget(self.ListRows, tableData.getTableRows())
+		self.TableItems.setTableWidget(tableData)
+		self.ListColumns.setListWidget(tableData.getTableColumns())
+		self.ListRows.setListWidget(tableData.getTableRows())
+		
+		if self.ListColumns.count() > 0:
+			self.renameColumnsButton.setEnabled(true)
+			
+		if self.ListRows.count() > 0:
+			self.renameRowsButton.setEnabled(true)
 	
 	def getTableData(self):
-		return getTableData(self.TableItems)
+		return self.TableItems.getTableData()
 	
 	
 #main
+"""
 app = QtGui.QApplication(sys.argv)
 dataItems = { editItem("c1") : {editItem("r1"):editItem("cell_1_1"), editItem("r2"):editItem("cell_1_2")},   editItem("c2") : {editItem("r1"):editItem("cell_1_1")}}
 
-data = tableData()
+data = CTableData()
 data.setTableItems(dataItems)
 data.setTableRows([editItem("r1"),editItem("r2")])
 data.setTableColumns([editItem("c1"), editItem("c2")])
 
 
-widget = editTableItemsWidget("Window Table Items", None, data )
+widget = CEditTableItemsWidget("Window Table Items", None, data )
 widget.exec_()
 print widget.getTableData()
 widget.done(QtGui.QDialog.Accepted)
 
 sys.exit(app.exec_())
-
-
-		
-		
-		
-		
-		
+"""

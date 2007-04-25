@@ -9,14 +9,18 @@ from const import *
 from projectExceptions import *
 
 
-class tableData(QtCore.QObject):
+class CTableData(QtCore.QObject):
 	
-	def __init__(self):
+	def __init__(self, rowsList = [], columnsList = [] , tableItems = {}):
 		self.tableData = { }
 		self.posRows = 1
 		self.posColumns = 2
 		self.posItems = 3
 		
+		self.setTableRows(rowsList)
+		self.setTableColumns(columnsList)
+		self.setTableItems(tableItems)
+				
 	def setTableRows(self, rowsList):
 		self.tableData[self.posRows] = rowsList
 	
@@ -35,3 +39,7 @@ class tableData(QtCore.QObject):
 		
 	def getTableItems(self):
 		return self.tableData[self.posItems]
+		
+	def getTableData(self):
+		return self.tableData
+	

@@ -10,6 +10,7 @@ from string import Template
 from PyQt4 import QtCore, QtGui
 from const import *
 from projectExceptions import *
+from tableData import *
 
 #****************************************************************************
 #***************COLOCAR NOUTRO FICHEIRO*****
@@ -60,7 +61,7 @@ def formatProcedureCall(procedure):
 	return strCallProcedure
 	
 	
-	
+#*********************************************************************************************************	
 def callProcedureResizableConstructor(memRefName, procedure, DparametersValues = { }):
 	
 	#formatedProcedure = formatProcedureCall(procedure)	
@@ -77,7 +78,7 @@ def callProcedureResizableProperty(procedure, DparametersValues = { }):
 	#formatedProcedure = formatProcedureCall(procedure)		
 	exec procedure in DparametersValues, globals()
 	
-#**********************************************************
+#*********************************************************************************************************
 
 
 
@@ -227,7 +228,7 @@ class MonitorControls(QtCore.QObject):
 		DPropertiesControls = self.getDefaultProperties(typeControl)
 						
 		#verificar se existem propriedades default para o controlo a ser adicionado
-		if DPropertiesControls == self.error:
+		if DPropertiesControls == self.error:			
 			return self.error
 		
 		#calcular um Id para o control		
@@ -459,7 +460,7 @@ print monitor.getControlsFromType(MonitorControls.TTextField)
 print monitor.DPropertiesMethods
 """
 
-
+"""
 #-------------------------------------------------------------------------------------
 class MainWidget(QtGui.QMainWindow):
 	
@@ -475,15 +476,15 @@ class MainWidget(QtGui.QMainWindow):
 		
 		#self.resizableBtn = ResizableButton(self)
 		self.monitor = MonitorControls()
-		widget = self.monitor.addNewControl(TCombo, self)		
+		widget = self.monitor.addNewControl(TTable, self)
 		widget.setGeometry(40,40,80,20)
 		QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
-		QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.SignalProcess_itemsChanged)
+		QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.SignalProcess_tableChanged)
 		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		
-		widget2 = self.monitor.addNewControl(TTabView, self)		
-		QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
-		QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.SignalProcess_itemsChanged)
+		#widget2 = self.monitor.addNewControl(TTabView, self)		
+		#QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
+		#QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.SignalProcess_itemsChanged)
 		
 		
 		
@@ -491,11 +492,11 @@ class MainWidget(QtGui.QMainWindow):
 		#QtCore.QObject.connect(widget2, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		
 		
-		"""Btn = QtGui.QPushButton(self)
+		Btn = QtGui.QPushButton(self)
 		Btn.setGeometry(21, 49, 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
 					self.info)
-		"""
+		
 		
 	#COLOCAR ESTE SINAL NA PROPRIA CLASSE MONITOR?????
 	def SignalProcess_resizableCliked(self, typeControl, idControl):				
@@ -516,6 +517,10 @@ class MainWidget(QtGui.QMainWindow):
 		list = QStringListToList(qtList)
 		print list
 	
+	def SignalProcess_tableChanged(self, typeControl, idControl, map):
+		print typeControl
+		print idControl
+		print map.getTableData()
 	
 	def info(self):
 		#self.w.setAutoFillBackground(bool(1))
@@ -536,3 +541,4 @@ app = QtGui.QApplication(sys.argv)
 widget = MainWidget()
 widget.show()
 sys.exit(app.exec_())
+"""
