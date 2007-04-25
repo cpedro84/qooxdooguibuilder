@@ -8,6 +8,7 @@ from PyQt4 import QtCore, QtGui
 from const import *
 from projectExceptions import *
 from editItem import *
+from listWidget import *
 
 
 class editItemsWidget(QtGui.QDialog):
@@ -32,7 +33,7 @@ class editItemsWidget(QtGui.QDialog):
 		self.ItemsGroupBox.setGeometry(10,10,290,250)
 		
 		#LISTA COM OS ITEMS
-		self.itemsListView = QtGui.QListWidget(self.ItemsGroupBox)
+		self.itemsListView = CListWidget(self.ItemsGroupBox)
 		self.itemsListView.setGeometry(10,20,210,190)		
 		#Processamento dos sinais emitidos pela ListWidget
 		self.connect(self.itemsListView, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.listItemDoubleClicked)
