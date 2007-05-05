@@ -1,0 +1,9 @@
+Usar compilador c++ Microsoft Visual Studio .net, através da linha de comandos:
+
+-abrir linha de comandos
+-executar o ficheiro bat: 
+	C:\Programas\Microsoft Visual Studio .NET\Vc7\bin\vcvars32.bat
+ Irão ser carregados os comandos da directoria
+
+-
+ 

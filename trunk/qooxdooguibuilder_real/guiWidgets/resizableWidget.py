@@ -24,11 +24,12 @@ class ResizableWidget(QtGui.QWidget):
 		self.childWidget.setParent(self)		
 				
 		#Formatar output da Widget que representa o controlo
-		self.childWidget.setFocusPolicy(QtCore.Qt.NoFocus)
-		#self.childWidget.setEnabled(bool(0))
+		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
+		self.childWidget.setEnabled(false)
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
 		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
 		#self.childWidget.setFrameShadow(QtGui.QFrame.Raised)
+		self.childWidget.setDragEnabled(true)
 		
 		self.havePopUpMenusExtra = false
 		self.popUpMenusExtraList = []
@@ -108,10 +109,12 @@ class ResizableWidget(QtGui.QWidget):
 		self.MouseClicked = 1
 		self.MouseRelease = 0
 		self.MouseState = self.MouseRelease
+		#botão de clique
+		self.mouseButtonClicked =QtCore.Qt.NoButton
 		#posicionamento anterior
-		self.MouseLastXpos = 0
-		self.MouseLastYpos = 0
-				
+		self.mousePressedPos = QtCore.QPoint(0,0)
+		
+		
 		#VARIAVEL QUE CONTROLA SE A WIDGET ESTÁ SELECCIONADA
 		self.isSelected = bool(0)
 				
@@ -178,7 +181,9 @@ class ResizableWidget(QtGui.QWidget):
 		self.labelText = text"""
 	
 	
-	#**********GESTÃO DOS MENUS EXTRA DO POP-UP MENU DA WIDGET********************
+	#****************************************************************************************
+	#**********************GESTÃO DOS MENUS EXTRA DO POP-UP MENU DA WIDGET********************
+	#****************************************************************************************
 	def setExtraPopUpMenus(self, typeControl):
 		if self.isItemsControl(typeControl):			
 			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Items..."), self)
@@ -231,7 +236,8 @@ class ResizableWidget(QtGui.QWidget):
 		except ValueError:
 			return false			
 	#****************************************************************************************
-	
+	#****************************************************************************************
+	#****************************************************************************************
 	
 	
 	#-------EVENTOS----------------------------------------------------------------	
@@ -247,8 +253,7 @@ class ResizableWidget(QtGui.QWidget):
 		WidgetWidth = self.widgetRect.width()
 		WidgetHeight = self.widgetRect.height()
 		
-		#DESENHO DO REBORDO DE SELECÇÃO/ALTERAÇÃO DE TAMANHO
-		
+		#DESENHO DO REBORDO DE SELECÇÃO/ALTERAÇÃO DE TAMANHO		
 		if self.isSelected: #verificar se a widget foi seleccionada
 			
 			#DEFINIÇÃO DAS FERRAMENTAS DE PINTURA
@@ -294,21 +299,22 @@ class ResizableWidget(QtGui.QWidget):
 			painter.drawRect(self.RectR)
 			
 			painter.end()
-						
+		
 		#REDIMENSIONAR TAMANHO DA WIDGET
 		self.childWidget.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
 		
 	
 	def mouseMoveEvent(self, event):
 		
-		widgetRect = self.geometry()
-		
 		mouseXpos = event.x()
 		mouseYpos = event.y()
 		
+		widgetRect = self.geometry()		
+		
 		#PONTOS DE REFERÊNCIA
 		point = QtCore.QPoint(mouseXpos, mouseYpos)		
-	
+		
+		#CASO O BOTÃO DO RATO NÃO ESTEJA PRESSIONADO ENTÃO SERÁ VERIFICADO SE A SUA POSIÇÃO ESTA DE ACORDO COM ALGUM PONTO DE ALTERAÇÃO DE DIMENSÃO
 		if self.MouseState == self.MouseRelease:			
 			#VALIDAR POSICAO DO RATO DE ACORDO COM OS PONTOS DE REF. 
 			if self.IsPointInsideRect(point, self.RectLT) == bool(1):  # LEFT TOP
@@ -338,68 +344,154 @@ class ResizableWidget(QtGui.QWidget):
 			else:			
 				self.pontoRef = self.noRef #definir como de referência do rato
 				self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+		
+		#************PROCESSAMENTO DO DRAG ******************
+		#CASO O BOTÃO ESQUERDO DO RATO ESTEJA PRESSIONADO ENTÃO SERÁ PROCESSADO O DRAG
+		elif self.MouseState == self.MouseClicked and self.mouseButtonClicked == QtCore.Qt.LeftButton and self.pontoRef == self.noRef and (abs(event.pos().x() - self.mousePressedPos.x()) >= PIXELS_TO_DRAG or  abs(event.pos().y() - self.mousePressedPos.y()) >= PIXELS_TO_DRAG):
 			
-		
-		#print(mouseYpos, self.MouseLastYpos)
-		"""if mouseYpos > self.MouseLastYpos:
-			print("maior")					
-		else:
-			print("menor")
-		"""
-		
+			itemData = QtCore.QByteArray()			
+			dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
+			dataStream << QtCore.QString(DRAG_MOVE_ACTION) << QtCore.QPoint(event.pos() - self.rect().topLeft())	
+	
+			mimeData = QtCore.QMimeData()
+			mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
+			
+			drag = QtGui.QDrag(self)			
+			drag.setMimeData(mimeData)		
+			drag.setHotSpot(event.pos() - self.rect().topLeft())
+			
+			pixmap = QtGui.QPixmap(self.rect().size())		
+			pixmap.fill(QtGui.QColor(QtCore.Qt.darkCyan))
+			drag.setPixmap(pixmap)
+			
+			self.hide()
+			
+			#Vai executar o operação de drag e posteriormente verificar qual a operação que foi após o drag (Após o drag o código dentro do if vai ser executado) 			
+			if drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+				self.MouseState = self.MouseRelease
+				self.mouseButtonClicked = QtCore.Qt.NoButton
+				self.show()
+			else: #Em caso de drop inválido a widget será colocada na sua posição original
+				self.MouseState = self.MouseRelease
+				self.mouseButtonClicked = QtCore.Qt.NoButton
+				self.show()
+			self.setFocus()
+			self.isSelected = true			
+			self.update()
+		#****************************************************************	
+		#****************************************************************
+		#****************************************************************
+	
 		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)
 		if self.MouseState == self.MouseClicked:
-			#print(mouseYpos, self.MouseLastYpos)
+			
+			newRect = QtCore.QRect()
+						
 			if self.pontoRef == self.RefRectLeftTop: # NO OK				
-				self.setGeometry(mouseXpos, mouseYpos, widgetRect.width(), widgetRect.height())			
+				#newRect.setRect(mouseXpos, mouseYpos, widgetRect.width(), widgetRect.height())			
+				self.update()
 			elif self.pontoRef == self.RefRectCenterTop: # NO OK				
-				if mouseYpos > self.MouseLastYpos:
+				self.update()
+				"""
+				#print "Y: "+str(mouseYpos)+" Y(ant): "+str(self.MouseLastYpos)				
+				if mouseYpos >= self.MouseLastYpos:
 					#print("maior")
-					self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()-(mouseYpos - widgetRect.y()) )
+					newRect.setRect(widgetRect.x(), widgetRect.y(), widgetRect.width(), widgetRect.height()-mouseYpos)
 					
+					difHeight = abs(widgetRect.height()-self.geometry().height())
+					#print difHeight 
+					newRect.setRect(widgetRect.x(), widgetRect.y()+difHeight, self.geometry().width(), self.geometry().height())
+					#self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()-(mouseYpos - widgetRect.y()) )
+					#self.setGeometry(QtCore.QRect(event.pos(), QtCore.QPoint(widgetRect.width(), widgetRect.height()-(mouseYpos - widgetRect.y()) )))
 				else:
+					newRect.setRect(widgetRect.x(), widgetRect.y(), widgetRect.width(), widgetRect.height()+mouseYpos)
+					difHeight = abs(widgetRect.height()-self.geometry().height())
+					#print difHeight 
+					newRect.setRect(widgetRect.x(), widgetRect.y()-difHeight, self.geometry().width(), self.geometry().height())
 					#print("menor")
-					self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()+(widgetRect.y() - mouseYpos) )
 					#self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()+(widgetRect.y() - mouseYpos) )
+					#self.setGeometry(widgetRect.x(), mouseYpos, widgetRect.width(), widgetRect.height()+(widgetRect.y() - mouseYpos) )
+					#self.setGeometry(QtCore.QRect(event.pos(), QtCore.QPoint(widgetRect.width(), widgetRect.height()+(mouseYpos - widgetRect.y()) )))
+				"""
 				
 			elif self.pontoRef == self.RefRectRightTop:# NO OK
-				self.setGeometry(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
+				#newRect.setRect(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
+				self.update()
 			elif self.pontoRef == self.RefRectLeftBottom: #NO OK
-				self.setGeometry(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
+				#newRect.setRect(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
+				self.update()
 			elif self.pontoRef == self.RefRectCenterBottom: #OK
-				self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), mouseYpos)			
+				newRect.setRect(widgetRect.x(), widgetRect.y(), widgetRect.width(), mouseYpos)
 			elif self.pontoRef == self.RefRectRightBottom: #OK
-				self.setGeometry(widgetRect.x(), widgetRect.y(), mouseXpos, mouseYpos)
+				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos, mouseYpos)
 			elif self.pontoRef == self.RefRectLeft: #NO OK		
-				self.setGeometry(widgetRect.x(), widgetRect.y(), mouseXpos, 0)
+				#newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos, 0)
+				self.update()
 			elif self.pontoRef == self.RefRectRight: #OK
-				self.setGeometry(widgetRect.x(), widgetRect.y(), mouseXpos,widgetRect.height())
+				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos,widgetRect.height())
 			
+			#VALIDAR NOVO TAMANHO DA RESIZABLE DE ACORDO COM OS LIMITES MINIMOS
+			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO
+				self.setGeometry(newRect)				
 			
-		#GUARDAR POSICIONAMENTO DO RATO
-		self.MouseLastXpos = mouseXpos
-		self.MouseLastYpos = mouseYpos	
-			
-			
+				
+	def merda(self):
+		print "merda"
+	
 	def mousePressEvent(self, event):
 		
 		#INDICAR QUE A WIDGET FOI SELECCIONADA
-		self.isSelected = bool(1)
-		
+		self.setFocus()
+		self.isSelected = true		
 		#ACTUALIZAR O ESTADO DO RATO
 		self.MouseState = self.MouseClicked
-		
+
+		#GUARDAR POSICIONAMENTO DO RATO
+		self.mousePressedPos = QtCore.QPoint(event.pos())
+
 		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))		
-		#self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_Selected))		
 		
-		self.repaint()
-	
+		self.mouseButtonClicked = event.button()
+		
+		self.update()
+		
 	def mouseReleaseEvent(self, event):
 		#ACTUALIZAR O ESTADO DO RATO
 		self.MouseState = self.MouseRelease
+		self.mouseButtonClicked = event.button()
 		#ALTERAR O CURSOR DO RATO PARA O ESTADO ORIGINAL
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+	
+	
+	def keyPressEvent(self, event):
+		#caso o evento tenha ocorrido por uma tecla desconhecida não será processado
+		keyPressed = event.key()
+		if  keyPressed ==  QtCore.Qt.Key_unknown or not self.isSelected:
+			return
+			
+		#obter  largura e altura da widget pai 
+		widthArea = self.parentWidget().geometry().width()
+		heightArea = self.parentWidget().geometry().height()
+				
+		height = self.geometry().height()
+		width = self.geometry().width()
+		
+		if keyPressed == QtCore.Qt.Key_Up and validatePosition(self.x(), self.y()-STEP_MOVE, width, height, widthArea, heightArea):			
+			self.move(self.x(), self.y()-STEP_MOVE)
+		elif keyPressed == QtCore.Qt.Key_Down and validatePosition(self.x(), self.y()+STEP_MOVE, width, height, widthArea, heightArea):
+			self.move(self.x(), self.y()+STEP_MOVE)
+		elif keyPressed == QtCore.Qt.Key_Left and validatePosition(self.x()-STEP_MOVE, self.y(), width, height, widthArea, heightArea):
+			self.move(self.x()-STEP_MOVE, self.y())
+		elif keyPressed == QtCore.Qt.Key_Right and validatePosition(self.x()+STEP_MOVE, self.y(), width, height, widthArea, heightArea):
+			self.move(self.x()+STEP_MOVE, self.y())
+		elif keyPressed == QtCore.Qt.Key_Escape:
+			self.clearFocus()
+			self.isSelected = false
+			self.repaint()
+		else:		
+			return
+		
 	
 	def IsPointInsideRect(self, point, rect):
 		
@@ -590,9 +682,13 @@ class ResizableWidget(QtGui.QWidget):
 	#def setMarginSize():
 
 	def disableSelected(self):
-		self.isSelected = bool(0)		
+		
+		self.isSelected = false		
 		self.repaint()
 	
+	def enableSelected(self):
+		self.isSelected = true
+		self.repaint()
 	
 	#****************PROCEDIMENTOS ESPECIAS SOBRE ACÇÕES DE POP-UP MENUS*******************
 	#TCOMBO;TLIST
@@ -1085,7 +1181,7 @@ class ResizableTable(ResizableWidget):
 
 
 #-------------------------------------------------------------------------------------
-
+"""
 #TESTES
 class MainWidget(QtGui.QMainWindow):
 	
@@ -1094,18 +1190,18 @@ class MainWidget(QtGui.QMainWindow):
 		
 		#self.w = ResizableButton("12","12", self)
 		#self.w = ResizableTable(TTable,"12", self)
-		self.w = ResizableTable(TTable,"12", self)
+		self.w = ResizableList(TList,"12", self)
 		#self.w = ResizableMenuBar(TMenuBar,"12", app, self)		
 		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		#QtCore.QObject.connect(self.w, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.Signal_tableChanged)
 		#self.w.addTab(editItem("1", QtGui.QWidget()))
 		#self.w.addTab(editItem("2", QtGui.QWidget()))
 
-		"""Btn = QtGui.QPushButton(self)
+		Btn = QtGui.QPushButton(self)
 		Btn.setGeometry(21, 49, 100,30)
 		self.connect(Btn, QtCore.SIGNAL("clicked()"), 
-		"""
 	
+	self.info)
 	
 	def info(self):
 		self.w.removeTab(0)
@@ -1125,3 +1221,4 @@ app = QtGui.QApplication(sys.argv)
 widget = MainWidget(app)
 widget.show()
 sys.exit(app.exec_())
+"""
