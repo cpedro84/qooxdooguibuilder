@@ -364,7 +364,7 @@ class ResizableWidget(QtGui.QWidget):
 			pixmap.fill(QtGui.QColor(QtCore.Qt.darkCyan))
 			drag.setPixmap(pixmap)
 			
-			self.hide()
+			#self.hide()
 			
 			#Vai executar o operação de drag e posteriormente verificar qual a operação que foi após o drag (Após o drag o código dentro do if vai ser executado) 			
 			if drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
@@ -434,9 +434,6 @@ class ResizableWidget(QtGui.QWidget):
 			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO
 				self.setGeometry(newRect)				
 			
-				
-	def merda(self):
-		print "merda"
 	
 	def mousePressEvent(self, event):
 		
@@ -450,7 +447,7 @@ class ResizableWidget(QtGui.QWidget):
 		self.mousePressedPos = QtCore.QPoint(event.pos())
 
 		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
-		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))		
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))
 		
 		self.mouseButtonClicked = event.button()
 		

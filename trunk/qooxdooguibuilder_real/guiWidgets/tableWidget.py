@@ -16,7 +16,33 @@ from listWidget import *
 class CTableWidget(QtGui.QTableWidget):
 	def __init__(self, parent=None):
 		QtGui.QTableWidget.__init__(self, parent)
-		
+		self.setRowCount(0)
+		self.setColumnCount(0)		
+		self.columns = []
+		self.rows = []
+	
+	def addColumn(self, text):
+		self.insertColumn(len(self.columns))
+		self.columns.append(text)
+		self.setHorizontalHeaderLabels(self.columns)
+	
+	def addRow(self, text):
+		self.insertRow(len(self.rows))
+		self.rows.append(text)
+		self.setVerticalHeaderLabels(self.rows)
+
+	
+	def setItem(self, row, column, text):
+		self.setItem(row, column, QtGui.QTableWidgetItem(text))
+	
+	
+	def clearHorizontalTableItems(self):
+		self.clear()
+		self.setHorizontalHeaderLabels(self.columns)
+	
+	def clearVerticalTableItems(self):
+		self.clear()
+		self.setVerticalHeaderLabels(self.rows)
 
 	def getTableData(self): #alterar função de forma a retornar um objecto do tipo tableData
 			
