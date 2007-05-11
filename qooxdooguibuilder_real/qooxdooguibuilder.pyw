@@ -9,6 +9,7 @@ from PyQt4 import QtCore, QtGui
 import initModulesSearchPath
 from const import *
 from MonitorControls import *
+from tableWidget import *
 
 pathButtonPixmap = DIR_CONTROLS_REPRESENTATION+"Button.png"
 pathCheckPixmap = DIR_CONTROLS_REPRESENTATION+"CheckBox.png"
@@ -56,9 +57,11 @@ class DragLabel(QtGui.QLabel):
 
 
 class DrawArea(QtGui.QWidget):
-    def __init__(self, monitor, parent = None):
-
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self, monitor, parent = None):	
+        
+	QtGui.QWidget.__init__(self)
+	
+	self.parent = parent
 	
 	#definir que o evento MouseMove é assionado por qualquer movimento do rato mesmo que este não seja clicado
 	self.setMouseTracking(true)
@@ -79,39 +82,7 @@ class DrawArea(QtGui.QWidget):
 	self.PenWidth = 2 
 	self.RectSize = 4
 	
-	#*************Definir uma grelha de orientação**************
-	font = QtGui.QFont()
-	font.setStyleStrategy(QtGui.QFont.ForceOutline)
-	
-	penDotLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.DotLine)
-	penSolidLine = QtGui.QPen(QtGui.QBrush(QtCore.Qt.SolidPattern),self.PenWidth, QtCore.Qt.SolidLine)
-		
-	painter = QtGui.QPainter()		
-	painter.begin(self)
-	
-	painter.setBrush(QtCore.Qt.darkGray)
-	painter.setFont(font)
-	painter.setPen(penDotLine)
-	
-	#LINHAS
-	line = 0
-	while line < self.height():
-		painter.drawLine(0,line, self.width(),0)
-		line += STEP_MOVE
-	
-	#LINHAS
-	"""column = 0
-	while column < self.width():
-		painter.drawLine(column, 0, 0, self.height())
-		column += STEP_MOVE
-"""
-	painter.end()
-      #************************************************************
-      
-    #def paintEvent(self, event):
-	
-	
-    
+
     def mousePressEvent(self, event):
 	self.mouseClicked = true
 	#Des-Seleccionar todos os controlos que tiverem seleccionados
@@ -145,6 +116,9 @@ class DrawArea(QtGui.QWidget):
     def SignalProcess_resizableCliked(self, typeControl, idControl):	
 	typeControl = str(typeControl)
 	idControl =str(idControl)
+	
+	#Envio do sinal de que um controlo foi clicado, com as suas propriedades
+	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
 	
 	self.monitor.setSelectedControl(typeControl, idControl)
     #************************************************************
@@ -212,6 +186,11 @@ class DrawArea(QtGui.QWidget):
  		    
 		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
 		    
+		    #Envio do sinal de que um controlo foi clicado, com as suas propriedades
+		    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
+		    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), TList, self.monitor.getLastIdControl())
+		    
+		    
 		    self.newIcon.move(dropPos)
 		    self.newIcon.show()
 	    
@@ -248,23 +227,50 @@ class PropertiesDockWidget(QtGui.QDockWidget):
 
 
 
-class PropertiesWidget(QtGui.QTableWidget):
+class PropertiesWidget(CTableWidget):
 
 
     def __init__(self, monitor, parent = None):
 
-        QtGui.QTableWidget.__init__(self, parent)
+        CTableWidget.__init__(self, parent)
 
 	self.monitor = monitor
-
         self.setAlternatingRowColors(True)
-        self.setColumnCount(2)
-        self.setHorizontalHeaderLabels(["Property", "Value"])
-
+        
+        self.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	self.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	
+	#self.setItem()
+	
+	
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
 
 
+    def fillControlPropertys(self, typeControl, idControl ):
+	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
+	
+	tableData = CTableData()
+	tableData.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	tableData.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	
+	currentRow = 0
+	columnProperties = 0
+	columnValues = 1
+	
+	if controlInfo.hasProperties():
+		for controlProperty in controlInfo.getControlProperties():
+			
+			tableData.addRow("")
+			tableData.setItem(columnProperties, currentRow, controlProperty.getNameProperty())
+			tableData.setItem(columnValues, currentRow, controlProperty.getValueProperty())
+			currentRow +=1
+			#print controlProperty.getNameProperty()
+			#print controlProperty.getValueProperty()
+	
+	self.setTableWidget(tableData)
+	
+	#(....)
 
 class ControlsDockWidget(QtGui.QDockWidget):
 
@@ -419,7 +425,6 @@ class ControlsWidget(QtGui.QWidget):
             child.close()
         else:
             child.show()
-
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -649,6 +654,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.drawArea = DrawArea(self.monitor)
 	self.drawArea.setAttribute(QtCore.Qt.WA_AcceptDrops)
+
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
 
     def newInterfaceAct(self):
 	

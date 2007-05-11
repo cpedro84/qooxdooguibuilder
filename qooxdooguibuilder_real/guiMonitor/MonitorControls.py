@@ -11,6 +11,7 @@ from PyQt4 import QtCore, QtGui
 from const import *
 from projectExceptions import *
 from tableData import *
+from ControlInfo import *
 
 #****************************************************************************
 #***************COLOCAR NOUTRO FICHEIRO*****
@@ -154,6 +155,7 @@ class MonitorControls(QtCore.QObject):
 		#Lista com a informação dos controlos seleccionados
 		self.LControlsSelected = [ ]
 		
+		self.lastIdControl = self.noneSelected
 		
 	def haveTypeControls(self, typeControl):
 		if self.DControlsInfo.has_key(typeControl) == false:
@@ -191,13 +193,57 @@ class MonitorControls(QtCore.QObject):
 		return self.error	
 		
 	
-	def getPropertyMethod(self, typeControl, idProperty):
-		return self.DPropertiesMethods[typeControl][idProperty]
 		
-	
 	def getDefaultPropertyValue(self, typeControl, idProperty):
 		return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
 	
+	def getPropertyMethod(self, typeControl, idProperty):
+		return self.DPropertiesMethods[typeControl][idProperty]
+	
+
+	def getPropertyControlValue(self, typeControl, idControl, idProperty):
+		if self.haveIdControl(typeControl, idControl):
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.PropertyValue]
+		else:
+			return self.errorControlMissing
+	
+	def getPropertyControlName(self, typeControl, idControl, idProperty):
+		if self.haveIdControl(typeControl, idControl):
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.Property]
+		else:
+			return self.errorControlMissing
+	
+	def getControlProperties(self, typeControl, idControl):
+		
+		if self.haveIdControl(typeControl, idControl):
+			return  self.DControlsInfo[typeControl][idControl][self.positionProperties]
+		else:
+			return self.errorControlMissing
+	
+	# return CControlInfo
+	def getControlInfo(self, typeControl, idControl):
+		
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		controlInfo = CControlInfo(typeControl, idControl)
+		#carregar as propriedades para o objecto
+		propertiesList = { }
+		propertiesList = self.getControlProperties(typeControl, idControl)		
+		if propertiesList <> self.errorControlMissing: #verificar se as propeidades existem
+			for idProperty in propertiesList.keys():
+				
+				nameProperty = propertiesList[idProperty][self.Property]
+				valueProperty = propertiesList[idProperty][self.PropertyValue]
+				typeProperty = propertiesList[idProperty][self.TypeProperty]
+				options = propertiesList[idProperty][self.Options]
+				controlProperty = CControlProperty(idProperty, nameProperty, valueProperty, typeProperty)
+				controlProperty.setOptions(options)
+
+				controlInfo.addControlProperty(controlProperty)
+		
+			
+		return controlInfo
 	
 	def getNameMemRef(self, typeControl, idControl):
 		#verificar se em memória existe o controlo		
@@ -290,15 +336,22 @@ class MonitorControls(QtCore.QObject):
 			#paramProperty = {self.paramPropertiesResizable : self.getDefaultPropertyValue(TypeControl, idProperty) }
 			#Executar o metodo para alteração da propriedade do controlo
 			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
-			if self.getTypeProperty(typeControl, IdControl, idProperty) == TDEFAULT: #Só as propriedades do tipo TDEFAULT é que serão inicialmente ser inicializadas
+			typeProperty = self.getTypeProperty(typeControl, IdControl, idProperty)
+			if typeProperty == TDEFAULT or typeProperty == TBOOLEAN: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas
 				self.changeProperty(typeControl, IdControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
 		#**********************************************************************************
 		
 		#seleccionar a Resizable criada
 		self.setSelectedControl(typeControl, IdControl)
 		
+		#Armazenar o último IdControl
+		self.lastIdControl = IdControl
+		
 		return widget
 
+	def getLastIdControl(self):
+		return self.lastIdControl
+	
 	def delControl(self, TypeControl, IDControl):
 				
 		if self.haveTypeControls(TypeControl) == false:

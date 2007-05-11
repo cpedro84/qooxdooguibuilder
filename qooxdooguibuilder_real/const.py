@@ -19,6 +19,7 @@ SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi selecciona
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
+SIGNAL_CONTROL_CLICKED = "Control_Clicked(const QString &, const QString &)"
 
 #DEFINICÃO DOS FICHEIROS COM AS INFORMAÇÕES SOBRE OS CONTROLOS
 FILE_CONTROLS_PROPERTIES= "ControlsDataTypes.dat"
@@ -48,7 +49,8 @@ TTree = "TRE"
 TTable = "TBL"
 
 #TIPOS DE PROPRIEDADES
-TDEFAULT = "TDefault"
+TDEFAULT= "TDefault"
+TBOOLEAN = "TBoolean"
 TITEMS = "TItems"
 TTABS = "TTabs"
 
@@ -97,3 +99,9 @@ STEP_MOVE = 5
 
 #DEFINIÇÃO DO Nº DE PIXELS MINIMO À EXECUÇÃO DO DRAG E DROP
 PIXELS_TO_DRAG = 5
+
+
+#DEFINIÇÃO DOS TITULOS DA PROPERTIES_WIDGET (Ecrã Principal)
+PROPERTIES_WIDGET_COLUMN1 = "Property"
+PROPERTIES_WIDGET_COLUMN2 = "Value"
+
