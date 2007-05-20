@@ -3,8 +3,47 @@
 
 
 
-import sys
+import sys, os
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "controls"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "data"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "icons"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "libraries"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "monitorization"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "utilities"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "widgets"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../controls"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../data"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../icons"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../libraries"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../monitorization"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../utilities"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../widgets"))
+
 from PyQt4 import QtCore, QtGui
+from const import *
+from monitorControls import *
+from tableWidget import *
+
+
+
+pathButtonPixmap = DIR_CONTROLS + "Button.png"
+pathCheckPixmap = DIR_CONTROLS + "CheckBox.png"
+pathComboPixmap = DIR_CONTROLS + "ComboBox.png"
+pathGroupPixmap = DIR_CONTROLS + "GroupBox.png"
+pathIframePixmap = DIR_CONTROLS + "Iframe.png"
+pathLabelPixmap = DIR_CONTROLS + "Label.png"
+pathListPixmap = DIR_CONTROLS + "List.png"
+pathMenuBarPixmap = DIR_CONTROLS + "MenuBar.png"
+pathPasswordFieldPixmap = DIR_CONTROLS + "PasswordField.png"
+pathRadioPixmap = DIR_CONTROLS + "RadioButton.png"
+pathSpinnerPixmap = DIR_CONTROLS + "Spinner.png"
+pathTabViewPixmap = DIR_CONTROLS + "TabView.png"
+pathTablePixmap = DIR_CONTROLS + "Table.png"
+pathTextAreaPixmap = DIR_CONTROLS + "TextArea.png"
+pathTextFieldPixmap = DIR_CONTROLS + "TextField.png"
+pathToolbarPixmap = DIR_CONTROLS + "ToolBar.png"
+pathTreePixmap = DIR_CONTROLS + "Tree.png"
 
 
 
@@ -18,98 +57,177 @@ class DragLabel(QtGui.QLabel):
         self.setFrameShape(QtGui.QFrame.Panel)
         self.setFrameShadow(QtGui.QFrame.Raised)
 
-
     def mousePressEvent(self, event):
 
         itemData = QtCore.QByteArray()
 
         mimeData = QtCore.QMimeData()
-        mimeData.setData("application/x-dnditemdata", itemData)
+        mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
 
-        drag = QtGui.QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(event.pos() - self.rect().topLeft())
+	drag = QtGui.QDrag(self)
+	drag.setMimeData(mimeData)
+	drag.setHotSpot(event.pos() - self.rect().topLeft())
 
         dropAction = drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
-
         if dropAction == QtCore.Qt.MoveAction:
             self.close()
             self.update()
 
 
-
 class DrawArea(QtGui.QWidget):
+    def __init__(self, monitor, parent = None):	
+        
+	QtGui.QWidget.__init__(self)
+	
+	self.parent = parent
+	
+	#definir que o evento MouseMove é accionado por qualquer movimento do rato mesmo que este não seja clicado
+	self.setMouseTracking(true)
+	self.monitor = monitor
+	
+	self.mouseClicked = false
 
-
-    def __init__(self, parent = None):
-
-        QtGui.QWidget.__init__(self, parent)
-
+	#********Variavéis que controlam o QRuberHand*********	
+	self.rubberHand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, self)
+	self.mousePressed = false	
+	#*********************************************
+	
         self.setAcceptDrops(True)
-        self.setBackgroundRole(QtGui.QPalette.Light)
-        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)
+        self.setBackgroundRole(DRAW_AREA_COLOR)
+        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
+      
+	#DEFINIÇÃO DE TAMANHOS
+	self.PenWidth = 2 
+	self.RectSize = 4
+	
 
+    def mousePressEvent(self, event):
+	self.mouseClicked = true
+	#Des-Seleccionar todos os controlos que tiverem seleccionados
+	self.monitor.disableAllSelectedControls()		
+	self.originPressed = QtCore.QPoint(event.pos())
+	
+	self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, QtCore.QSize()))
+	self.rubberHand.show()
+		
+    def mouseReleaseEvent(self, event):
+	self.mouseClicked = true
+	rubberRect = QtCore.QRect(self.rubberHand.geometry())
+	self.rubberHand.hide()	
+	self.monitor.setSelectedControlsIntersection(rubberRect)
 
-    def dragEnterEvent(self, event):
+    def mouseMoveEvent(self, event):		
+	if self.mouseClicked: 
+		self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, event.pos()).normalized())
+	
+	#verificar se existem vários controlos selecciondos 
+	
 
-        if event.mimeData().hasFormat("application/x-dnditemdata"):
-            event.acceptProposedAction()
-        else:
+    def dragEnterEvent(self, event):	
+	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
+            event.acceptProposedAction() #Indicação do possivel drop	    
+	else:
             event.ignore()
 
+    
+    #***************PROCESSAMENTO DE SINAIS***************
+    def SignalProcess_resizableCliked(self, typeControl, idControl):	
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	#Envio do sinal de que um controlo foi clicado, com as suas propriedades
+	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
+	
+	self.monitor.setSelectedControl(typeControl, idControl)
+    #************************************************************
 
     def dropEvent(self, event):
         
-        if event.mimeData().hasFormat("application/x-dnditemdata"):
-            if main_window.control_beeing_added == 1:
-                self.newIcon = DragLabel("Button", self)
-            elif main_window.control_beeing_added == 2:
-                self.newIcon = DragLabel("Check Box", self)
-            elif main_window.control_beeing_added == 3:
-                self.newIcon = DragLabel("Combo Box", self)
-            elif main_window.control_beeing_added == 4:
-                self.newIcon = DragLabel("Group Box", self)
-            elif main_window.control_beeing_added == 5:
-                self.newIcon = DragLabel("Iframe", self)
-            elif main_window.control_beeing_added == 6:
-                self.newIcon = DragLabel("Label", self)
-            elif main_window.control_beeing_added == 7:
-                self.newIcon = DragLabel("List", self)
-            elif main_window.control_beeing_added == 8:
-                self.newIcon = DragLabel("Menu Bar", self)
-            elif main_window.control_beeing_added == 9:
-                self.newIcon = DragLabel("Password Field", self)
-            elif main_window.control_beeing_added == 10:
-                self.newIcon = DragLabel("Radio Button", self)
-            elif main_window.control_beeing_added == 11:
-                self.newIcon = DragLabel("Spinner", self)
-            elif main_window.control_beeing_added == 12:
-                self.newIcon = DragLabel("Tab View", self)
-            elif main_window.control_beeing_added == 13:
-                self.newIcon = DragLabel("Table", self)
-            elif main_window.control_beeing_added == 14:
-                self.newIcon = DragLabel("Text Area", self)
-            elif main_window.control_beeing_added == 15:
-                self.newIcon = DragLabel("Text Field", self)
-            elif main_window.control_beeing_added == 16:
-                self.newIcon = DragLabel("Tool Bar", self)
-            elif main_window.control_beeing_added == 17:
-                self.newIcon = DragLabel("Tree", self)
-            self.newIcon.move(event.pos())
-            self.newIcon.show()
+        if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
+            
+	    itemData = event.mimeData().data(APLICATION_RESIZABLE_TYPE)	    
+	    dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)	    
+	    
+            offset = QtCore.QPoint()
+            actionType = QtCore.QString()
+	    dataStream >> actionType >> offset
+	    
+	    #Calcular a posição de drop de forma que o controlo fique integrado numa posição multipla do STEP_MOVE
+	    dropPos = QtCore.QPoint(event.pos() - offset)
+	    dropPos.setX(dropPos.x() - (dropPos.x() % STEP_MOVE))
+	    dropPos.setY(dropPos.y() - (dropPos.y() % STEP_MOVE))
+	    #*************************************************************************************************
+	    
+	    if actionType == DRAG_COPY_ACTION:
 
-            if event.source() in self.children():
-                event.setDropAction(QtCore.Qt.MoveAction)
+		    if main_window.control_beeing_added == 1:
+			self.newIcon = DragLabel("Button", self)
+		    elif main_window.control_beeing_added == 2:
+			self.newIcon = DragLabel("Check Box", self)
+		    elif main_window.control_beeing_added == 3:
+			self.newIcon = DragLabel("Combo Box", self)
+		    elif main_window.control_beeing_added == 4:
+			self.newIcon = DragLabel("Group Box", self)
+		    elif main_window.control_beeing_added == 5:
+			self.newIcon = DragLabel("Iframe", self)
+		    elif main_window.control_beeing_added == 6:
+			self.newIcon = DragLabel("Label", self)
+		    elif main_window.control_beeing_added == 7:
+			self.newIcon = DragLabel("List", self)
+		    elif main_window.control_beeing_added == 8:
+			self.newIcon = DragLabel("Menu Bar", self)
+		    elif main_window.control_beeing_added == 9:
+			self.newIcon = DragLabel("Password Field", self)
+		    elif main_window.control_beeing_added == 10:
+			self.newIcon = DragLabel("Radio Button", self)
+		    elif main_window.control_beeing_added == 11:
+			self.newIcon = DragLabel("Spinner", self)
+		    elif main_window.control_beeing_added == 12:
+			self.newIcon = DragLabel("Tab View", self)
+		    elif main_window.control_beeing_added == 13:
+			self.newIcon = DragLabel("Table", self)
+		    elif main_window.control_beeing_added == 14:
+			self.newIcon = DragLabel("Text Area", self)            
+			
+		    #*********************************************************
+		    #TEXTFIELD
+		    elif main_window.control_beeing_added == 15:
+			#self.newIcon = DragLabel("Text Field", self)		
+			self.newIcon = self.monitor.addNewControl(TList, self)
+			self.newIcon.setGeometry(self.newIcon.x(), self.newIcon.y(), 100, 80)
+		    #*********************************************************	    
+		    
+		    elif main_window.control_beeing_added == 16:
+			self.newIcon = DragLabel("Tool Bar", self)
+		    elif main_window.control_beeing_added == 17:
+			self.newIcon = DragLabel("Tree", self)
+ 		    
+		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
+		    
+		    #Envio do sinal de que um controlo foi clicado, com as suas propriedades
+		    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
+		    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), TList, self.monitor.getLastIdControl())
+		    
+		    
+		    self.newIcon.move(dropPos)
+		    self.newIcon.show()
+	    
+	    #CASO DE UM DRAG DE "MOVE"
+	    elif actionType == DRAG_MOVE_ACTION:		  
+		event.source().move(dropPos)		
+		
+	    #Indicação de operação de Drop sucedida
+            if event.source() in self.children():           
+		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
             else:
                 event.acceptProposedAction()
-        else:
+        
+	else:
             event.ignore()
 
 
-
 class PropertiesDockWidget(QtGui.QDockWidget):
-
 
     def __init__(self, parent = None):
 
@@ -127,21 +245,50 @@ class PropertiesDockWidget(QtGui.QDockWidget):
 
 
 
-class PropertiesWidget(QtGui.QTableWidget):
+class PropertiesWidget(CTableWidget):
 
 
-    def __init__(self, parent = None):
+    def __init__(self, monitor, parent = None):
 
-        QtGui.QTableWidget.__init__(self, parent)
+        CTableWidget.__init__(self, parent)
 
+	self.monitor = monitor
         self.setAlternatingRowColors(True)
-        self.setColumnCount(2)
-        self.setHorizontalHeaderLabels(["Property", "Value"])
-
+        
+        self.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	self.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	
+	#self.setItem()
+	
+	
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
 
 
+    def fillControlPropertys(self, typeControl, idControl ):
+	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
+	
+	tableData = CTableData()
+	tableData.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	tableData.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	
+	currentRow = 0
+	columnProperties = 0
+	columnValues = 1
+	
+	if controlInfo.hasProperties():
+		for controlProperty in controlInfo.getControlProperties():
+			
+			tableData.addRow("")
+			tableData.setItem(columnProperties, currentRow, controlProperty.getNameProperty())
+			tableData.setItem(columnValues, currentRow, controlProperty.getValueProperty())
+			currentRow +=1
+			#print controlProperty.getNameProperty()
+			#print controlProperty.getValueProperty()
+	
+	self.setTableWidget(tableData)
+	
+	#(....)
 
 class ControlsDockWidget(QtGui.QDockWidget):
 
@@ -163,79 +310,80 @@ class ControlsDockWidget(QtGui.QDockWidget):
 
 class ControlsWidget(QtGui.QWidget):
 
-
-    def __init__(self, parent = None):
+    def __init__(self, monitor, parent = None):
 
         QtGui.QListWidget.__init__(self, parent)
+
+	self.monitor = monitor
 
         self.setGeometry(self.x(), self.y(), 254, 360)
 
         itemButton = QtGui.QLabel(self)
-        itemButton.setPixmap(QtGui.QPixmap("controls/Button.png"))
+        itemButton.setPixmap(QtGui.QPixmap(pathButtonPixmap))
         itemButton.move(2, 2)
 
         itemCheckBox = QtGui.QLabel(self)
-        itemCheckBox.setPixmap(QtGui.QPixmap("controls/CheckBox.png"))
+        itemCheckBox.setPixmap(QtGui.QPixmap(pathCheckPixmap))
         itemCheckBox.move(2, 23)
 
         itemComboBox = QtGui.QLabel(self)
-        itemComboBox.setPixmap(QtGui.QPixmap("controls/ComboBox.png"))
+        itemComboBox.setPixmap(QtGui.QPixmap(pathComboPixmap))
         itemComboBox.move(2, 44)
 
         itemGroupBox = QtGui.QLabel(self)
-        itemGroupBox.setPixmap(QtGui.QPixmap("controls/GroupBox.png"))
+        itemGroupBox.setPixmap(QtGui.QPixmap(pathGroupPixmap))
         itemGroupBox.move(2, 65)
 
         itemIframe = QtGui.QLabel(self)
-        itemIframe.setPixmap(QtGui.QPixmap("controls/Iframe.png"))
+        itemIframe.setPixmap(QtGui.QPixmap(pathIframePixmap))
         itemIframe.move(2, 86)
 
         itemLabel = QtGui.QLabel(self)
-        itemLabel.setPixmap(QtGui.QPixmap("controls/Label.png"))
+        itemLabel.setPixmap(QtGui.QPixmap(pathLabelPixmap))
         itemLabel.move(2, 107)
 
         itemList = QtGui.QLabel(self)
-        itemList.setPixmap(QtGui.QPixmap("controls/List.png"))
+        itemList.setPixmap(QtGui.QPixmap(pathListPixmap))
         itemList.move(2, 128)
 
         itemMenuBar = QtGui.QLabel(self)
-        itemMenuBar.setPixmap(QtGui.QPixmap("controls/MenuBar.png"))
+        itemMenuBar.setPixmap(QtGui.QPixmap(pathMenuBarPixmap))
         itemMenuBar.move(2, 149)
 
         itemPasswordField = QtGui.QLabel(self)
-        itemPasswordField.setPixmap(QtGui.QPixmap("controls/PasswordField.png"))
+        itemPasswordField.setPixmap(QtGui.QPixmap(pathPasswordFieldPixmap))
         itemPasswordField.move(2, 170)
 
         itemRadioButton = QtGui.QLabel(self)
-        itemRadioButton.setPixmap(QtGui.QPixmap("controls/RadioButton.png"))
+        itemRadioButton.setPixmap(QtGui.QPixmap(pathRadioPixmap))
         itemRadioButton.move(2, 191)
 
         itemSpinner = QtGui.QLabel(self)
-        itemSpinner.setPixmap(QtGui.QPixmap("controls/Spinner.png"))
+        itemSpinner.setPixmap(QtGui.QPixmap(pathSpinnerPixmap))
         itemSpinner.move(2, 212)
 
         itemTabView = QtGui.QLabel(self)
-        itemTabView.setPixmap(QtGui.QPixmap("controls/TabView.png"))
+        itemTabView.setPixmap(QtGui.QPixmap(pathTabViewPixmap))
         itemTabView.move(2, 233)
 
         itemTable = QtGui.QLabel(self)
-        itemTable.setPixmap(QtGui.QPixmap("controls/Table.png"))
+        itemTable.setPixmap(QtGui.QPixmap(pathTablePixmap))
         itemTable.move(2, 254)
 
         itemTextArea = QtGui.QLabel(self)
-        itemTextArea.setPixmap(QtGui.QPixmap("controls/TextArea.png"))
+        itemTextArea.setPixmap(QtGui.QPixmap(pathTextAreaPixmap))
         itemTextArea.move(2, 275)
 
         itemTextField = QtGui.QLabel(self)
-        itemTextField.setPixmap(QtGui.QPixmap("controls/TextField.png"))
+        itemTextField.setPixmap(QtGui.QPixmap(pathTextFieldPixmap))
         itemTextField.move(2, 296)
 
         itemToolBar = QtGui.QLabel(self)
-        itemToolBar.setPixmap(QtGui.QPixmap("controls/ToolBar.png"))
+        itemToolBar.setPixmap(QtGui.QPixmap(pathToolbarPixmap))
         itemToolBar.move(2, 317)
 
         itemTree = QtGui.QLabel(self)
-        itemTree.setPixmap(QtGui.QPixmap("controls/Tree.png"))
+        itemTree.setPixmap(QtGui.QPixmap(pathTreePixmap))
         itemTree.move(2, 338)
 
 
@@ -281,19 +429,20 @@ class ControlsWidget(QtGui.QWidget):
             main_window.control_beeing_added = 17
 
         itemData = QtCore.QByteArray()
-
+	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
+	dataStream << QtCore.QString(DRAG_COPY_ACTION) << QtCore.QPoint()	
+	
         mimeData = QtCore.QMimeData()
-        mimeData.setData("application/x-dnditemdata", itemData)
+        mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos())
 
-        if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+        if drag.start(QtCore.Qt.CopyAction ) == QtCore.Qt.MoveAction:
             child.close()
         else:
             child.show()
-
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -302,6 +451,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent = None):
 
         QtGui.QMainWindow.__init__(self, parent)
+	
+	self.monitor = MonitorControls()
 
         self.createActions()
         self.createMenus()
@@ -311,9 +462,13 @@ class MainWindow(QtGui.QMainWindow):
         self.createDrawArea()
 
         self.centralWidget = QtGui.QScrollArea(self)
-        self.centralWidget.setBackgroundRole(QtGui.QPalette.Dark)
+        self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
+	self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
+	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+	self.centralWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	
         self.centralWidget.setWidget(self.drawArea)
 
+	self.centralWidget.show()
         self.setCentralWidget(self.centralWidget)
 
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
@@ -496,17 +651,17 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDockWindows(self):
 
-        self.controlsWidget = ControlsWidget()
+        self.controlsWidget = ControlsWidget(self.monitor)
 
         self.intermediateWidget = QtGui.QScrollArea(self)
-        self.intermediateWidget.setBackgroundRole(QtGui.QPalette.Light)
+        self.intermediateWidget.setBackgroundRole(BACKGROUNDS_COLOR)
         self.intermediateWidget.setWidget(self.controlsWidget)
 
         self.controlsDockWidget = ControlsDockWidget()
         self.controlsDockWidget.setWidget(self.intermediateWidget)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
 
-        self.propertiesWidget = PropertiesWidget()
+        self.propertiesWidget = PropertiesWidget(self.monitor)
 
         self.propertiesDockWidget = PropertiesDockWidget()
         self.propertiesDockWidget.setWidget(self.propertiesWidget)
@@ -515,16 +670,18 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDrawArea(self):
 
-        self.drawArea = DrawArea()
+        self.drawArea = DrawArea(self.monitor)
+	self.drawArea.setAttribute(QtCore.Qt.WA_AcceptDrops)
 
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
 
     def newInterfaceAct(self):
-
+	
         return
 
 
     def openInterfaceAct(self):
-
+	
         return
 
 
