@@ -19,6 +19,7 @@ SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi selecciona
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
+SIGNAL_RESIZABLE_RELEASED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_CONTROL_CLICKED = "Control_Clicked(const QString &, const QString &)"
 
 #DEFINICÃO DOS FICHEIROS COM AS INFORMAÇÕES SOBRE OS CONTROLOS
@@ -49,7 +50,9 @@ TTree = "TRE"
 TTable = "TBL"
 
 #TIPOS DE PROPRIEDADES
-TDEFAULT= "TDefault"
+TINT = "TInt"
+TFLOAT = "TFloat"
+TSTRING = "TString"
 TBOOLEAN = "TBoolean"
 TITEMS = "TItems"
 TTABS = "TTabs"
@@ -58,6 +61,9 @@ TTABS = "TTabs"
 itemsControls = [TList, TCombo]
 tabsControls = [TTabView]
 tableControls = [TTable]
+
+#LISTA QUE IDENTIFICA QUAIS OS TIPOS DE PROPRIEDADES COM MAIS QUE UMA OPÇÃO
+multiPropretyValues = [TBOOLEAN]
 
 #TIPOS DE ERROS
 generalError = -1

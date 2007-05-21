@@ -10,6 +10,7 @@ from projectExceptions import *
 from editItem import *
 from tableData import *
 from listWidget import *
+from generalFunctions import *
 
 
 
@@ -21,18 +22,23 @@ class CTableWidget(QtGui.QTableWidget):
 		self.columns = []
 		self.rows = []
 	
+	
 	def addColumn(self, text):
-		self.insertColumn(len(self.columns))
+		pos = len(self.columns)
+		self.insertColumn(pos)
+		self.setHorizontalHeaderItem(pos, QtGui.QTableWidgetItem(text))
 		self.columns.append(text)
-		self.setHorizontalHeaderLabels(self.columns)
+		
 	
-	def addRow(self, text):
-		self.insertRow(len(self.rows))
+	def addRow(self, text):		
+		pos = len(self.rows)		
+		self.insertRow(pos)
+		self.setVerticalHeaderItem(pos, QtGui.QTableWidgetItem(text))
 		self.rows.append(text)
-		self.setVerticalHeaderLabels(self.rows)
+		
+		#self.setVerticalHeaderLabels(self.rows)
 
-	
-	def setItem(self, row, column, text):
+	def setItemText(self, row, column, text):
 		self.setItem(row, column, QtGui.QTableWidgetItem(text))
 	
 	
@@ -70,7 +76,12 @@ class CTableWidget(QtGui.QTableWidget):
 				
 			itrColumn +=1
 		
-		tableData = CTableData(rowsList, columnsList, tableItems)
+		#tableData = CTableData(rowsList, columnsList, tableItems)
+		tableData = CTableData()
+		tableData.setTableRows(rowsList)		
+		tableData.setTableColumns(columnsList)
+		tableData.setTableItems(tableItems)
+		
 		return tableData
 	
 	def setTableWidget(self, tableData):
@@ -78,11 +89,9 @@ class CTableWidget(QtGui.QTableWidget):
 		itrColumn = 0
 		itrRow = 0	
 		
-		#LIMPAR OS DADOS DA self
-		self.clear()
-		self.setRowCount(0)
-		self.setColumnCount(0)
-		
+		#LIMPAR OS DADOS DA TABLE_WIDGET
+		self.removeAll()
+	
 		#adicionar as colunas e linhas em primeiro lugar para que as celulas sejam criadas	
 		#COLUNAS	
 		#adicionar as colunas e linhas em primeiro lugar para que as celulas sejam criadas	
@@ -111,8 +120,7 @@ class CTableWidget(QtGui.QTableWidget):
 			
 				itrRow +=1
 			itrColumn +=1
-		
-	
+
 	def getRowsList(self):
 		rowsList = []
 		itr = 0
@@ -120,9 +128,8 @@ class CTableWidget(QtGui.QTableWidget):
 		while itr < self.rowCount():
 			rowsList.append(editItem(QtGui.QTableWidgetItem(self.verticalHeaderItem(itr)).text()))
 			itr +=1
-		
+			
 		return rowsList
-		
 		
 	def getColumnsList(self):
 		columnsList = []
@@ -133,3 +140,27 @@ class CTableWidget(QtGui.QTableWidget):
 			itr +=1
 		
 		return columnsList
+
+
+	def removeColumns(self):
+		column = 0
+		while column < self.columnCount():
+			self.removeColumn(column)			
+			column +=1
+		self.setColumnCount(0)
+		self.columns = []
+		
+	def removeRows(self):
+		row = 0
+		while row < self.rowCount():
+			self.removeRow(row)			
+			row +=1
+		self.setRowCount(0)
+		self.rows = []
+		
+	def removeAll(self):		
+		self.removeRows()
+		self.removeColumns()		
+		self.clear()
+		self.update()
+	

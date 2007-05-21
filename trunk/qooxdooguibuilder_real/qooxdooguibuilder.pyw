@@ -10,6 +10,9 @@ import initModulesSearchPath
 from const import *
 from MonitorControls import *
 from tableWidget import *
+from ComboBoxProperties import *
+from LineEditProperty import *
+from InputMask import *
 
 pathButtonPixmap = DIR_CONTROLS_REPRESENTATION+"Button.png"
 pathCheckPixmap = DIR_CONTROLS_REPRESENTATION+"CheckBox.png"
@@ -113,13 +116,18 @@ class DrawArea(QtGui.QWidget):
 
     
     #***************PROCESSAMENTO DE SINAIS***************
-    def SignalProcess_resizableCliked(self, typeControl, idControl):	
+    def SignalProcess_resizableReleased(self, typeControl, idControl):	
 	typeControl = str(typeControl)
 	idControl =str(idControl)
 	
 	#Envio do sinal de que um controlo foi clicado, com as suas propriedades
 	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
-	
+
+
+    def SignalProcess_resizableClicked(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+    
 	self.monitor.setSelectedControl(typeControl, idControl)
     #************************************************************
 
@@ -184,12 +192,8 @@ class DrawArea(QtGui.QWidget):
 		    elif main_window.control_beeing_added == 17:
 			self.newIcon = DragLabel("Tree", self)
  		    
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
-		    
-		    #Envio do sinal de que um controlo foi clicado, com as suas propriedades
-		    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
-		    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), TList, self.monitor.getLastIdControl())
-		    
+		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
+		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 		    
 		    self.newIcon.move(dropPos)
 		    self.newIcon.show()
@@ -198,16 +202,22 @@ class DrawArea(QtGui.QWidget):
 	    elif actionType == DRAG_MOVE_ACTION:		  
 		event.source().move(dropPos)		
 		
+	    
 	    #Indicação de operação de Drop sucedida
             if event.source() in self.children():           
 		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
             else:
                 event.acceptProposedAction()
-        
+	
+	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades
+    	    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
+	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), TList, self.monitor.getLastIdControl())
+
 	else:
             event.ignore()
 
+	
 
 class PropertiesDockWidget(QtGui.QDockWidget):
 
@@ -233,24 +243,71 @@ class PropertiesWidget(CTableWidget):
     def __init__(self, monitor, parent = None):
 
         CTableWidget.__init__(self, parent)
-
+	self.connect(self, QtCore.SIGNAL("cellClicked(int, int)"), self.cellClicked)
+	#self.connect(self, QtCore.SIGNAL("cellDoubleClicked(int, int)"), self.cellDoubleClicked)
+	
 	self.monitor = monitor
         self.setAlternatingRowColors(True)
         
         self.addColumn(PROPERTIES_WIDGET_COLUMN1)
 	self.addColumn(PROPERTIES_WIDGET_COLUMN2)
 	
-	#self.setItem()
-	
+	self.columnProperties = 0
+	self.columnValues = 1
+		
 	
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
 
 
     def fillControlPropertys(self, typeControl, idControl ):
-	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
 	
-	tableData = CTableData()
+	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
+		
+	#self.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	#self.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	self.removeRows()
+
+	currentRow = 0
+	if controlInfo.hasProperties():
+		for controlProperty in controlInfo.getControlProperties():			
+			self.addRow("")
+			
+			#Coluna 1
+			item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
+			item.setFlags(QtCore.Qt.ItemIsEnabled)			
+			self.setItem(currentRow, self.columnProperties, item)
+			#cell1 = QtGui.QLabel(controlProperty.getNameProperty(), self)
+			#cell1.setReadOnly(true)			
+			#self.setCellWidget(currentRow, columnProperties, cell1)
+			
+			#Coluna 2
+			"""item2 = QtGui.QTableWidgetItem(controlProperty.getValueProperty())
+			item2.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable)		
+			self.setItem(currentRow, self.columnProperties, item2)
+			"""
+			
+			typeControl = controlInfo.getTypeControl()
+			idControl = controlInfo.getIdControl()
+			idProperty = controlProperty.getIdProperty()
+			#De acordo com o tipo de propriedade, colocar a widget mais indicada na cell
+			#if self.monitor.isMultiProperty(typeControl, idControl, idProperty):
+			if controlProperty.hasOptions():
+				cellValue = CComboBoxProperties(idProperty, self)
+				for option in controlProperty.getOptions():
+					cellValue.addPropertyValue(option)
+					
+			else:						
+				cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
+				
+				
+			self.setCellWidget(currentRow, self.columnValues, cellValue)
+			
+			currentRow +=1
+
+	"""
+	tableData = CTableData()	
+	#print tableData.getTableColumns()
 	tableData.addColumn(PROPERTIES_WIDGET_COLUMN1)
 	tableData.addColumn(PROPERTIES_WIDGET_COLUMN2)
 	
@@ -258,19 +315,48 @@ class PropertiesWidget(CTableWidget):
 	columnProperties = 0
 	columnValues = 1
 	
+	propertiesValues = []
+	
 	if controlInfo.hasProperties():
-		for controlProperty in controlInfo.getControlProperties():
-			
+		for controlProperty in controlInfo.getControlProperties():			
 			tableData.addRow("")
 			tableData.setItem(columnProperties, currentRow, controlProperty.getNameProperty())
-			tableData.setItem(columnValues, currentRow, controlProperty.getValueProperty())
+			#tableData.setItem(columnValues, currentRow, controlProperty.getValueProperty())
+			propertiesValues.append(controlProperty.getValueProperty())
+			
 			currentRow +=1
-			#print controlProperty.getNameProperty()
-			#print controlProperty.getValueProperty()
+
+	self.setTableWidget(tableData)	
+		
+	#Preencher coluna dos valores das propriedades com os valores por defeito
+	currentRow = 0
+	for valueProperty in propertiesValues:
+		combo = QtGui.QComboBox(self)
+		combo.addItem("merda")
+		self.setCellWidget(currentRow, columnValues, combo)
+		#self.setItem(currentRow, columnValues, QtGui.QTableWidgetItem("merda"))	
+		currentRow +=1
 	
-	self.setTableWidget(tableData)
 	
-	#(....)
+	#ALTERAR PREENCHIMENTO
+	
+	del tableData	
+	"""
+	
+    def cellClicked(self, row, column):
+	#seleccionar toda a linha
+	self.selectRow(row)
+	#if column == self.columnProperties:
+	#	self.setCurrentCell(row, self.columnValues)
+     
+     
+    #def cellDoubleClicked(self, row, column):
+	
+	
+	
+	#if column == self.columnProperties:
+	#	self.setCurrentCell(row, self.columnValues)
+     
 
 class ControlsDockWidget(QtGui.QDockWidget):
 
@@ -663,12 +749,12 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def openInterfaceAct(self):
-	
+	self.propertiesWidget.removeAll()
         return
 
 
     def openTemplateAct(self):
-
+	
         return
 
 

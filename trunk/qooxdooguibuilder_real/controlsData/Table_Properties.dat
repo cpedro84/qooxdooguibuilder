@@ -1,6 +1,6 @@
-01:HeaderCellHeight:16:-:TDefault
-02:RowsHeight:15:setRowsHeight(param):TDefault
-03:ColumnsWidth:15:setColumnsWidth(param):TDefault
-04:RowCount:0:setRowCount(param):TDefault
-05:ColumnCount:0:setColumnCount(param):TDefault
+01:HeaderCellHeight:16:-:TInt
+02:RowsHeight:15:setRowsHeight(param):TInt
+03:ColumnsWidth:15:setColumnsWidth(param):TInt
+04:RowCount:0:setRowCount(param):TInt
+05:ColumnCount:0:setColumnCount(param):TInt
 06:Items:null:-:TITEMS
