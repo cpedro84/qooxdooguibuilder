@@ -460,6 +460,7 @@ class ResizableWidget(QtGui.QWidget):
 		#ALTERAR O CURSOR DO RATO PARA O ESTADO ORIGINAL
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 	
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), str(self.typeControl), str(self.idControl))
 	
 	def keyPressEvent(self, event):
 		#caso o evento tenha ocorrido por uma tecla desconhecida não será processado

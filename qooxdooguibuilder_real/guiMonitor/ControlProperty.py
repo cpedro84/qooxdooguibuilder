@@ -52,6 +52,9 @@ class CControlProperty(QtCore.QObject):
 	def getTypeProperty(self):
 		return self.typeProperty
 		
+	def getOptions(self):
+		return self.options
+	
 	def hasOptions(self):
 		if len(self.options) > 1:
 			return true

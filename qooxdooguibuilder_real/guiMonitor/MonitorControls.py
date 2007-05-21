@@ -337,7 +337,8 @@ class MonitorControls(QtCore.QObject):
 			#Executar o metodo para alteração da propriedade do controlo
 			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
 			typeProperty = self.getTypeProperty(typeControl, IdControl, idProperty)
-			if typeProperty == TDEFAULT or typeProperty == TBOOLEAN: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas
+			
+			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas
 				self.changeProperty(typeControl, IdControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
 		#**********************************************************************************
 		
@@ -577,7 +578,21 @@ class MonitorControls(QtCore.QObject):
 				self.setSelectedControl(str(typeControl), str(idControl), false)
 		
 		self.clearIndicationSeletedControl()
+	
+
+	def isMultiProperty(self, typeControl, idControl, idProperty):
+		property = self.getTypeProperty(typeControl, idControl, idProperty)
 		
+		if property <> self.error:
+			try:
+				multiPropretyValues.index(property)
+				return true
+			except ValueError:
+				return false
+		else:
+			return false
+	
+	
 		
 	def SendResizableSignal(self, typeControl, idControl):
 		print "valor"
