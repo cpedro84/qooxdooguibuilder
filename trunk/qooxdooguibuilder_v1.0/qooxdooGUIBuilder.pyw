@@ -115,7 +115,9 @@ class DrawArea(QtGui.QWidget):
 	
 	self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, QtCore.QSize()))
 	self.rubberHand.show()
-		
+	
+	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
+	
     def mouseReleaseEvent(self, event):
 	self.mouseClicked = true
 	rubberRect = QtCore.QRect(self.rubberHand.geometry())
@@ -275,7 +277,8 @@ class PropertiesWidget(CTableWidget):
 	#self.connect(self, QtCore.SIGNAL("cellDoubleClicked(int, int)"), self.cellDoubleClicked)
 	
 	self.monitor = monitor
-        self.setAlternatingRowColors(True)
+       
+	self.setAlternatingRowColors(True)
         
         self.addColumn(PROPERTIES_WIDGET_COLUMN1)
 	self.addColumn(PROPERTIES_WIDGET_COLUMN2)
@@ -289,24 +292,30 @@ class PropertiesWidget(CTableWidget):
 
 
 
-    def fillControlPropertys(self, typeControl, idControl ):
+    def fillControlPropertys(self, typeControl, idControl):
+	
+	typeControl = str(typeControl)
+	idControl = str(idControl)	
+	
+	print self.monitor.DControlsInfo
+	print self.monitor.getDefaultProperties(typeControl)
 	
 	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
 		
 	#self.addColumn(PROPERTIES_WIDGET_COLUMN1)
 	#self.addColumn(PROPERTIES_WIDGET_COLUMN2)
-	self.removeRows()
-
+	self.clearProperties()	
+	
 	currentRow = 0
 	if controlInfo.hasProperties():
 		for controlProperty in controlInfo.getControlProperties():			
 			self.addRow("")
-			
+
 			#Coluna 1 - NOME DA PROPRIEDADE
 			item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
 			item.setFlags(QtCore.Qt.ItemIsEnabled)			
 			self.setItem(currentRow, self.columnProperties, item)			
-			
+
 			#Coluna 2 - VALOR DA PROPRIEDADE
 			typeControl = controlInfo.getTypeControl()
 			idControl = controlInfo.getIdControl()
@@ -316,12 +325,13 @@ class PropertiesWidget(CTableWidget):
 			if controlProperty.hasOptions():
 				cellValue = CComboBoxProperties(idProperty, self)
 				for option in controlProperty.getOptions():
-					cellValue.addPropertyValue(option)
-				#self.connect(cellValue, QtCore.SIGNAL("activated(int)"), self.teste)
-			else:						
+					cellValue.addPropertyValue(option)	
+				#posicionar na propriedade por defeito
+				propertyVal = str(controlProperty.getValueProperty())
+				cellValue.setSelectedItem(propertyVal)
+			else:
 				cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
-				#self.connect(cellValue, QtCore.SIGNAL("activated(int)"), self.teste)
-
+				
 			#conectar o sinal de alteração de propriedade da cell com o valor da propriedade
 			self.connect(cellValue, QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), self.changePropertyValue)
 			
@@ -329,17 +339,22 @@ class PropertiesWidget(CTableWidget):
 
 			currentRow +=1
 
-    
+    def clearProperties(self):
+	self.removeRows()
+
     def changePropertyValue(self, idProperty, propertyValue):
-	
+
 	typeControl = str(self.monitor.getTypeSelectedControl())
 	idControl = str(self.monitor.getIdSelectedControl())
 	idProperty = str(idProperty)
 	
-	print "******"+propertyValue
-	print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
-	self.monitor.changeProperty(typeControl, idControl, idProperty, propertyValue)
-	print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
+	#print typeControl+"-"+idControl+"-"+idProperty
+	#print "******"
+	#print self.monitor.getControlProperties(typeControl, idControl)
+	#print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
+	self.monitor.changeProperty(typeControl, idControl, idProperty, propertyValue)	
+	#print self.monitor.getControlProperties(typeControl, idControl)
+	#print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
 	
 	#print idProperty+"-"+propertyValue
 	
@@ -530,6 +545,10 @@ class MainWindow(QtGui.QMainWindow):
         self.createDockWindows()
         self.createDrawArea()
 
+	#Conectar o evento de clique na drawArea (para que sejam des-seleccionados todos os controlos) com a remoção das propriedades
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.propertiesWidget.clearProperties)
+
+
         self.centralWidget = QtGui.QScrollArea(self)
         self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
@@ -544,6 +563,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Qooxdoo GUI Builder")
         self.setMinimumSize(800, 600)
 
+    
 
     def createActions(self):
 
