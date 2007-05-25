@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "
 
 from PyQt4 import QtCore, QtGui
 from const import *
-from monitorControls import *
+from MonitorControls import *
 from tableWidget import *
 from ComboBoxProperties import *
 from LineEditProperty import *
@@ -154,6 +154,11 @@ class DrawArea(QtGui.QWidget):
 	self.monitor.setSelectedControl(typeControl, idControl)
     #************************************************************
 
+   # Items -> QStringList
+    def saveTListItems(self, typeControl, idControl, Items):	
+	self.monitor.changeItemsProperties(typeControl, idControl, Items)
+		
+
     def dropEvent(self, event):
         
         if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
@@ -218,6 +223,10 @@ class DrawArea(QtGui.QWidget):
 		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
 		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 		    
+		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
+		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
+		    #*****************************************************************
+		    
 		    self.newIcon.move(dropPos)
 		    self.newIcon.show()
 	    
@@ -247,7 +256,6 @@ class DrawArea(QtGui.QWidget):
 	else:
             event.ignore()
 
-	
 
 class PropertiesDockWidget(QtGui.QDockWidget):
 
@@ -297,9 +305,6 @@ class PropertiesWidget(CTableWidget):
 	typeControl = str(typeControl)
 	idControl = str(idControl)	
 	
-	print self.monitor.DControlsInfo
-	print self.monitor.getDefaultProperties(typeControl)
-	
 	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
 		
 	#self.addColumn(PROPERTIES_WIDGET_COLUMN1)
@@ -309,35 +314,41 @@ class PropertiesWidget(CTableWidget):
 	currentRow = 0
 	if controlInfo.hasProperties():
 		for controlProperty in controlInfo.getControlProperties():			
-			self.addRow("")
-
-			#Coluna 1 - NOME DA PROPRIEDADE
-			item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
-			item.setFlags(QtCore.Qt.ItemIsEnabled)			
-			self.setItem(currentRow, self.columnProperties, item)			
-
-			#Coluna 2 - VALOR DA PROPRIEDADE
-			typeControl = controlInfo.getTypeControl()
-			idControl = controlInfo.getIdControl()
-			idProperty = controlProperty.getIdProperty()
 			
-			#De acordo com o tipo de propriedade, colocar a widget mais indicada na cell			
-			if controlProperty.hasOptions():
-				cellValue = CComboBoxProperties(idProperty, self)
-				for option in controlProperty.getOptions():
-					cellValue.addPropertyValue(option)	
-				#posicionar na propriedade por defeito
-				propertyVal = str(controlProperty.getValueProperty())
-				cellValue.setSelectedItem(propertyVal)
-			else:
-				cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
+			#Verificar se a propriedade é especifica (caso seja não pode ser apresentada na dock Widget)
+			try:
+				specificTypeProperties.index(controlProperty.getTypeProperty())
+				continue
+			except ValueError: #caso a propriedade não seja especifica será adicionada à lista na interface		
+				self.addRow("")
+
+				#Coluna 1 - NOME DA PROPRIEDADE
+				item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
+				item.setFlags(QtCore.Qt.ItemIsEnabled)			
+				self.setItem(currentRow, self.columnProperties, item)			
+	
+				#Coluna 2 - VALOR DA PROPRIEDADE
+				typeControl = controlInfo.getTypeControl()
+				idControl = controlInfo.getIdControl()
+				idProperty = controlProperty.getIdProperty()
 				
-			#conectar o sinal de alteração de propriedade da cell com o valor da propriedade
-			self.connect(cellValue, QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), self.changePropertyValue)
-			
-			self.setCellWidget(currentRow, self.columnValues, cellValue)
-
-			currentRow +=1
+				#De acordo com o tipo de propriedade, colocar a widget mais indicada na cell			
+				if controlProperty.hasOptions():
+					cellValue = CComboBoxProperties(idProperty, self)
+					for option in controlProperty.getOptions():
+						cellValue.addPropertyValue(option)	
+					#posicionar na propriedade por defeito
+					propertyVal = str(controlProperty.getValueProperty())
+					cellValue.setSelectedItem(propertyVal)
+				else:
+					cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
+					
+				#conectar o sinal de alteração de propriedade da cell com o valor da propriedade
+				self.connect(cellValue, QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), self.changePropertyValue)
+				
+				self.setCellWidget(currentRow, self.columnValues, cellValue)
+	
+				currentRow +=1
 
     def clearProperties(self):
 	self.removeRows()
