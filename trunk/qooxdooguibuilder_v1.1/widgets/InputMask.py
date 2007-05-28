@@ -15,10 +15,10 @@ class CInputMask(QtCore.QString):
 		self.mask = ""
 		
 		if type == TINT:			
-			self.mask = "000000"
+			self.mask = "#0000"
 			#self.mask = "9999999"
 		elif type == TFLOAT:
-			self.mask = "0000,000"
+			self.mask = "#0000,000"
 		elif type == TSTRING:
 			self.mask = "nnnnnnnnnnnnnnnnnnnnnn"
 		
