@@ -382,11 +382,11 @@ class ResizableWidget(QtGui.QWidget):
 		#****************************************************************
 		#****************************************************************
 	
-		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)
+		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)		
 		if self.MouseState == self.MouseClicked:
-			
+
 			newRect = QtCore.QRect()
-						
+			
 			if self.pontoRef == self.RefRectLeftTop: # NO OK				
 				#newRect.setRect(mouseXpos, mouseYpos, widgetRect.width(), widgetRect.height())			
 				self.update()
@@ -431,10 +431,10 @@ class ResizableWidget(QtGui.QWidget):
 				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos,widgetRect.height())
 			
 			#VALIDAR NOVO TAMANHO DA RESIZABLE DE ACORDO COM OS LIMITES MINIMOS
-			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO
-				self.setGeometry(newRect)				
-			
-	
+			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO				
+				self.resize(newRect.width(), 200)
+				#self.setGeometry(newRect.x(), newRect.y(), newRect.width(), newRect.height())
+
 	def mousePressEvent(self, event):
 		
 		#INDICAR QUE A WIDGET FOI SELECCIONADA
@@ -454,6 +454,7 @@ class ResizableWidget(QtGui.QWidget):
 		self.update()
 		
 	def mouseReleaseEvent(self, event):
+		#print "release"
 		#ACTUALIZAR O ESTADO DO RATO
 		self.MouseState = self.MouseRelease
 		self.mouseButtonClicked = event.button()
@@ -633,14 +634,19 @@ class ResizableWidget(QtGui.QWidget):
 	def setHeight(self, height):		
 		height = float(height)
 		self.height = height
-		widgetRect = self.geometry()
-		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
+		newSize = QtCore.QSize(QtGui.QWidget(self).width(), height)
+		self.resize(newSize)
+		#widgetRect = self.geometry()	
+		#self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
+		
 
 	def setWidth(self, width):
 		width = float(width)
 		self.width = width
-		widgetRect = self.geometry()
-		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
+		newSize = QtCore.QSize(width, QtGui.QWidget(self).height())
+		self.resize(newSize)
+		#widgetRect = self.geometry()
+		#self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
 			
 	def setMaxHeight(self, maxHeight):
 		self.maxHeight = maxHeight

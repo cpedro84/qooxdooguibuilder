@@ -98,21 +98,24 @@ class DrawArea(QtGui.QWidget):
 	self.mousePressed = false	
 	#*********************************************
 	
-        self.setAcceptDrops(True)
-        self.setBackgroundRole(BACKGROUNDS_COLOR)
-        
-	palette = QtGui.QPalette()
+	self.setAcceptDrops(True)
+	self.setBackgroundRole(QtGui.QPalette.Light)
+	
+	"""palette = QtGui.QPalette()
 	palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Window, QtGui.QColor(QtCore.Qt.white))		
 	self.setPalette(palette)
+	"""
 	
-	self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
-      
+	#self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
+	self.setGeometry(self.x(), self.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
+
 	#DEFINIÇÃO DE TAMANHOS
 	self.PenWidth = 2 
 	self.RectSize = 4
 	
 
     def mousePressEvent(self, event):
+
 	self.mouseClicked = true
 	#Des-Seleccionar todos os controlos que tiverem seleccionados
 	self.monitor.disableAllSelectedControls()		
@@ -134,13 +137,6 @@ class DrawArea(QtGui.QWidget):
 		self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, event.pos()).normalized())
 	
 	#verificar se existem vários controlos selecciondos 
-	
-
-    def dragEnterEvent(self, event):	
-	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
-            event.acceptProposedAction() #Indicação do possivel drop	    
-	else:
-            event.ignore()
 
     
     #***************PROCESSAMENTO DE SINAIS***************
@@ -168,6 +164,12 @@ class DrawArea(QtGui.QWidget):
 
     def changeTableItemsProperties(self, typeControl, idControl, tableItems):
 	self.monitor.changeTabsProperties(typeControl, idControl, tableItems)
+
+    def dragEnterEvent(self, event):	
+	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
+            event.acceptProposedAction() #Indicação do possivel drop	    
+	else:
+            event.ignore()
 
     def dropEvent(self, event):
         
@@ -258,8 +260,15 @@ class DrawArea(QtGui.QWidget):
 	    idControl = str(self.monitor.getIdSelectedControl())
 	    	
 	    #Alterar as prorpriedades Left e Top de acordo com a nova posição
+	    
 	    self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
 	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
+	    
+	    #*************FAZER**********************************************
+	    #print QtGui.QWidget(event.source()).width()
+	    #self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(event.source().width()))
+	    #self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(event.source().height()))
+	    #******************************************************************
 	
 	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)
     	    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
@@ -578,12 +587,18 @@ class MainWindow(QtGui.QMainWindow):
 	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 	self.centralWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	
 
+	#Widget intermédia entre a scrollBar e a DrawArea
 	designWidget = QtGui.QWidget()
-	designWidget.setGeometry(designWidget.x(), designWidget.y(), designWidget.width() * 2, designWidget.height() * 6)
+	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
 	designWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	
+	self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
 	self.drawArea.setParent(designWidget)
-	self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-MARGIN, self.drawArea.height()-MARGIN)
+	self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-MARGIN, self.drawArea.height()-MARGIN)	
+	
+	palette = QtGui.QPalette(self.drawArea.palette())
+	palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Window, QtGui.QColor(QtCore.Qt.white))		
+	self.drawArea.setPalette(palette)	
 	
 	self.centralWidget.setWidget(designWidget)
 	self.centralWidget.show()
