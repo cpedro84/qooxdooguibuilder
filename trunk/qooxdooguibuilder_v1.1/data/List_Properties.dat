@@ -1,0 +1,3 @@
+01:EnableInlineFind:true/false:-:TBoolean
+02:MarkLeadingItem:false/true:-:TBoolean
+03:Items:-:-:TItems
