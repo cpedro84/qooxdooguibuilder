@@ -95,16 +95,13 @@ class DrawArea(QtGui.QWidget):
 
 	#********Variavéis que controlam o QRuberHand*********	
 	self.rubberHand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, self)
-	self.mousePressed = false	
+	self.mousePressed = false
 	#*********************************************
 	
 	self.setAcceptDrops(True)
+	self.setAutoFillBackground(true)
 	self.setBackgroundRole(QtGui.QPalette.Light)
 	
-	"""palette = QtGui.QPalette()
-	palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Window, QtGui.QColor(QtCore.Qt.white))		
-	self.setPalette(palette)
-	"""
 	
 	#self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
 	self.setGeometry(self.x(), self.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
@@ -190,59 +187,19 @@ class DrawArea(QtGui.QWidget):
 	    
 	    if actionType == DRAG_COPY_ACTION:
 
-		    if main_window.control_beeing_added == 1:
-			self.newIcon = DragLabel("Button", self)
-		    elif main_window.control_beeing_added == 2:
-			self.newIcon = DragLabel("Check Box", self)
-		    elif main_window.control_beeing_added == 3:
-			self.newIcon = DragLabel("Combo Box", self)
-		    elif main_window.control_beeing_added == 4:
-			self.newIcon = DragLabel("Group Box", self)
-		    elif main_window.control_beeing_added == 5:
-			self.newIcon = DragLabel("Iframe", self)
-		    elif main_window.control_beeing_added == 6:
-			self.newIcon = DragLabel("Label", self)
-		    elif main_window.control_beeing_added == 7:
-			self.newIcon = DragLabel("List", self)
-		    elif main_window.control_beeing_added == 8:
-			self.newIcon = DragLabel("Menu Bar", self)
-		    elif main_window.control_beeing_added == 9:
-			self.newIcon = DragLabel("Password Field", self)
-		    elif main_window.control_beeing_added == 10:
-			self.newIcon = DragLabel("Radio Button", self)
-		    elif main_window.control_beeing_added == 11:
-			self.newIcon = DragLabel("Spinner", self)
-		    elif main_window.control_beeing_added == 12:
-			self.newIcon = DragLabel("Tab View", self)
-		    elif main_window.control_beeing_added == 13:
-			self.newIcon = DragLabel("Table", self)
-		    elif main_window.control_beeing_added == 14:
-			self.newIcon = DragLabel("Text Area", self)            
-			
-		    #*********************************************************
-		    #TEXTFIELD
-		    elif main_window.control_beeing_added == 15:
-			#self.newIcon = DragLabel("Text Field", self)		
-			self.newIcon = self.monitor.addNewControl(TList, self)
-			self.newIcon.setGeometry(self.newIcon.x(), self.newIcon.y(), 100, 80)
-		    #*********************************************************	    
-		    
-		    elif main_window.control_beeing_added == 16:
-			self.newIcon = DragLabel("Tool Bar", self)
-		    elif main_window.control_beeing_added == 17:
-			self.newIcon = DragLabel("Tree", self)
- 		    
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
+		    newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
+
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 		    
 		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
 		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTTabViewTabs)
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTTabViewTabs)
 		    #*****************************************************************
 		    
-		    self.newIcon.move(dropPos)
-		    self.newIcon.show()
+		    newControlWidget.move(dropPos)
+		    newControlWidget.show()
 	    
 	    #CASO DE UM DRAG DE "MOVE"
 	    elif actionType == DRAG_MOVE_ACTION:		  
@@ -507,42 +464,43 @@ class ControlsWidget(QtGui.QWidget):
 
         child = self.childAt(event.pos())
 
+
         if not child:
             return
         elif event.y() >= 2 and event.y() < 23:
-            main_window.control_beeing_added = 1
+            main_window.control_beeing_added = TButton
         elif event.y() >= 23 and event.y() < 44:
-            main_window.control_beeing_added = 2
+            main_window.control_beeing_added = TCheckBox
         elif event.y() >= 44 and event.y() < 65:
-            main_window.control_beeing_added = 3
+            main_window.control_beeing_added = TCombo
         elif event.y() >= 65 and event.y() < 86:
-            main_window.control_beeing_added = 4
+            main_window.control_beeing_added = TGroupBox
         elif event.y() >= 86 and event.y() < 107:
-            main_window.control_beeing_added = 5
+            main_window.control_beeing_added = TIframe
         elif event.y() >= 107 and event.y() < 128:
-            main_window.control_beeing_added = 6
+            main_window.control_beeing_added = TLabel
         elif event.y() >= 128 and event.y() < 149:
-            main_window.control_beeing_added = 7
+            main_window.control_beeing_added = TList
         elif event.y() >= 149 and event.y() < 170:
-            main_window.control_beeing_added = 8
+            main_window.control_beeing_added = TMenuBar
         elif event.y() >= 170 and event.y() < 191:
-            main_window.control_beeing_added = 9
+            main_window.control_beeing_added = TPasswordField
         elif event.y() >= 191 and event.y() < 212:
-            main_window.control_beeing_added = 10
+            main_window.control_beeing_added = TRadioButton
         elif event.y() >= 212 and event.y() < 233:
-            main_window.control_beeing_added = 11
+            main_window.control_beeing_added = TSpinner
         elif event.y() >= 233 and event.y() < 254:
-            main_window.control_beeing_added = 12
+            main_window.control_beeing_added = TTabView
         elif event.y() >= 254 and event.y() < 275:
-            main_window.control_beeing_added = 13
+            main_window.control_beeing_added = TTextArea
         elif event.y() >= 275 and event.y() < 296:
-            main_window.control_beeing_added = 14
+            main_window.control_beeing_added = TTextField
         elif event.y() >= 296 and event.y() < 317:
-            main_window.control_beeing_added = 15
+            main_window.control_beeing_added = TToolBar
         elif event.y() >= 317 and event.y() < 338:
-            main_window.control_beeing_added = 16
+            main_window.control_beeing_added = TTree
         elif event.y() >= 338 and event.y() < 359:
-            main_window.control_beeing_added = 17
+            main_window.control_beeing_added = TTable
 
         itemData = QtCore.QByteArray()
 	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
@@ -592,9 +550,9 @@ class MainWindow(QtGui.QMainWindow):
 	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
 	designWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	
-	self.drawArea.setBackgroundRole(QtGui.QPalette.Light)
+	#Colocar a drawArea na zona intermédia (designWidget)
 	self.drawArea.setParent(designWidget)
-	self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-MARGIN, self.drawArea.height()-MARGIN)	
+	self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-(MARGIN*2), self.drawArea.height()-(MARGIN*2))	
 	
 	palette = QtGui.QPalette(self.drawArea.palette())
 	palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Window, QtGui.QColor(QtCore.Qt.white))		

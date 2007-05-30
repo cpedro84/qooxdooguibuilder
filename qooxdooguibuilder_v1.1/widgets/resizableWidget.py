@@ -29,8 +29,7 @@ class ResizableWidget(QtGui.QWidget):
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
 		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
 		#self.childWidget.setFrameShadow(QtGui.QFrame.Raised)
-		self.childWidget.setDragEnabled(true)
-		
+			
 		self.havePopUpMenusExtra = false
 		self.popUpMenusExtraList = []
 		
@@ -79,8 +78,7 @@ class ResizableWidget(QtGui.QWidget):
 			
 		#DEFINIÇÃO DE TAMANHOS
 		self.PenWidth = 2 
-		self.RectSize = 4	
-		
+		self.RectSize = 4		
 		
 		#DEFINIÇÃO DAS VARIAVEIS PARA OS RECT DE RESIZE
 		self.RectLT = QtCore.QRect(0,0,0,0) #LEFT TOP
@@ -432,7 +430,7 @@ class ResizableWidget(QtGui.QWidget):
 			
 			#VALIDAR NOVO TAMANHO DA RESIZABLE DE ACORDO COM OS LIMITES MINIMOS
 			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO				
-				self.resize(newRect.width(), 200)
+				self.resize(newRect.width(), newRect.height())
 				#self.setGeometry(newRect.x(), newRect.y(), newRect.width(), newRect.height())
 
 	def mousePressEvent(self, event):
@@ -634,19 +632,19 @@ class ResizableWidget(QtGui.QWidget):
 	def setHeight(self, height):		
 		height = float(height)
 		self.height = height
-		newSize = QtCore.QSize(QtGui.QWidget(self).width(), height)
-		self.resize(newSize)
-		#widgetRect = self.geometry()	
-		#self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
+		#newSize = QtCore.QSize(QtGui.QWidget(self).width(), height)
+		#self.resize(newSize)
+		widgetRect = self.geometry()	
+		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
 		
 
-	def setWidth(self, width):
+	def setWidth(self, width):		
 		width = float(width)
 		self.width = width
-		newSize = QtCore.QSize(width, QtGui.QWidget(self).height())
-		self.resize(newSize)
-		#widgetRect = self.geometry()
-		#self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
+		#newSize = QtCore.QSize(width, QtGui.QWidget(self).height())
+		#self.resize(newSize)
+		widgetRect = self.geometry()
+		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
 			
 	def setMaxHeight(self, maxHeight):
 		self.maxHeight = maxHeight
@@ -797,33 +795,27 @@ class ResizableButton(ResizableAbstractIO):
 		self.Button.setIcon(Icon)
 
 	def setIconWidth(self, width):		
-		height = self.iconSize.height()
+		height = self.iconSize().height()
 		self.setIconSize(QtCore.QSize(width, height))
 	
 	def setIconHeight(self, height):
-		width = self.iconSize.width()
+		width = self.iconSize().width()
 		self.setIconSize(QtCore.QSize(width, height))
 	
 		
 #-------------------------------------------------------------------------------------
-class ResizableCheckBox(ResizableAbstractButton):
+class ResizableCheckBox(ResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		self.checkBox = QtGui.QCheckBox()
-		ResizableAbstractButton.__init__(self, typeControl, id, self.checkBox, parent)
+		ResizableAbstractIO.__init__(self, typeControl, id, self.checkBox, parent)
 	
 	def setChecked(self, enable):		
 		if enable:
-			self.checkBox.setCheckedState(QtCore.Qt.Checked)
+			self.checkBox.setCheckState(QtCore.Qt.Checked)
 		else:
-			self.checkBox.setCheckedState(QtCore.Qt.Unchecked)
+			self.checkBox.setCheckState(QtCore.Qt.Unchecked)
 		
-	def setChecked(self):
-		self.checkBox.setCheckedState(QtCore.Qt.Checked)
 	
-	def setUnchecked(self):
-		self.checkBox.setCheckedState(QtCore.Qt.Unchecked)
-	
-			
 	def isChecked(self):
 		checked = bool(0)		
 		
@@ -839,20 +831,28 @@ class ResizableLabel(ResizableAbstractIO):
 		self.Label = QtGui.QLabel()
 		ResizableAbstractIO.__init__(self, typeControl, id, self.Label, parent)
 	
-	def setTextAlign(self, Alignment):
-		self.Label.setAlignment(Alignment)
+	def setTextAlign(self, alignment):		
+		alignment = str(alignment)		
+		if alignment == ALIGN_LEFT:
+			self.setAlignLeft()
+		elif alignment == ALIGN_RIGHT:
+			self.setAlignRight()
+		elif alignment == ALIGN_CENTER:
+			self.setAlignCenter()
+		elif alignment == ALIGN_JUSTIFY:
+			self.setAlignJustify()
 	
 	def setAlignLeft(self):
-		self.Label.setAlignment(QtCore.Qt.AlignLeft)
+		self.Label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		
 	def setAlignRight(self):
-		self.Label.setAlignment(QtCore.Qt.AlignRight)
+		self.Label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 		
 	def setAlignCenter(self):
-		self.Label.setAlignment(QtCore.Qt.AlignHCenter)
+		self.Label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
 		
 	def setAlignJustify(self):
-		self.Label.setAlignment(QtCore.Qt.AlignJustify)
+		self.Label.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
 	
 	def setWrap(self, enable):
 		
@@ -902,9 +902,9 @@ class ResizableTextArea(ResizableAbstractIO):
 
 class ResizablePasswordField(ResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
-		self.PasswordEdit = QtGui.QTextEdit()
+		self.PasswordEdit = QtGui.QLineEdit()
 		ResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
-		self.LineEdit.setEchoMode(QtGui.QLineEdit.Password)
+		self.PasswordEdit.setEchoMode(QtGui.QLineEdit.Password)
 				
 		
 #-------------------------------------------------------------------------------------
@@ -1020,20 +1020,20 @@ class ResizableGroupBox(ResizableWidget):
 		ResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
 
 	def setLegend(self, text):
-		self.setTitle(text)
+		self.GroupBox.setTitle(text)
 
 	def setWindowIcon(self, icon):
-		self.setWindowIcon(icon)
+		self.GroupBox.setWindowIcon(icon)
 
 #-------------------------------------------------------------------------------------
 #Associar com um QButtonGroup....
-class ResizableRadioButton(ResizableWidget):
+class ResizableRadioButton(ResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
-		self.RadioButton = QtGui.QRadioButton()			
+		self.RadioButton = QtGui.QRadioButton()		
 		ResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
 
 	def setChecked(self, enable):		
-		self.checkBox.setChecked(enable)
+		self.RadioButton.setChecked(enable)
 		
 #-------------------------------------------------------------------------------------
 class ResizableTabView(ResizableWidget):
