@@ -1,0 +1,4 @@
+01:Text:Button:setText(param):TString
+02:Icon:-:-:TIcon
+03:IconWidth:-:setIconWidth(param):TInt
+04:IconHeight:-:setIconHeight(param):TInt

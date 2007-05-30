@@ -77,7 +77,7 @@ def callProcedureResizableConstructor(memRefName, procedure, DparametersValues =
 	#exec "return "+memRefName
 
 def callProcedureResizableProperty(procedure, DparametersValues = { }):	
-	#formatedProcedure = formatProcedureCall(procedure)		
+	#formatedProcedure = formatProcedureCall(procedure)	
 	exec procedure in DparametersValues, globals()
 	
 #*********************************************************************************************************
@@ -340,11 +340,16 @@ class MonitorControls(QtCore.QObject):
 		return  self.newControlName+str(typeControl)+str(idControl)
 		
 	def getTypeProperty(self,  typeControl, idControl, idProperty):
+		typeControl = str(typeControl)
+		idControl = idControl
+		idProperty = str(idProperty)
+		
 		if  self.haveTypeControls(typeControl) == false:
 			return self.error
-		
-		try:
-			return self.Dcontrols[typeControl][idControl][self.positionProperties][self.TypeProperty]
+			
+		try:			
+			#return self.DControlsInfo[typeControl][idControl][self.positionProperties][self.TypeProperty]
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.TypeProperty]
 		except:
 			return self.error
 			
@@ -400,7 +405,7 @@ class MonitorControls(QtCore.QObject):
 			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
 			typeProperty = self.getTypeProperty(typeControl, IdControl, idProperty)
 			
-			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas
+			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING or typeProperty == TALIGN: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas				
 				self.changeProperty(typeControl, IdControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
 		#**********************************************************************************
 		
@@ -424,8 +429,25 @@ class MonitorControls(QtCore.QObject):
 				self.DControlsInfo[TypeControl][IDControl] = self.deletedControl
 			return IDControl
 
+	#Metodo que de acordo com a propriedade, esta é alterada de forma a ser possivel ser executado o codigo da resizableWidget
+	def setValueProperty(self, typeControl, idControl, idProperty, value):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		idProperty = str(idProperty)
+		
+		#Para propriedades do tipo TBOOLEAN é necessário converter o valor (value) para um tipo booleano
+		typeProperty = self.getTypeProperty(typeControl, idControl, idProperty)
+		if typeProperty == TBOOLEAN:
+			#transformar o conteudo do valor
+			if value == 'false':
+				value = false
+			elif value == 'true':
+				value = true
+		
+		return value
 
 	def changeProperty(self, typeControl, idControl, idProperty, value = None):
+		
 		if self.haveIdControl(typeControl, idControl) == false:
 			return self.error
 		else:
@@ -444,18 +466,14 @@ class MonitorControls(QtCore.QObject):
 			if widgetName == self.errorControlMissing:
 				return self.errorMethodCall
 			
-			#Para propriedades do tipo TBOOLEAN é necessário converter o valor (value) para um tipo booleano
-			if self.getTypeProperty(typeControl, idControl, idProperty) == TBOOLEAN:
-				#transformar o conteudo do valor
-				if value == 'false':
-					value = false
-				elif value == 'true':
-					value = true
+			
+			value = self.setValueProperty(typeControl, idControl, idProperty, value)			
 			#*************************************************************************************
 			
 			#Construir mapa com os valores dos parametros
 			paramProperty = {self.paramPropertiesResizable : value }
-			if paramProperty == self.emptyParamValue:
+			#if paramProperty == self.emptyParamValue:
+			if value == self.emptyParamValue:
 				return self.errorEmptyParamValue
 			
 			#Antes de executar o metodo é necessário saber qual a referencia ao controlo (....)
