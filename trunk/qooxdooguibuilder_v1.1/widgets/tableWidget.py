@@ -165,3 +165,7 @@ class CTableWidget(QtGui.QTableWidget):
 		self.clear()
 		self.update()
 	
+	
+	
+	
+	

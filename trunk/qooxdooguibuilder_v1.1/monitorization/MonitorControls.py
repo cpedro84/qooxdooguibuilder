@@ -381,6 +381,7 @@ class MonitorControls(QtCore.QObject):
 			
 		#criar ResizableWidget
 		widget = callProcedureResizableConstructor(memRefName, constructorMethod, params)		
+		
 		#QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
 		#QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalReceive)
 		#QtCore.QObject.connect(widget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SendResizableSignal)
