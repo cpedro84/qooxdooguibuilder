@@ -743,8 +743,14 @@ class ResizableWidget(QtGui.QWidget):
 		if widgetTableItems.exec_() == QtGui.QDialog.Accepted:
 			#carregar as alterações efectuadas sobre a tableWidget
 			tableData = widgetTableItems.getTableData()
+			
+			#Obter o tamanho original das colunas e linhas para posteriormente ser reposto
+			#columnsWidth = self.
+			
 			#modificar o output tableWidget
 			self.setTable(tableData)
+			#alterar o tamanho das colunas e linhas de acordo com o original
+			
 			
 			#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
 			#tableData = QtCore.QObject(tableData)
@@ -877,29 +883,29 @@ class resizableTextField(ResizableAbstractIO):
 		
 		
 
-class ResizableTextArea(ResizableAbstractIO):
+class ResizableTextArea(ResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
-		self.TextEdit = QtGui.QTextEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.TextEdit, parent)
+		self.textArea = QtGui.QTextEdit()
+		ResizableWidget.__init__(self, typeControl, id, self.textArea, parent)
 	
-	def setWrap(self, enable):
-		
-		if enable:
-			self.Label.setWordWrap(bool(1))
+	def setWrap(self, enabled):		
+		if enabled:
+			self.enableWordWrap()
 		else:
-			self.Label.setWordWrap(bool(0))
-		
+			self.disableWordWrap()
 	
-	def enableReadOnly(self):
-		self.TextEdit.setReadOnly(bool(1))
-		
-	def disableReadOnly(self):
-		self.TextEdit.setReadOnly(bool(0))
-	
+	def setReadOnly(self, enabled):
+		self.textArea.setReadOnly(enabled)
+
 	def enableWordWrap(self):
-		self.TextEdit.setWordWrapMode(QtCore.QTextOption.WordWrap)
+		self.textArea.setWordWrapMode(QtGui.QTextOption.WordWrap)
+	
+	def disableWordWrap(self):
+		self.textArea.setWordWrapMode(QtGui.QTextOption.NoWrap)
 
-
+	def setText(self, text):
+		self.textArea.setPlainText(text)
+	
 class ResizablePasswordField(ResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		self.PasswordEdit = QtGui.QLineEdit()
@@ -1149,26 +1155,35 @@ class ResizableSpinner(ResizableWidget):
 
 class ResizableTable(ResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
-		self.tableWidget = CTableWidget()
+		self.tableWidget = CTableWidget()		
 		ResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
-	
+		
 	
 	"""def setHeaderCellHeight(self, height):
 		self.table.
 	"""
-	
 	def setRowsHeight(self, height):		
-		for row in self.table.rowCount():
+		height = int(height)
+		row = 0 
+		while row < self.tableWidget.rowCount():
 			self.tableWidget.setRowHeight(row, height)
+			row +=1
 
-	def setColumsWidth(self, width):		
-		for row in self.table.columnCount():
-			self.tableWidget.setColumnWidth(row, width)
-
+	def setColumnsWidth(self, width):		
+		width = int(width)
+		column = 0
+		
+		while column < self.tableWidget.columnCount():			
+			self.tableWidget.setColumnWidth(column, width)
+			column +=1
+	
+	
 	def setRowCount(self, count):
+		count = int(count)
 		self.tableWidget.setRowCount(count)
 		
 	def setColumnCount(self, count):
+		count = int(count)
 		self.tableWidget.setColumnCount(count)
 		
 		

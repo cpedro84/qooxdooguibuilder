@@ -186,9 +186,9 @@ class DrawArea(QtGui.QWidget):
 	    #*************************************************************************************************
 	    
 	    if actionType == DRAG_COPY_ACTION:
-
+		    
 		    newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
-
+		    
 		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
 		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 		    
@@ -492,15 +492,15 @@ class ControlsWidget(QtGui.QWidget):
         elif event.y() >= 233 and event.y() < 254:
             main_window.control_beeing_added = TTabView
         elif event.y() >= 254 and event.y() < 275:
-            main_window.control_beeing_added = TTextArea
-        elif event.y() >= 275 and event.y() < 296:
-            main_window.control_beeing_added = TTextField
-        elif event.y() >= 296 and event.y() < 317:
-            main_window.control_beeing_added = TToolBar
-        elif event.y() >= 317 and event.y() < 338:
-            main_window.control_beeing_added = TTree
-        elif event.y() >= 338 and event.y() < 359:
             main_window.control_beeing_added = TTable
+        elif event.y() >= 275 and event.y() < 296:
+            main_window.control_beeing_added = TTextArea
+        elif event.y() >= 296 and event.y() < 317:
+            main_window.control_beeing_added = TTextField
+        elif event.y() >= 317 and event.y() < 338:
+            main_window.control_beeing_added = TToolBar
+        elif event.y() >= 338 and event.y() < 359:
+            main_window.control_beeing_added = TTree
 
         itemData = QtCore.QByteArray()
 	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
