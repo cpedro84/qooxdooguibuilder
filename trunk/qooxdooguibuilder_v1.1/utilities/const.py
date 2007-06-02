@@ -20,7 +20,7 @@ SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi selecciona
 #SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Items_Changed" #ENVIO DE: typeControl; idControl; lista de items
 #SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
-SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Tabs_Changed" #ENVIO DE: typeControl; idControl; lista de tabs
+SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Tabs_Changed" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
 SIGNAL_RESIZABLE_RELEASED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_CONTROL_CLICKED = "Control_Clicked(const QString &, const QString &)"
@@ -53,6 +53,50 @@ TTextField = "TXF"
 TToolBar = "TLB"
 TTree = "TRE"
 TTable = "TBL"
+
+#DESIGNAÇÃO DOS CONTROLOS
+BTN = "Button"
+CKB = "CheckBox"
+CMB = "ComboBox"
+GRB = "GroupBox"
+IFR = "IFrame"
+LBL = "Label"
+LST = "List"
+MBR = "MenuBar"
+PWF = "PasswordField"
+RDB = "RadioButton"
+SPR = "Spinner"
+TBV = "TabView"
+TXV = "TextArea"
+TXF = "TextField"
+TLB = "ToolBar"
+TRE = "Tree"
+TBL = "Table"
+
+#MAPA COM OS TIPOS DE CONTROLOS E SUAS RESPECTIVAS DESIGNAÇÕES
+CONTROLS_DESIGNATIONS = {
+TButton : BTN,
+TCheckBox : CKB,
+TCombo : CMB,
+TGroupBox : GRB,
+TIframe : IFR,
+TLabel : LBL,
+TList : LST,
+TMenuBar : MBR,
+TPasswordField : PWF,
+TRadioButton : RDB,
+TSpinner : SPR,
+TTabView : TBV,
+TTextArea : TXV,
+TTextField : TXF,
+TToolBar : TLB,
+TTree : TRE,
+TTable : TBL
+}
+
+
+#STANDART CONTROL NAME INFORMATION
+CONTROL_LABEL = "Control: "
 
 #TIPOS DE PROPRIEDADES
 TINT = "TInt"
