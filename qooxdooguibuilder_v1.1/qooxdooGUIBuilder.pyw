@@ -4,10 +4,6 @@
 
 
 import sys
-
-
-
-
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "controls"))
@@ -222,7 +218,7 @@ class DrawArea(QtGui.QWidget):
 	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
 	    
 	    #*************FAZER**********************************************
-	    #print QtGui.QWidget(event.source()).width()
+	    #print QtGui.QWidget(event.source()).geometry().width()
 	    #self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(event.source().width()))
 	    #self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(event.source().height()))
 	    #******************************************************************
@@ -282,7 +278,8 @@ class PropertiesWidget(CTableWidget):
 	
 	typeControl = str(typeControl)
 	idControl = str(idControl)	
-	
+		
+	#carregar as informações do controlo clicado
 	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
 		
 	#self.addColumn(PROPERTIES_WIDGET_COLUMN1)
@@ -537,6 +534,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	#Conectar o evento de clique na drawArea (para que sejam des-seleccionados todos os controlos) com a remoção das propriedades
 	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.propertiesWidget.clearProperties)
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.clearControlName)
 
 	#formatar a central Widget
         self.centralWidget = QtGui.QScrollArea(self)
@@ -744,6 +742,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDockWindows(self):
 
+	#CONTROLS
         self.controlsWidget = ControlsWidget(self.monitor)
 
         self.intermediateWidget = QtGui.QScrollArea(self)
@@ -754,11 +753,27 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDockWidget.setWidget(self.intermediateWidget)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
 
-        self.propertiesWidget = PropertiesWidget(self.monitor)
+        
+	#PROPERTIES 	
+	self.controlInfoWidget = QtGui.QWidget()	
+	
+	self.controlName = QtGui.QLabel("Control: ")
+	self.propertiesWidget = PropertiesWidget(self.monitor)
+	
+	
+	propertiesLayout = QtGui.QBoxLayout(QtGui.QBoxLayout.TopToBottom)
+	propertiesLayout.addWidget(self.controlName)
+	propertiesLayout.addWidget(self.propertiesWidget)
+	
+	self.controlName.setParent(self.controlInfoWidget)
+	self.propertiesWidget.setParent(self.controlInfoWidget)
+	
+	self.controlInfoWidget.setLayout(propertiesLayout) 
 
         self.propertiesDockWidget = PropertiesDockWidget()
-        self.propertiesDockWidget.setWidget(self.propertiesWidget)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
+        #self.propertiesDockWidget.setWidget(self.propertiesWidget)
+        self.propertiesDockWidget.setWidget(self.controlInfoWidget)
+	self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
 
 
     def createDrawArea(self):
@@ -767,7 +782,19 @@ class MainWindow(QtGui.QMainWindow):
 	self.drawArea.setAttribute(QtCore.Qt.WA_AcceptDrops)
 
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
-
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.changeControlName)
+    
+    def changeControlName(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl = str(idControl)
+	
+	#Preencher a label com o nome do controlo	
+	self.controlName.setText(CONTROL_LABEL + CONTROLS_DESIGNATIONS[typeControl])
+    
+    def clearControlName(self):
+	self.controlName.setText(CONTROL_LABEL)
+    
+    
     def newInterfaceAct(self):
 	
         return

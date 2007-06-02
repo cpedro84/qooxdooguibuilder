@@ -5,6 +5,9 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
+
+
+
 from const import *
 from editItemsWidget import *
 from editTableItemsWidget import *
@@ -763,8 +766,7 @@ class ResizableWidget(QtGui.QWidget):
 #*******************************************************************
 #*******************************************************************
 
-	
-#-------------------------------------------------------------------------------------
+
 class ResizableAbstractButton(ResizableWidget):
 	def __init__(self, id, widget = None, parent=None):
 		self.AbstractButtonWidget = widget
@@ -775,8 +777,9 @@ class ResizableAbstractButton(ResizableWidget):
 				
 	def getText(self):
 		return self.AbstractButtonWidget.text()	
-		
 
+
+#-------------------------------------------------------------------------------------
 class ResizableAbstractIO(ResizableWidget):
 
 	def __init__(self, typeControl, id, widget = None, parent=None):
@@ -787,325 +790,8 @@ class ResizableAbstractIO(ResizableWidget):
 		self.AbstractIOWidget.setText(strText)
 				
 	def getText(self):
-		return self.AbstractIOWidget.text()	
-		
-
-#-------------------------------------------------------------------------------------
-class ResizableButton(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		
-		self.Button = QtGui.QPushButton()		
-		ResizableAbstractIO.__init__(self, typeControl, id, self.Button, parent)
-		
-	def setIcon(self, Icon):
-		self.Button.setIcon(Icon)
-
-	def setIconWidth(self, width):		
-		height = self.iconSize().height()
-		self.setIconSize(QtCore.QSize(width, height))
+		return self.AbstractIOWidget.text()
 	
-	def setIconHeight(self, height):
-		width = self.iconSize().width()
-		self.setIconSize(QtCore.QSize(width, height))
-	
-		
-#-------------------------------------------------------------------------------------
-class ResizableCheckBox(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		self.checkBox = QtGui.QCheckBox()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.checkBox, parent)
-	
-	def setChecked(self, enable):		
-		if enable:
-			self.checkBox.setCheckState(QtCore.Qt.Checked)
-		else:
-			self.checkBox.setCheckState(QtCore.Qt.Unchecked)
-		
-	
-	def isChecked(self):
-		checked = bool(0)		
-		
-		if self.checkBox.checkState() == QtCore.Qt.Checked:
-			checked = bool(1)
-		
-		return checked
-
-
-#-------------------------------------------------------------------------------------
-class ResizableLabel(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		self.Label = QtGui.QLabel()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.Label, parent)
-	
-	def setTextAlign(self, alignment):		
-		alignment = str(alignment)		
-		if alignment == ALIGN_LEFT:
-			self.setAlignLeft()
-		elif alignment == ALIGN_RIGHT:
-			self.setAlignRight()
-		elif alignment == ALIGN_CENTER:
-			self.setAlignCenter()
-		elif alignment == ALIGN_JUSTIFY:
-			self.setAlignJustify()
-	
-	def setAlignLeft(self):
-		self.Label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-		
-	def setAlignRight(self):
-		self.Label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-		
-	def setAlignCenter(self):
-		self.Label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
-		
-	def setAlignJustify(self):
-		self.Label.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
-	
-	def setWrap(self, enable):
-		
-		if enable:
-			self.Label.setWordWrap(bool(1))
-		else:
-			self.Label.setWordWrap(bool(0))
-		
-	def enabledWordWrap(self):
-		self.Label.setWordWrap(bool(1))
-		
-	def disabledWordWrap(self):
-		self.Label.setWordWrap(bool(0))
-		
-		
-#-------------------------------------------------------------------------------------
-class resizableTextField(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		self.TextField = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.TextField, parent)
-		self.TextField.setEchoMode(QtGui.QLineEdit.Normal)
-		
-		
-
-class ResizableTextArea(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.textArea = QtGui.QTextEdit()
-		ResizableWidget.__init__(self, typeControl, id, self.textArea, parent)
-	
-	def setWrap(self, enabled):		
-		if enabled:
-			self.enableWordWrap()
-		else:
-			self.disableWordWrap()
-	
-	def setReadOnly(self, enabled):
-		self.textArea.setReadOnly(enabled)
-
-	def enableWordWrap(self):
-		self.textArea.setWordWrapMode(QtGui.QTextOption.WordWrap)
-	
-	def disableWordWrap(self):
-		self.textArea.setWordWrapMode(QtGui.QTextOption.NoWrap)
-
-	def setText(self, text):
-		self.textArea.setPlainText(text)
-	
-class ResizablePasswordField(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		self.PasswordEdit = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
-		self.PasswordEdit.setEchoMode(QtGui.QLineEdit.Password)
-				
-		
-#-------------------------------------------------------------------------------------
-class ResizableComboBox(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.ComboBox = QtGui.QComboBox()
-		ResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
-	
-	#??????????????????????????????????
-	def addItemText(self, item):
-		self.ComboBox.addItem(item)
-	
-	# textItemsList -> ELEMENT TYPE: editItem
-	def setItems(self, textItemsList):
-		self.ComboBox.clear()
-		for item in textItemsList:			
-			self.addItemText(item.getText())
-	
-	def countItems(self):
-		self.ComboBox.count()
-	
-	def getItemText(self, index):		
-		if indexValidation(index, self.countItems()):
-			return str(self.ComboBox.itemText(index))
-		
-		return structureError
-		
-		
-	def getItems(self):
-		items = []
-		nElements = self.countItems()
-		elem = 0		
-		while elem < nElements:
-			textItems.append(editItem(self.getItemText(elem)))
-			elem = elem + 1
-		
-		return items
-	
-	
-	def addItemIcon(self, strText, Icon):
-		self.ComboBox.addItem(Icon, strText)
-	
-	def insertItem(self, index, strText):
-		self.ComboBox.insertItem(index, strText)		
-			
-	def isEditable(self):
-		return self.ComboBox.isEditable()
-		
-	def setCurrentIndex(self, index):
-		self.ComboBox.setCurrentIndex(index)
-
-	def setEditText(self, strText):
-		self.ComboBox.setEditText(strText)
-	
-	def setItemText(self, index, strText):
-		self.ComboBox.setItemText(self, index, strText)
-	
-	def setItemIcon(self, index, icon):
-		self.ComboBox.setItemIcon(self, index, icon)
-
-	def getItemIcon(self, index):
-		return self.ComboBox.itemIcon(index)
-		
-	def getSelectedItem(self):
-		return self.ComboBox.currentIndex()
-
-	
-
-#-------------------------------------------------------------------------------------
-class ResizableList(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.ListView = CListWidget()
-		ResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
-		self.items = []
-		#PROPREIDADES
-		self.selectable = bool(1)
-
-		
-	def addItemText(self, item):
-		self.ListView.addItem(item)
-	
-	# textItemsList -> ELEMENT TYPE: editItem 
-	def setItems(self, textItemsList):
-		self.ListView.clear()
-		for item in textItemsList:			
-			self.addItemText(item.getText())
-
-	def countItems(self):
-		return self.ListView.count()
-
-	def getItemText(self, index):		
-		if indexValidation(index, self.countItems()):
-			return str(self.ListView.item(index).text())
-	
-		return structureError
-		
-		
-	def getItems(self):
-		textItems = []
-		nElements = self.countItems()
-		elem = 0		
-		while elem < nElements:
-			textItems.append(editItem(self.getItemText(elem)))
-			elem = elem + 1
-		
-		return textItems
-	
-
-#-------------------------------------------------------------------------------------
-class ResizableGroupBox(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.GroupBox = QtGui.QGroupBox()
-		ResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
-
-	def setLegend(self, text):
-		self.GroupBox.setTitle(text)
-
-	def setWindowIcon(self, icon):
-		self.GroupBox.setWindowIcon(icon)
-
-#-------------------------------------------------------------------------------------
-#Associar com um QButtonGroup....
-class ResizableRadioButton(ResizableAbstractIO):
-	def __init__(self, typeControl, id, parent=None):
-		self.RadioButton = QtGui.QRadioButton()		
-		ResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
-
-	def setChecked(self, enable):		
-		self.RadioButton.setChecked(enable)
-		
-#-------------------------------------------------------------------------------------
-class ResizableTabView(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.TabView = QtGui.QTabWidget()
-		ResizableWidget.__init__(self, typeControl, id, self.TabView, parent)
-		self.TabView.setEnabled(true)
-		
-	def addTab(self, tab):
-		widget = QtGui.QWidget()
-		self.TabView.addTab(widget, tab.getText())
-	
-	def removeTab(self, tabIndex):
-		self.TabView.removeTab(tabIndex)
-		
-	def removeTabs(self):
-		nTabs = self.TabView.count()		
-		tab = 0
-		while tab < nTabs:			
-			self.TabView.removeTab(0)			
-			tab = tab + 1			
-		
-	def setTabs(self, tabsList):
-		self.removeTabs()
-		for tab in tabsList:			
-			self.addTab(tab)
-	
-	def countTabs(self):
-		return self.TabView.count()	
-	
-	def getTabText(self, index):
-		if indexValidation(index, self.countTabs()):
-			return self.TabView.tabText(index)
-		
-		return structureError
-	
-	def getTabWidget(self, index):
-		if indexValidation(index, self.countTabs()):
-			return self.TabView.widget(index)
-		
-		return structureError
-	
-	def getTabs(self):
-		tabsList = []
-		nElements = self.countTabs()
-		elem = 0		
-		while elem < nElements:
-			tabsList.append(editItem(self.getTabText(elem), self.getTabWidget(elem)))
-			elem = elem + 1
-		
-		return tabsList	
-		
-#-------------------------------------------------------------------------------------
-class ResizableTree(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.Tree = QtGui.QTreeView()
-		ResizableWidget.__init__(self, typeControl, id, self.Tree, parent)
-
-
-#-------------------------------------------------------------------------------------
-class ResizableToolBar(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.ToolBar = QtGui.QToolBar()
-		ResizableWidget.__init__(self, typeControl, id, self.ToolBar, parent)
-
-
 #-------------------------------------------------------------------------------------
 #??????
 class ResizableDialogWindow(ResizableWidget):
@@ -1113,7 +799,7 @@ class ResizableDialogWindow(ResizableWidget):
 		self.DialogWindow = QtGui.QDialog()
 		ResizableWidget.__init__(self, typeControl, id, self.DialogWindow, parent)
 
-
+#??????
 class editMenu(QtGui.QMenu):
 	def __init__(self, app, parent=None):
 		#QtGui.QMenu.__init__(self, "teste", parent)
@@ -1132,6 +818,7 @@ class editMenu(QtGui.QMenu):
 		self.setTitle("")
 """
 #-------------------------------------------------------------------------------------
+#??????
 class ResizableMenuBar(ResizableWidget):	
 	def __init__(self, typeControl, id, app, parent=None):
 		self.MenuBar = QtGui.QMenuBar()
@@ -1145,59 +832,6 @@ class ResizableMenuBar(ResizableWidget):
 		#edit.setGeometry(menuHelp.geometry().x(), menuHelp.geometry().y(), menuHelp.geometry().width(), menuHelp.geometry().height())
 				
 		self.MenuBar.addMenu(menuHelp)
-		
-
-class ResizableSpinner(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.Spinner = QtGui.QSpinBox()
-		ResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)
-
-
-class ResizableTable(ResizableWidget):
-	def __init__(self, typeControl, id, parent=None):
-		self.tableWidget = CTableWidget()		
-		ResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
-		
-	
-	"""def setHeaderCellHeight(self, height):
-		self.table.
-	"""
-	def setRowsHeight(self, height):		
-		height = int(height)
-		row = 0 
-		while row < self.tableWidget.rowCount():
-			self.tableWidget.setRowHeight(row, height)
-			row +=1
-
-	def setColumnsWidth(self, width):		
-		width = int(width)
-		column = 0
-		
-		while column < self.tableWidget.columnCount():			
-			self.tableWidget.setColumnWidth(column, width)
-			column +=1
-	
-	
-	def setRowCount(self, count):
-		count = int(count)
-		self.tableWidget.setRowCount(count)
-		
-	def setColumnCount(self, count):
-		count = int(count)
-		self.tableWidget.setColumnCount(count)
-		
-		
-	def getTableData(self):
-		#(...) - fazer o carregamento dos dados construindo um objecto do tipo tableData				
-		return self.tableWidget.getTableData()
-	
-	def setTable(self, tableData):
-		#alterar o conteudo da tableWidget de acordo com as alterações efectuadas
-		self.tableWidget.setTableWidget(tableData)
-		
-	
-#(..... CONTINUAR WIDGETS)
-
 
 #-------------------------------------------------------------------------------------
 """

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: latin1 -*-
 
-
-
 import sys
-from resizableWidget import *
+from importResizables import *
 from string import Template
 import copy
 
