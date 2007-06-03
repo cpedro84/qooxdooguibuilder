@@ -117,6 +117,7 @@ class DrawArea(QtGui.QWidget):
 	self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, QtCore.QSize()))
 	self.rubberHand.show()
 	
+	#enviar sinal para inicar que nenhum controlo está seleccionado
 	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
 	
     def mouseReleaseEvent(self, event):
@@ -146,7 +147,14 @@ class DrawArea(QtGui.QWidget):
 	idControl =str(idControl)
     
 	self.monitor.setSelectedControl(typeControl, idControl)
-    #************************************************************
+    
+    def deleteControl(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	#enviar sinal para inicar que nenhum controlo está seleccionado	
+	self.monitor.deleteControl(typeControl, idControl)
+	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
 
     # Items -> QStringList
     def saveTListItems(self, typeControl, idControl, items):
@@ -158,6 +166,9 @@ class DrawArea(QtGui.QWidget):
     def changeTableItemsProperties(self, typeControl, idControl, tableItems):
 	self.monitor.changeTabsProperties(typeControl, idControl, tableItems)
 
+    #********************************************************* 
+    #************************************************************
+    
     def dragEnterEvent(self, event):	
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             event.acceptProposedAction() #Indicação do possivel drop	    
@@ -187,11 +198,12 @@ class DrawArea(QtGui.QWidget):
 		    
 		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
 		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)
 		    
 		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
 		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
 		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTTabViewTabs)
+		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTTabViewTabs)		    
 		    #*****************************************************************
 		    
 		    newControlWidget.move(dropPos)
@@ -324,6 +336,9 @@ class PropertiesWidget(CTableWidget):
 				self.setCellWidget(currentRow, self.columnValues, cellValue)
 	
 				currentRow +=1
+		
+		#ordenar a tabela por ordem alfabética na coluna dos nomes das propriedes
+		self.sortItems(self.columnProperties, QtCore.Qt.AscendingOrder)
 
     def clearProperties(self):
 	self.removeRows()
@@ -523,7 +538,7 @@ class MainWindow(QtGui.QMainWindow):
 
         QtGui.QMainWindow.__init__(self, parent)
 	
-	self.monitor = MonitorControls()
+	self.monitor = CMonitorControls()
 
         self.createActions()
         self.createMenus()
@@ -537,7 +552,7 @@ class MainWindow(QtGui.QMainWindow):
 	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.clearControlName)
 
 	#formatar a central Widget
-        self.centralWidget = QtGui.QScrollArea(self)
+        self.centralWidget = QtGui.QScrollArea()
         self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	#self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
 	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
@@ -545,22 +560,17 @@ class MainWindow(QtGui.QMainWindow):
 
 	#Widget intermédia entre a scrollBar e a DrawArea
 	designWidget = QtGui.QWidget()
-	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
+	self.centralWidget.setWidget(designWidget)
+	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)	
 	designWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	
-	#Colocar a drawArea na zona intermédia (designWidget)
+	#Colocar a drawArea na zona intermédia (designWidget)	
 	self.drawArea.setParent(designWidget)
-	self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-(MARGIN*2), self.drawArea.height()-(MARGIN*2))	
+	#self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-(MARGIN*2), self.drawArea.height()-(MARGIN*2))
+	self.drawArea.setGeometry(MARGIN, MARGIN, DRAW_AREA_WIDTH-(MARGIN), DRAW_AREA_HEIGHT-(MARGIN*2))
+		
+	self.setCentralWidget(self.centralWidget)	
 	
-	palette = QtGui.QPalette(self.drawArea.palette())
-	palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Window, QtGui.QColor(QtCore.Qt.white))		
-	self.drawArea.setPalette(palette)	
-	
-	self.centralWidget.setWidget(designWidget)
-	self.centralWidget.show()
-        
-	self.setCentralWidget(self.centralWidget)
-
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
         self.setWindowTitle("Qooxdoo GUI Builder")
         self.setMinimumSize(800, 600)
@@ -801,7 +811,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def openInterfaceAct(self):
-	self.propertiesWidget.removeAll()
+	print self.monitor.DControlsInfo[TList]
         return
 
 

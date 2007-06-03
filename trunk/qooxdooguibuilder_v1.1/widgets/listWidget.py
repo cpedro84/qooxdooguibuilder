@@ -10,6 +10,7 @@ from editItem import *
 from tableData import *
 
 class CListWidget(QtGui.QListWidget):
+	
 	def __init__(self, parent=None):
 		QtGui.QListWidget.__init__(self, parent)
 		

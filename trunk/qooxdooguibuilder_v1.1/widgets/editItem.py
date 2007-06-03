@@ -16,15 +16,14 @@ class editItem(QtCore.QObject):
 		self.text = text
 		self.widget = widget
 
-	def getText(self):
-		return self.text
-	
-	def getWidget(self):
-		return self.widget
-		
 	def setWidget(self, widget):
 		self.widget = widget
 		
 	def setText(self, text):
 		self.text = text
 		
+	def getText(self):
+		return self.text
+	
+	def getWidget(self):
+		return self.widget

@@ -15,6 +15,7 @@ from generalFunctions import *
 
 
 class CTableWidget(QtGui.QTableWidget):
+	
 	def __init__(self, parent=None):
 		QtGui.QTableWidget.__init__(self, parent)
 		self.setRowCount(0)
@@ -41,48 +42,6 @@ class CTableWidget(QtGui.QTableWidget):
 	def setItemText(self, row, column, text):
 		self.setItem(row, column, QtGui.QTableWidgetItem(text))
 	
-	
-	def clearHorizontalTableItems(self):
-		self.clear()
-		self.setHorizontalHeaderLabels(self.columns)
-	
-	def clearVerticalTableItems(self):
-		self.clear()
-		self.setVerticalHeaderLabels(self.rows)
-
-	def getTableData(self): #alterar função de forma a retornar um objecto do tipo tableData
-			
-		tableItems = { }
-		
-		rowsList = []
-		rowsList = self.getRowsList()
-		columnsList = []
-		columnsList = self.getColumnsList()
-		
-		itrColumn = 0
-		itrRow = 0
-		#copiar todos os items da self
-		while itrColumn < self.columnCount():
-			columnItem = editItem(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
-			itrRow = 0 
-			tableItems[columnItem] = {}
-			for rowItem in rowsList:
-				tableItem = self.item(itrRow, itrColumn)
-				if tableItem == None:
-					tableItem = QtGui.QTableWidgetItem("")
-				cellItem = editItem(QtGui.QTableWidgetItem(tableItem).text())
-				tableItems[columnItem].update({rowItem: cellItem})
-				itrRow +=1
-				
-			itrColumn +=1
-		
-		#tableData = CTableData(rowsList, columnsList, tableItems)
-		tableData = CTableData()
-		tableData.setTableRows(rowsList)		
-		tableData.setTableColumns(columnsList)
-		tableData.setTableItems(tableItems)
-		
-		return tableData
 	
 	def setTableWidget(self, tableData):
 		
@@ -120,6 +79,45 @@ class CTableWidget(QtGui.QTableWidget):
 			
 				itrRow +=1
 			itrColumn +=1
+	
+	
+	
+
+	def getTableData(self): #alterar função de forma a retornar um objecto do tipo tableData
+			
+		tableItems = { }
+		
+		rowsList = []
+		rowsList = self.getRowsList()
+		columnsList = []
+		columnsList = self.getColumnsList()
+		
+		itrColumn = 0
+		itrRow = 0
+		#copiar todos os items da self
+		while itrColumn < self.columnCount():
+			columnItem = editItem(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
+			itrRow = 0 
+			tableItems[columnItem] = {}
+			for rowItem in rowsList:
+				tableItem = self.item(itrRow, itrColumn)
+				if tableItem == None:
+					tableItem = QtGui.QTableWidgetItem("")
+				cellItem = editItem(QtGui.QTableWidgetItem(tableItem).text())
+				tableItems[columnItem].update({rowItem: cellItem})
+				itrRow +=1
+				
+			itrColumn +=1
+		
+		#tableData = CTableData(rowsList, columnsList, tableItems)
+		tableData = CTableData()
+		tableData.setTableRows(rowsList)		
+		tableData.setTableColumns(columnsList)
+		tableData.setTableItems(tableItems)
+		
+		return tableData
+	
+	
 
 	def getRowsList(self):
 		rowsList = []
@@ -140,6 +138,15 @@ class CTableWidget(QtGui.QTableWidget):
 			itr +=1
 		
 		return columnsList
+
+
+	def clearHorizontalTableItems(self):
+		self.clear()
+		self.setHorizontalHeaderLabels(self.columns)
+	
+	def clearVerticalTableItems(self):
+		self.clear()
+		self.setVerticalHeaderLabels(self.rows)
 
 
 	def removeColumns(self):

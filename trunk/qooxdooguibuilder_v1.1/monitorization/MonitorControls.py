@@ -81,8 +81,12 @@ def callProcedureResizableProperty(procedure, DparametersValues = { }):
 #*********************************************************************************************************
 
 
-
-class MonitorControls(QtCore.QObject):
+## Documentation for CMonitorControls.
+#
+# Monotorize, manage and maintain the interactions with the resizableWidgets,
+# where is possible to create (@see addNewControl) and delete (@see deleteControl) resizable Widgets, 
+# change properties (@see changeProperties) and some more actions related with.
+class CMonitorControls(QtCore.QObject):
 	
 	#******************************************************************************
 	#**************DEFINIÇÃO DE CONSTANTES**********************************
@@ -125,12 +129,12 @@ class MonitorControls(QtCore.QObject):
 	errorEmptyParamValue = 0
 	errorControlMissing = -1
 	
+
+	#***********************************************************************************
+	#***********************************************************************************
+	#***********************************************************************************
 	
-
-	#***********************************************************************************
-	#***********************************************************************************
-	#***********************************************************************************
-
+	## The constructor.
 	def __init__(self):
 		#MAPAS PARA GESTÃO DOS DADOS DOS CONTROLOS		
 		#Mapa Associativo para armazenamento dos controlos e suas informações
@@ -154,204 +158,163 @@ class MonitorControls(QtCore.QObject):
 		self.LControlsSelected = [ ]
 		
 		self.lastIdControl = self.noneSelected
-		
-	def haveTypeControls(self, typeControl):
-		if self.DControlsInfo.has_key(typeControl) == false:
-			return false
-		else:
-			return true
 	
-	def haveIdControl(self, typeControl, idControl):
-		typeControl = str(typeControl)
-		idControl = idControl
+	##
+	# Load type control's properties from the given filePath.
+	# If some problem occured an error will be printed.
+	#
+	# @Param typeControl string
+	# @Param filePath string
+	#
+	# @return python Dict with the properties
+	def loadTypeControlProperties(self, TypeControl, filePath):
 		
-		if self.haveTypeControls(typeControl) and self.DControlsInfo[typeControl].has_key(idControl) and self.DControlsInfo[typeControl][idControl] != self.deletedControl:
-			return true
-		else:
-			return false
+		try:
+			DControlDefaultPropertiesInfo = { }
+			fcontrol=open(filePath)
+			#Ler conteudo do ficheiro
+			for line in fcontrol:
+				line = line.replace('\n', '')	
+				line = line.split(':')		
+				IdProperty = line[0]
+				property = line[1]				
+				options = line[2].split('/')
+				defaultValue = options[0]				
+				resizablePropertyMethodCall = line[3]
+				typeProperty = line[4]
+				#Armazenar o metodo de chamada à classe resizable no mapa associativo
+				if not self.DPropertiesMethods.has_key(TypeControl):
+					self.DPropertiesMethods[TypeControl] = { }
+				
+				#Armazenar metodo respectivo que é executado na classe Resizable
+				self.DPropertiesMethods[TypeControl][IdProperty] = resizablePropertyMethodCall
+				
+				#Armazenar propriedade no mapa associativo
+				DControlDefaultPropertiesInfo[IdProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
+				
+			return DControlDefaultPropertiesInfo
+			
+		except IOError:
+			print str(ERROR_OPEN_FILE+" File:"+filePath)
+		
+	
+	##
+	# Load global properties for all controls type, from the given filePath into memory structures.
+	# If some problem occured an error will be printed.
+	#
+	# @Param filePath string
+	def loadGlobalProperties(self, filePath):
+		
+		try:
+			DControlDefaultPropertiesInfo = { }
+			DPropertiesMethodsInfo = { } 
+			fproperties = open(filePath)
+			#Ler conteudo do ficheiro
+			for line in fproperties:
+				line = line.replace('\n', '')	
+				line = line.split(':')
+				idProperty = line[0]
+				property = line[1]				
+				options = line[2].split('/')
+				defaultValue = options[0]
+				resizablePropertyMethodCall = line[3]				
+				typeProperty = line[4]
+				#Armazenar as caracteristicas globais na estrutura que armazerna as propriedades globais de todos os tipos de controlos				
+				DControlDefaultPropertiesInfo[idProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
+				
+				DPropertiesMethodsInfo[idProperty] = resizablePropertyMethodCall
+
+			#adicionar a todos os controlos as propriedades globais
+			for typeControl in self.DControlDefaultProperties.keys():				
+				#Armazenar as propreidades Globais
+				D = self.DControlDefaultProperties[typeControl]
+				D.update(DControlDefaultPropertiesInfo)
+		
+				#Armazenar os metodos da propriedades globais
+				D = self.DPropertiesMethods[typeControl]
+				D.update(DPropertiesMethodsInfo)
+			
+		except IOError:
+			str(ERROR_OPEN_FILE+" File:"+filePath)
 		
 		
-	def getNewIDControl(self, typeControl):
+	##
+	# Load all specific properties for all types of controls, from the given filePath, into memory structures.
+	# If some problem occured an error will be printed.
+	#
+	# @Param filePath string
+	def loadPropertiesFromFile(self, filePath):
+		#Abrir ficheiro com a indicação de todos os controlos		
+		
+		try:
+			fcontrols=open(filePath)
+			#Ler conteudo do ficheiro
+			for line in fcontrols:
+				line = line.replace('\n', '')	
+				line = line.split(':')		
+				typeControl = line[0]
+				filePathTypeControl = DIR_CONTROLS_DATA+line[1]
+				
+				#Ler metodo constructor para a criação das resizable
+				resizableContructorCall = line[2]
+				#Associação do metodo ao mapa associativo
+				self.DResizableInitMethods[typeControl] = resizableContructorCall
+				
+				#Ler Propriedades do actual tipo de controlo 
+				DControlDefaultProperties = self.loadTypeControlProperties(typeControl, filePathTypeControl)
+				#Associar ao mapa das caracteristicas dos controlos, as informações sobre as descrições (em forma de mapa associativo)
+				self.DControlDefaultProperties[typeControl] = DControlDefaultProperties				
+			
+		except IOError:
+			str(ERROR_OPEN_FILE+" File:"+filePath)
+
+
+	##
+	# Calculates a new Id for a new typeControl. 
+	#
+	# @Param typeControl string
+	#
+	# @return idControl string	
+	def generateNewIDControl(self, typeControl):
 
 		if self.haveTypeControls(typeControl) == false:				
 			return str(0)
 		else:				
-			try:				
-				return self.DControlsInfo[typeControl].values().index(self.deletedControl)			
+			#return str(len(self.DControlsInfo[typeControl].keys()))
+			try:					
+				return self.DControlsInfo[typeControl].keys().index(self.deletedControl)			
 			except ValueError:
 				return str(len(self.DControlsInfo[typeControl].keys()))
-
-	
-	def getDefaultProperties(self, typeControl):		
-		if self.DControlDefaultProperties.has_key(typeControl):
-			mapProperties = copy.deepcopy(self.DControlDefaultProperties[typeControl])
-			return mapProperties
-		
-		return self.error	
-
-	def getDefaultPropertyValue(self, typeControl, idProperty):
-		return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
-	
-	def getPropertyMethod(self, typeControl, idProperty):
-		return self.DPropertiesMethods[typeControl][idProperty]
-	
-
-	def getPropertyControlValue(self, typeControl, idControl, idProperty):
-		if self.haveIdControl(typeControl, idControl):
-			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.PropertyValue]
-		else:
-			return self.errorControlMissing
-	
-	def getPropertyControlName(self, typeControl, idControl, idProperty):
-		if self.haveIdControl(typeControl, idControl):
-			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.Property]
-		else:
-			return self.errorControlMissing
-	
-	def getControlProperties(self, typeControl, idControl):
 			
-		if self.haveIdControl(typeControl, idControl):
-			return  copy.copy(self.DControlsInfo[typeControl][idControl][self.positionProperties])
-			#return  copy.deepcopy(self.DControlsInfo[typeControl][idControl][self.positionProperties])
-		else:
-			return self.errorControlMissing
-	
-	
-	
-	def getIdItemsProperty(self, typeControl, idControl):
-		typeControl = str(typeControl)
-		idControl = str(idControl)
-	
-		idPropertyItems = -1
-	
-		#carregar as informações do controlo
-		controlInfo = self.getControlInfo(typeControl, idControl)
-		
-		#Verificar qual a propriedade de Items
-		if controlInfo.hasProperties():
-			for controlProperty in controlInfo.getControlProperties():
-				if controlProperty.getTypeProperty() == TITEMS or controlProperty.getTypeProperty() ==  TTABS:
-					idPropertyItems = controlProperty.getIdProperty()
-					break
-		
-		return idPropertyItems
-	
-	
-	#Metodo que armazena, para um controlo com propriedade de Items, os items 
-	def changeItemsProperties(self, typeControl, idControl, listItems):
-		typeControl = str(typeControl)
-		idControl = str(idControl)
-	
-		idPropertyItems = getIdItemsProperty(typeControl, idControl)
 			
-		#caso tenha sido encontrada a propriedade de Items
-		if idPropertyItems <> -1:
-			#???????????transformar todos os items editItem em texto ?????????????
-			#list = []			
-			#for item in listItems:
-			#	list.append(item.getText())
-			#****************************************************
-			#pickleList = serializeObject(listItems)
 			
-			#armazenar a lista de items			
-			self.changeProperty(typeControl, idControl, idPropertyItems, listItems)
-		
-
-	def changeTabsProperties(self, typeControl, idControl, listItems):		
-		typeControl = str(typeControl)
-		idControl = str(idControl)
-		
-		self.changeItemsProperties(typeControl, idControl, listItems)
-	
-	
-	def changeTableItemsProperties(self, typeControl, idControl, tableItems):		
-		typeControl = str(typeControl)
-		idControl = str(idControl)
-		
-		idPropertyItems = getIdItemsProperty(typeControl, idControl)
-		
-		#caso tenha sido encontrada a propriedade de Items
-		if idPropertyItems <> -1:
-			#armazenar a lista de items			
-			self.changeProperty(typeControl, idControl, idPropertyItems, tableItems)
-		
-	
-	
-	# return CControlInfo
-	def getControlInfo(self, typeControl, idControl):
-		
-		typeControl = str(typeControl)
-		idControl = str(idControl)
-		
-		controlInfo = CControlInfo(typeControl, idControl)
-		#carregar as propriedades para o objecto
-		propertiesList = { }		
-		propertiesList = self.getControlProperties(typeControl, idControl)		
-		
-		#print typeControl+"-"+idControl
-		#print propertiesList
-		
-		if propertiesList <> self.errorControlMissing: #verificar se as propeidades existem
-			for idProperty in propertiesList.keys():
+			"""#Verificar se existe algum id disponivel entre os valores já criados
+			if indexValue(self.DControlsInfo[typeControl].values())
+			
+			
+			nElements = len(self.DControlsInfo[typeControl].keys()) 
+			while itr < nElements:
+				try:
+					print itr
+					self.DControlsInfo[typeControl].values().index(itr)
+				except ValueError:
+					return itr
 				
-				nameProperty = propertiesList[idProperty][self.Property]
-				valueProperty = propertiesList[idProperty][self.PropertyValue]
-				typeProperty = propertiesList[idProperty][self.TypeProperty]
-				options = propertiesList[idProperty][self.Options]
-				controlProperty = CControlProperty(idProperty, nameProperty, valueProperty, typeProperty)
-				controlProperty.setOptions(options)
-
-				controlInfo.addControlProperty(controlProperty)
+				itr +=1
 				
-		return controlInfo
-	
-	def getNameMemRef(self, typeControl, idControl):
-		#verificar se em memória existe o controlo		
-		typeControl = str(typeControl)
-		idControl = idControl
-		
-		if self.haveIdControl(typeControl, idControl):			
-			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.nameMemRef]
-		else:
-			return self.errorControlMissing
-	
-	def getValueMemRef(self, typeControl, idControl):
-		#verificar se em memória existe o controlo		
-		typeControl = str(typeControl)
-		idControl = idControl
-		
-		if self.haveIdControl(typeControl, idControl):			
-			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.valueMemRef]
-		else:
-			return self.errorControlMissing
-		
-	def getControlsFromType(self, TypeControl):
-		if self.haveTypeControls(TypeControl) == false:
-			return self.error
-		return copy.deepcopy(self.DControlsInfo[TypeControl])
-	
-	def getAllControls(self): #(...)
-		print self.DControlsInfo	
-		
-		
-	def generateMemRefWidgetName(self, typeControl, idControl):
-		return  self.newControlName+str(typeControl)+str(idControl)
-		
-	def getTypeProperty(self,  typeControl, idControl, idProperty):
-		typeControl = str(typeControl)
-		idControl = idControl
-		idProperty = str(idProperty)
-		
-		if  self.haveTypeControls(typeControl) == false:
-			return self.error
-			
-		try:			
-			#return self.DControlsInfo[typeControl][idControl][self.positionProperties][self.TypeProperty]
-			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.TypeProperty]
-		except:
-			return self.error
-			
-			
+			#caso não tenha encontrado nenhuma posição vaga então é criado um novo id
+			return nElements 
+			"""
+
+
+	##
+	# A new instance of typeControls is created and maintained in internal structure. The controls properties is formated by default properties values.
+	# The reference of the new control is returned.
+	#
+	# @Param typeControl string
+	# @Param parentWidget QWidget
+	#
+	# @return memory reference
 	def addNewControl(self, typeControl, parentWidget):
 		
 		#DPropertiesControls = {}
@@ -362,7 +325,8 @@ class MonitorControls(QtCore.QObject):
 			return self.error
 		
 		#calcular um Id para o control		
-		IdControl = self.getNewIDControl(typeControl)
+		IdControl = self.generateNewIDControl(typeControl)
+		#print IdControl 
 		#adicionar o novo controlo ao mapa
 		DControl = { }
 		DControl[IdControl] = { self.positionProperties : DPropertiesControls, self.positionMemRef : { } }
@@ -415,20 +379,47 @@ class MonitorControls(QtCore.QObject):
 		self.lastIdControl = IdControl
 		
 		return widget
-		
-	def getLastIdControl(self):
-		return self.lastIdControl
 	
-	def delControl(self, TypeControl, IDControl):
-				
-		if self.haveTypeControls(TypeControl) == false:
+	
+	##
+	# The control identified by typeControl and idControl is deleted from the maintain monitor system.
+	# The control's Id is returned if the delete operation was correctly performed.
+	# If the control don't exist in the monitor system, the will be returned -1. 
+	#
+	# @Param typeControl string
+	# @Param parentWidget QWidget
+	#
+	# @return string
+	def deleteControl(self, typeControl, idControl):
+		
+		typeControl = str(typeControl)
+		idControl = str(idControl)		
+		
+		if self.haveTypeControls(typeControl) == false:
 			return self.deletedControl
 		else:				
-			if self.DControlsInfo[TypeControl].has_key(IDControl) == true:
-				self.DControlsInfo[TypeControl][IDControl] = self.deletedControl
-			return IDControl
-
-	#Metodo que de acordo com a propriedade, esta é alterada de forma a ser possivel ser executado o codigo da resizableWidget
+			if self.DControlsInfo[typeControl].has_key(idControl) == true:
+				
+				#obter o nome da instancia que referencia a widget Resizable em memória
+				widgetName = self.getValueMemRef(str(typeControl), str(idControl))
+				if widgetName <> self.errorControlMissing:					
+					widgetName.setParent(QtGui.QWidget())
+					del widgetName 
+				
+				self.DControlsInfo[typeControl][idControl] = self.deletedControl
+				#del self.DControlsInfo[typeControl][idControl] 
+			return idControl
+	
+	##
+	# Set a value property for be used in the resizable methods. This is a method used internaly inthe class.
+	# The formated value is returned
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param idProperty string
+	# @Param value string
+	#
+	# @return valueFormated string	
 	def setValueProperty(self, typeControl, idControl, idProperty, value):
 		typeControl = str(typeControl)
 		idControl = str(idControl)
@@ -443,8 +434,20 @@ class MonitorControls(QtCore.QObject):
 			elif value == 'true':
 				value = true
 		
+
 		return value
 
+
+	##
+	# Change a property value in tha maintain system and their layout for a given value property of a typeControl.
+	#If the property value wasn't changed, then -1 is returned.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param idProperty string
+	# @Param value string
+	#
+	# @return -1 if a problem occured
 	def changeProperty(self, typeControl, idControl, idProperty, value = None):
 		
 		if self.haveIdControl(typeControl, idControl) == false:
@@ -477,107 +480,69 @@ class MonitorControls(QtCore.QObject):
 			
 			#Antes de executar o metodo é necessário saber qual a referencia ao controlo (....)
 			callProcedureResizableProperty(widgetName+"."+resizablePropertyMethodCall, paramProperty)
+	
+	
+	
+	## Special method for Controls with Items related properties.
+	# Save the items values (listItems) for a control with Item property related.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param listItems python List	
+	def changeItemsProperties(self, typeControl, idControl, listItems):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+	
+		idPropertyItems = getIdItemsProperty(typeControl, idControl)
 			
-	def loadTypeControlProperties(self, TypeControl, filePath):
-		
-		try:
-			DControlDefaultPropertiesInfo = { }
-			fcontrol=open(filePath)
-			#Ler conteudo do ficheiro
-			for line in fcontrol:
-				line = line.replace('\n', '')	
-				line = line.split(':')		
-				IdProperty = line[0]
-				property = line[1]				
-				options = line[2].split('/')
-				defaultValue = options[0]				
-				resizablePropertyMethodCall = line[3]
-				typeProperty = line[4]
-				#Armazenar o metodo de chamada à classe resizable no mapa associativo
-				if not self.DPropertiesMethods.has_key(TypeControl):
-					self.DPropertiesMethods[TypeControl] = { }
-				
-				#Armazenar metodo respectivo que é executado na classe Resizable
-				self.DPropertiesMethods[TypeControl][IdProperty] = resizablePropertyMethodCall
-				
-				#Armazenar propriedade no mapa associativo
-				DControlDefaultPropertiesInfo[IdProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
-				
-			return DControlDefaultPropertiesInfo
+		#caso tenha sido encontrada a propriedade de Items
+		if idPropertyItems <> -1:
+			#???????????transformar todos os items editItem em texto ?????????????
+			#list = []			
+			#for item in listItems:
+			#	list.append(item.getText())
+			#****************************************************
+			#pickleList = serializeObject(listItems)
 			
-		except IOError:
-			print str(ERROR_OPEN_FILE+" File:"+filePath)
+			#armazenar a lista de items			
+			self.changeProperty(typeControl, idControl, idPropertyItems, listItems)
 		
 	
-	def loadGlobalProperties(self, filePath):
+	## Special method for Controls with Tabs related properties.
+	# Save the Tabs values (listItems) for a control with Tabs property related.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param listTabs python List
+	def changeTabsProperties(self, typeControl, idControl, listTabs):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
 		
-		try:
-			DControlDefaultPropertiesInfo = { }
-			DPropertiesMethodsInfo = { } 
-			fproperties = open(filePath)
-			#Ler conteudo do ficheiro
-			for line in fproperties:
-				line = line.replace('\n', '')	
-				line = line.split(':')
-				idProperty = line[0]
-				property = line[1]				
-				options = line[2].split('/')
-				defaultValue = options[0]
-				resizablePropertyMethodCall = line[3]				
-				typeProperty = line[4]
-				#Armazenar as caracteristicas globais na estrutura que armazerna as propriedades globais de todos os tipos de controlos				
-				DControlDefaultPropertiesInfo[idProperty] = {self.Property:property, self.PropertyValue:defaultValue, self.Options:options, self.TypeProperty:typeProperty}
-				
-				DPropertiesMethodsInfo[idProperty] = resizablePropertyMethodCall
-
-			#adicionar a todos os controlos as propriedades globais
-			for typeControl in self.DControlDefaultProperties.keys():				
-				#Armazenar as propreidades Globais
-				D = self.DControlDefaultProperties[typeControl]
-				D.update(DControlDefaultPropertiesInfo)
-		
-				#Armazenar os metodos da propriedades globais
-				D = self.DPropertiesMethods[typeControl]
-				D.update(DPropertiesMethodsInfo)
-			
-		except IOError:
-			str(ERROR_OPEN_FILE+" File:"+filePath)
-		
-		
+		self.changeItemsProperties(typeControl, idControl, listTabs)
 	
-	def loadPropertiesFromFile(self, filePath):
-		#Abrir ficheiro com a indicação de todos os controlos		
-		
-		try:
-			fcontrols=open(filePath)
-			#Ler conteudo do ficheiro
-			for line in fcontrols:
-				line = line.replace('\n', '')	
-				line = line.split(':')		
-				typeControl = line[0]
-				filePathTypeControl = DIR_CONTROLS_DATA+line[1]
-				
-				#Ler metodo constructor para a criação das resizable
-				resizableContructorCall = line[2]
-				#Associação do metodo ao mapa associativo
-				self.DResizableInitMethods[typeControl] = resizableContructorCall
-				
-				#Ler Propriedades do actual tipo de controlo 
-				DControlDefaultProperties = self.loadTypeControlProperties(typeControl, filePathTypeControl)
-				#Associar ao mapa das caracteristicas dos controlos, as informações sobre as descrições (em forma de mapa associativo)
-				self.DControlDefaultProperties[typeControl] = DControlDefaultProperties				
-			
-		except IOError:
-			str(ERROR_OPEN_FILE+" File:"+filePath)
-		
 	
-	#SIGNALS
-	"""def SendResizableSignal(self, typeControl, idControl):
-		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
-		print "teste monitor signal"
-		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), typeControl, idControl)
-	"""
 	
+	def changeTableItemsProperties(self, typeControl, idControl, tableItems):		
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		idPropertyItems = getIdItemsProperty(typeControl, idControl)
+		
+		#caso tenha sido encontrada a propriedade de Items
+		if idPropertyItems <> -1:
+			#armazenar a lista de items			
+			self.changeProperty(typeControl, idControl, idPropertyItems, tableItems)
+	
+	
+	
+	##
+	# Disable the selected efect of the current selected control, identified with typeControl and idControl.
+	# If some problem occurred -1 will be returned.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return -1 
 	def disableSelectedControl(self, typeControl, idControl):
 			
 		procedureInfo = METHOD_DISABLE_SELECTION		
@@ -586,7 +551,9 @@ class MonitorControls(QtCore.QObject):
 				return self.errorMethodCall		
 		callProcedureResizableProperty(str(widgetName)+"."+procedureInfo)
 	
-			
+	
+	##
+	# Disable the efect of all seleted controls.	
 	def disableAllSelectedControls(self):
 		
 		for control in self.LControlsSelected:			
@@ -599,12 +566,22 @@ class MonitorControls(QtCore.QObject):
 		self.controlSelected[self.positionIdControl] = self.noneSelected
 		
 		
-
+	##
+	# Clear the state of selected control. None selected state will be set.
 	def clearIndicationSeletedControl(self):
 		self.controlSelected[self.positionTypeControl] = self.noneSelected
 		self.controlSelected[self.positionIdControl] = self.noneSelected
-
-	def setSelectedControl(self, typeControl, idControl, unSelectedOtherControls = true):		
+	
+	
+	
+	##
+	# Set a new control to be selected. The new control is identified with typeControl and idControl.
+	# If unSelectedOtherControls is true, then other seleted controls will be deselecte. Otherwise maintain the selected effect.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param unSelectedOtherControls boolean	
+	def setSelectedControl(self, typeControl, idControl, unSelectedOtherControls = true):
 		#caso o controlo já seleccionado seja igual ao que se pretende seleccionar então não será processada a selecção
 		if self.controlSelected[self.positionTypeControl] == typeControl and self.controlSelected[self.positionIdControl] == idControl:			
 			return
@@ -628,13 +605,343 @@ class MonitorControls(QtCore.QObject):
 		#Alterar interface da resizableWidget de forma a parecer seleccionada
 		self.getValueMemRef(str(typeControl), str(idControl)).enableSelected()
 	
+	##
+	# The controls in the given intersection will be put a selection effect on.
+	#
+	# @Param intersection QRect(QT class)	
+	def setSelectedControlsIntersection(self, intersection):
+		LWidgetsRects = []
+		LWidgetsRects = self.getResizableWidgetsRects()
+		
+		for widgetInfo in LWidgetsRects:			
+			typeControl = widgetInfo[0]
+			idControl = widgetInfo[1]
+			widgetRect = widgetInfo[2]			
+			
+			if intersection.intersects(widgetRect):				
+				self.setSelectedControl(str(typeControl), str(idControl), false)
+		
+		self.clearIndicationSeletedControl()
 	
+	
+	
+	##
+	# Check if a control property, identidied with typeControl, idControl and idProperty, is a multi-property.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param idProperty string
+	#
+	# @return boolean
+	def isMultiProperty(self, typeControl, idControl, idProperty):
+		property = self.getTypeProperty(typeControl, idControl, idProperty)
+		
+		if property <> self.error:
+			try:
+				multiPropretyValues.index(property)
+				return true
+			except ValueError:
+				return false
+		else:
+			return false
+
+	
+	
+
+	##
+	# Check if already exists, on memory, a control with the given typeControl.
+	#
+	# @Param typeControl string
+	#
+	# @return boolean
+	def haveTypeControls(self, typeControl):
+		if self.DControlsInfo.has_key(typeControl) == false:
+			return false
+		else:
+			return true
+	
+	
+	##
+	# Check if already exists on memory a control with the given typeControl an idControl.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return boolean
+	def haveIdControl(self, typeControl, idControl):
+		typeControl = str(typeControl)
+		idControl = idControl
+		
+		if self.haveTypeControls(typeControl) and self.DControlsInfo[typeControl].has_key(idControl) and self.DControlsInfo[typeControl][idControl] != self.deletedControl:
+			return true
+		else:
+			return false
+	
+	
+	##
+	# Generate a memory name reference for a resizableWidget, identified with the given typeControl and idControl
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return memoryReference string	
+	def generateMemRefWidgetName(self, typeControl, idControl):
+		return  self.newControlName+str(typeControl)+str(idControl)
+	
+	
+
+	def getLastIdControl(self):
+		return self.lastIdControl
+
+	##
+	# Returns the default properties from a given typeControl. If no default properties is found then is returned -1.
+	#
+	# @Param typeControl string
+	#
+	# @return python dict type  
+	def getDefaultProperties(self, typeControl):		
+		if self.DControlDefaultProperties.has_key(typeControl):
+			mapProperties = copy.deepcopy(self.DControlDefaultProperties[typeControl])
+			return mapProperties
+		
+		return self.error	
+
+	##
+	# Returns the default property value from a given typeControl and idProperty.
+	#
+	# @Param typeControl string
+	# @Param idProperty string
+	#
+	# @return value string
+	def getDefaultPropertyValue(self, typeControl, idProperty):
+		return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
+	
+	
+	##
+	# Returns the property value from a given typeControl and idProperty. If no property value is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idProperty string
+	#
+	# @return value string
+	def getPropertyControlValue(self, typeControl, idControl, idProperty):
+		if self.haveIdControl(typeControl, idControl):
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.PropertyValue]
+		else:
+			return self.errorControlMissing
+	
+	##
+	# Returns the method name related with a property of a typeControl. 
+	# This method belongs to the resizableWidget that represents the typeControl.
+	#
+	# @Param typeControl string
+	# @Param idProperty string
+	#
+	# @return methodName string	
+	def getPropertyMethod(self, typeControl, idProperty):
+		return self.DPropertiesMethods[typeControl][idProperty]
+	
+	
+	
+	##
+	# Returns the property name related with a property of a typeControl. If no property name is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param idProperty string
+	#
+	# @return propertyName string
+	def getPropertyControlName(self, typeControl, idControl, idProperty):
+		if self.haveIdControl(typeControl, idControl):
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.Property]
+		else:
+			return self.errorControlMissing
+	
+	
+	##
+	# Returns control properties from a given typeControl and idControl. If no control properties is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return python dict type
+	def getControlProperties(self, typeControl, idControl):
+			
+		if self.haveIdControl(typeControl, idControl):
+			return  copy.copy(self.DControlsInfo[typeControl][idControl][self.positionProperties])
+			#return  copy.deepcopy(self.DControlsInfo[typeControl][idControl][self.positionProperties])
+		else:
+			return self.errorControlMissing
+	
+	
+	## Special method for Controls with Items related properties.
+	# Returns the idProperty value from a control type with Item property related.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return idProperty string
+	def getIdItemsProperty(self, typeControl, idControl):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+	
+		idPropertyItems = -1
+	
+		#carregar as informações do controlo
+		controlInfo = self.getControlInfo(typeControl, idControl)
+		
+		#Verificar qual a propriedade de Items
+		if controlInfo.hasProperties():
+			for controlProperty in controlInfo.getControlProperties():
+				if controlProperty.getTypeProperty() == TITEMS or controlProperty.getTypeProperty() ==  TTABS:
+					idPropertyItems = controlProperty.getIdProperty()
+					break
+		
+		return idPropertyItems
+	
+	
+	
+	##
+	# Returns the related information from Control identified with the given typeControl and idControl.
+	#
+	# @Param typeControl string
+	# @Param idControl string	
+	#
+	# @return CControlInfo
+	# @see CControlInfo
+	def getControlInfo(self, typeControl, idControl):
+		
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		controlInfo = CControlInfo(typeControl, idControl)
+		#carregar as propriedades para o objecto
+		propertiesList = { }		
+		propertiesList = self.getControlProperties(typeControl, idControl)		
+		
+		#print typeControl+"-"+idControl
+		#print propertiesList
+		
+		if propertiesList <> self.errorControlMissing: #verificar se as propeidades existem
+			for idProperty in propertiesList.keys():
+				
+				nameProperty = propertiesList[idProperty][self.Property]
+				valueProperty = propertiesList[idProperty][self.PropertyValue]
+				typeProperty = propertiesList[idProperty][self.TypeProperty]
+				options = propertiesList[idProperty][self.Options]
+				controlProperty = CControlProperty(idProperty, nameProperty, valueProperty, typeProperty)
+				controlProperty.setOptions(options)
+
+				controlInfo.addControlProperty(controlProperty)
+				
+		return controlInfo
+	
+	##
+	# Returns the name in memory that makes reference to the Control identified with the given typeControl and idControl.
+	# If no name reference is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return name memory reference
+	def getNameMemRef(self, typeControl, idControl):
+		#verificar se em memória existe o controlo		
+		typeControl = str(typeControl)
+		idControl = idControl
+		
+		if self.haveIdControl(typeControl, idControl):			
+			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.nameMemRef]
+		else:
+			return self.errorControlMissing
+	
+	##
+	# Returns the value reference in momory that makes reference to the Control identified with the given typeControl and idControl.
+	# If no value reference is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	#
+	# @return value memory reference
+	def getValueMemRef(self, typeControl, idControl):
+		#verificar se em memória existe o controlo		
+		typeControl = str(typeControl)
+		idControl = idControl
+		
+		if self.haveIdControl(typeControl, idControl):			
+			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.valueMemRef]
+		else:
+			return self.errorControlMissing
+	
+	##
+	# Returns all the controls information from a given typeControl. If no controls is found then is returned -1.
+	#
+	# @Param typeControl string	
+	#
+	# @return python Dict
+	def getControlsFromType(self, typeControl):
+		if self.haveTypeControls(typeControl) == false:
+			return self.error
+		return copy.deepcopy(self.DControlsInfo[typeControl])
+	
+		
+	def getAllControls(self): #(...)
+		print self.DControlsInfo	
+		
+		
+	##
+	# Returns the property type from a given typeControl, idControl and idProperty. If no property type is found then is returned -1.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param idProperty string
+	#
+	# @return typeProperty string
+	def getTypeProperty(self,  typeControl, idControl, idProperty):
+		typeControl = str(typeControl)
+		idControl = idControl
+		idProperty = str(idProperty)
+		
+		if  self.haveTypeControls(typeControl) == false:
+			return self.error
+			
+		try:			
+			#return self.DControlsInfo[typeControl][idControl][self.positionProperties][self.TypeProperty]
+			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.TypeProperty]
+		except:
+			return self.error
+			
+	
+	
+		
+	
+	#SIGNALS
+	"""def SendResizableSignal(self, typeControl, idControl):
+		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
+		print "teste monitor signal"
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), typeControl, idControl)
+	"""
+		
+	##
+	# Return the type of the selected control.
+	#
+	# @return string
 	def getTypeSelectedControl(self):
 		return self.controlSelected[self.positionTypeControl]
 	
+	
+	
+	##
+	# Returns the Id of the selected control.
+	# Ifnone control is selected -1 will be returned.
+	#
+	# @Param string
 	def getIdSelectedControl(self):
 		return self.controlSelected[self.positionIdControl]
 	
+	##
+	# Returns a list with the sizes (QRect) of all widgets saved in the structures.
+	#
+	# @Param python list
 	def getResizableWidgetsRects(self):
 		
 		LWidgetsRects = []
@@ -651,34 +958,11 @@ class MonitorControls(QtCore.QObject):
 		
 		return LWidgetsRects
 
-	#Método que data uma interseção (intersection -> QRect) selecciona os controlos dessa interseção
-	def setSelectedControlsIntersection(self, intersection):
-		LWidgetsRects = []
-		LWidgetsRects = self.getResizableWidgetsRects()
-		
-		for widgetInfo in LWidgetsRects:			
-			typeControl = widgetInfo[0]
-			idControl = widgetInfo[1]
-			widgetRect = widgetInfo[2]			
-			
-			if intersection.intersects(widgetRect):				
-				self.setSelectedControl(str(typeControl), str(idControl), false)
-		
-		self.clearIndicationSeletedControl()
+
+	
 	
 
-	def isMultiProperty(self, typeControl, idControl, idProperty):
-		property = self.getTypeProperty(typeControl, idControl, idProperty)
 		
-		if property <> self.error:
-			try:
-				multiPropretyValues.index(property)
-				return true
-			except ValueError:
-				return false
-		else:
-			return false
-	
 	
 		
 	def SendResizableSignal(self, typeControl, idControl):

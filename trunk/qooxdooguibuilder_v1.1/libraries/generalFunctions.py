@@ -60,7 +60,7 @@ def clearList(list):
 		itr +=1
 
 ##Documentation for a function.
-# Convert QString to String in latin1 format
+# Convert QString to String, in latin1 format
 #
 # @param qtString QString
 def QStringToString(qtString):
@@ -105,3 +105,15 @@ def serializeObject(object):
 
 def unserializeObject(pickleObject):
 	return pickle.loads(pickleObject)
+
+
+
+
+def indexValue(list, value):
+	
+	for elem in list:
+		if elem == value:
+			return true
+	
+	return false
+		

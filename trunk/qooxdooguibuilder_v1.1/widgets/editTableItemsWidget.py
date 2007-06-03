@@ -162,7 +162,18 @@ class CEditTableItemsWidget(QtGui.QDialog):
 			
 		#carregar dados iniciais para a tabela
 		self.inicializeTableData(inicialTableData)
+	
 
+	def inicializeTableData(self, tableData):
+		self.TableItems.setTableWidget(tableData)
+		self.ListColumns.setListWidget(tableData.getTableColumns())
+		self.ListRows.setListWidget(tableData.getTableRows())
+		
+		if self.ListColumns.count() > 0:
+			self.renameColumnsButton.setEnabled(true)
+			
+		if self.ListRows.count() > 0:
+			self.renameRowsButton.setEnabled(true)
 	
 	#TRATAMENTO DOS SINAIS
 	#SLOTS
@@ -533,16 +544,6 @@ class CEditTableItemsWidget(QtGui.QDialog):
 			self.renameRowsButton.setText(self.RenameState)
 			self.btnRowState = self.RenameState
 	
-	def inicializeTableData(self, tableData):
-		self.TableItems.setTableWidget(tableData)
-		self.ListColumns.setListWidget(tableData.getTableColumns())
-		self.ListRows.setListWidget(tableData.getTableRows())
-		
-		if self.ListColumns.count() > 0:
-			self.renameColumnsButton.setEnabled(true)
-			
-		if self.ListRows.count() > 0:
-			self.renameRowsButton.setEnabled(true)
 	
 	def getTableData(self):
 		return self.TableItems.getTableData()

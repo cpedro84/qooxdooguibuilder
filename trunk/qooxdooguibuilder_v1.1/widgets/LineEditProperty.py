@@ -26,17 +26,18 @@ class CLineEditProperty(QtGui.QLineEdit):
 		self.connect(self, QtCore.SIGNAL("returnPressed()"), self.valueChanged)
 		#self.connect(self, QtCore.SIGNAL("selectionChanged()"), self.valueChanged)
 	
-	def getPropertyValue(self):
-		return self.text().toLatin1().__str__()
-	
-	def getIdProperty(self):
-		return self.idProperty
 	
 	def setIdProperty(self, idProperty):
 		self.idProperty = idProperty
 	
 	def setPropertyType(self, typeProperty):
 		self.typeProperty = typeProperty
+		
+	def getPropertyValue(self):
+		return self.text().toLatin1().__str__()
+	
+	def getIdProperty(self):
+		return self.idProperty
 		
 	def valueChanged(self):
 		#ENVIO DO SINAL PARA  INFORMAR QUE A PROPRIEDADE FOI ALTERADA DE ESTADO
