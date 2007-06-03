@@ -16,7 +16,6 @@ from projectExceptions import *
 from tableWidget import *
 from listWidget import *
 
-
 class ResizableWidget(QtGui.QWidget):
     
 	def __init__(self, typeControl, Id, widget=None, parent=None):
@@ -28,7 +27,8 @@ class ResizableWidget(QtGui.QWidget):
 				
 		#Formatar output da Widget que representa o controlo
 		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
-		self.childWidget.setEnabled(false)
+		self.childWidget.setEnabled(false)		
+		#self.blockSignals(true)
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
 		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
 		#self.childWidget.setFrameShadow(QtGui.QFrame.Raised)
@@ -470,6 +470,12 @@ class ResizableWidget(QtGui.QWidget):
 		if  keyPressed ==  QtCore.Qt.Key_unknown or not self.isSelected:
 			return
 			
+		#verificar se a tecla pressionada foi o DEL
+		if keyPressed == QtCore.Qt.Key_Delete: #Eliminar Widget
+			#ENVIO DO SINAL PARA INFORMAR QUE O CONTROLO SELECCIONADO È PARA SER ELIMINADO
+			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), str(self.typeControl), str(self.idControl))
+			return
+		
 		#obter  largura e altura da widget pai 
 		widthArea = self.parentWidget().geometry().width()
 		heightArea = self.parentWidget().geometry().height()
@@ -536,7 +542,8 @@ class ResizableWidget(QtGui.QWidget):
 		print("")
 
 	def deleteAct(self):
-		print("")
+		#ENVIO DO SINAL PARA INFORMAR QUE O CONTROLO SELECCIONADO È PARA SER ELIMINADO
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), str(self.typeControl), str(self.idControl))
 		
 	def applyTemplateAct(self):
 		print("")

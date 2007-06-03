@@ -25,6 +25,11 @@ class CComboBoxProperties(QtGui.QComboBox):
 	def setIdProperty(self, idProperty):
 		self.idProperty = idProperty
 	
+	def setSelectedItem(self,itemText):
+		nItem = self.findText(itemText)
+		if nItem <> -1:
+			self.setCurrentIndex(nItem)
+	
 	def getSelectedPropertyValue(self):
 		return self.currentText().toLatin1().__str__()
 	
@@ -34,11 +39,6 @@ class CComboBoxProperties(QtGui.QComboBox):
 	def removeAllProperties(self):
 		self.clear()
 	
-	def setSelectedItem(self,itemText):
-		nItem = self.findText(itemText)
-		if nItem <> -1:
-			self.setCurrentIndex(nItem)
-
 	def valueChanged(self, nItem):
 		#ENVIO DO SINAL PARA  INFORMAR QUE A PROPRIEDADE FOI ALTERADA DE ESTADO
 		value = str(self.getSelectedPropertyValue())		

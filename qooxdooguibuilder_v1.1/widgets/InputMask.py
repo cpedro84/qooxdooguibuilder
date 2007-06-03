@@ -8,7 +8,6 @@ from projectExceptions import *
 from generalFunctions import *
 
 class CInputMask(QtCore.QString):
-
 	
 	def __init__(self, type = TINT):
 		
@@ -24,7 +23,8 @@ class CInputMask(QtCore.QString):
 		
 		QtCore.QString.__init__(self, self.mask)
 	
-
-	def setMask(self, mask):
-		
+	def setMask(self, mask):		
 		self = QtCore.QString(mask)
+		
+	def getMask(self):
+		return QStringToString(self)
