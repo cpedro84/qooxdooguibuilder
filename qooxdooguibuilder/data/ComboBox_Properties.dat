@@ -1,4 +1,4 @@
-01:Editable:false/true:-:TDefault
-02:PagingInterval:10:-:TDefault
-03:Selected:-:-:TDefault
-04:Items:-:setItems(param):TItems
+01:Editable:false/true:-:TBoolean
+02:PagingInterval:10:-:TInt
+03:Selected:true/false:-:TBoolean
+04:Items:-:-:TItems
