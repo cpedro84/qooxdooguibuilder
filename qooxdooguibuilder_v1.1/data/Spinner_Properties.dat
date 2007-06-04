@@ -1,3 +1,3 @@
 01:Min:0:-:TInt
-02:Max:100:-:TInt
-03:StepBy:1:-:TInt
+02:Value:0:-:TInt
+03:Max:100:-:TInt

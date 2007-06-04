@@ -1,1 +1,3 @@
-Txt:Text:TextField:setText(param):TString
+01:Text:Text Field:setText(param):TString
+02:MaxLength:100:-:TInt
+03:ReadOnly:false/true:-:TBoolean
