@@ -1,3 +1,3 @@
 01:HeaderCellHeight:16:-:TInt
 02:RowHeight:12:-:TInt
-03:Items:-:-:TItems
+03:Items:-:-:TTableItems

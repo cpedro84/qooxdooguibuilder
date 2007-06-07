@@ -24,7 +24,7 @@ class ResizableComboBox(ResizableWidget):
 		self.ComboBox.insertItem(index, strText)
 	
 	
-	# textItemsList -> ELEMENT TYPE: editItem
+	# textItemsList -> ELEMENT TYPE: CEditItem
 	def setItems(self, textItemsList):
 		self.ComboBox.clear()
 		for item in textItemsList:			
@@ -62,7 +62,7 @@ class ResizableComboBox(ResizableWidget):
 		nElements = self.countItems()
 		elem = 0		
 		while elem < nElements:
-			textItems.append(editItem(self.getItemText(elem)))
+			textItems.append(CEditItem(self.getItemText(elem)))
 			elem = elem + 1
 		
 		return items

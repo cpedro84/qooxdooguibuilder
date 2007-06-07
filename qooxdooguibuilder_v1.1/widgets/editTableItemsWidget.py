@@ -166,8 +166,18 @@ class CEditTableItemsWidget(QtGui.QDialog):
 
 	def inicializeTableData(self, tableData):
 		self.TableItems.setTableWidget(tableData)
-		self.ListColumns.setListWidget(tableData.getTableColumns())
-		self.ListRows.setListWidget(tableData.getTableRows())
+		
+		#Inicializar a lista com as colunas
+		listColumns_ = []
+		for column in tableData.getTableColumns():
+			listColumns_.append(CEditItem(column))
+		self.ListColumns.setListWidget(listColumns_)
+		
+		#Inicializar lista com as linhas
+		listRows_ = []
+		for column in tableData.getTableRows():
+			listRows_.append(CEditItem(column))
+		self.ListRows.setListWidget(listRows_)
 		
 		if self.ListColumns.count() > 0:
 			self.renameColumnsButton.setEnabled(true)

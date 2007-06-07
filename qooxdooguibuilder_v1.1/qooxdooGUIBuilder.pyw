@@ -29,6 +29,7 @@ from tableWidget import *
 from ComboBoxProperties import *
 from LineEditProperty import *
 from InputMask import *
+from yamlInterpreter import *
 
 pathButtonPixmap = DIR_CONTROLS+"Button.png"
 pathCheckPixmap = DIR_CONTROLS+"CheckBox.png"
@@ -105,6 +106,8 @@ class DrawArea(QtGui.QWidget):
 	self.PenWidth = 2 
 	self.RectSize = 4
 	
+	
+	self.originPressed = QtCore.QPoint()
 
     def mousePressEvent(self, event):
 
@@ -137,13 +140,16 @@ class DrawArea(QtGui.QWidget):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
 	
-	#Envio do sinal de que um controlo foi clicado, com as suas propriedades
+	#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
 	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
 
 
     def SignalProcess_resizableClicked(self, typeControl, idControl):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
+	
+	#Envio do sinal, indicando que a interface foi alterada
+	self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
     
 	self.monitor.setSelectedControl(typeControl, idControl)
     
@@ -157,17 +163,30 @@ class DrawArea(QtGui.QWidget):
 
     # Items -> QStringList
     def saveTListItems(self, typeControl, idControl, items):
-	self.monitor.changeItemsProperties(typeControl, idControl, Items)
+	self.monitor.changeItemsProperties(typeControl, idControl, items)
 	
     def saveTTabViewTabs(self, typeControl, idControl, tabs):
-	self.monitor.changeTabsProperties(typeControl, idControl, Tabs)
+	self.monitor.changeTabsProperties(typeControl, idControl, tabs)
 
-    def changeTableItemsProperties(self, typeControl, idControl, tableItems):
-	self.monitor.changeTabsProperties(typeControl, idControl, tableItems)
+    def saveTTableItems(self, typeControl, idControl, tableItems):
+	self.monitor.changeTableItemsProperties(typeControl, idControl, tableItems)
 
     #********************************************************* 
     #************************************************************
-    
+    def assignSignalsToControlWidget(self, newControlWidget):
+	#PROCESSAMENTO DOS SINAIS DA RESIZABLE WIDGET
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)		    
+        #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
+        #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
+	#PARA  CONTROLOS DO TIPO TTABLE QUE TENHAM PROPRIEDADES DE TTABLEITEMS 
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.saveTTableItems)
+	#*****************************************************************
+
+
     def dragEnterEvent(self, event):	
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             event.acceptProposedAction() #Indicação do possivel drop	    
@@ -191,19 +210,13 @@ class DrawArea(QtGui.QWidget):
 	    dropPos.setY(dropPos.y() - (dropPos.y() % STEP_MOVE))
 	    #*************************************************************************************************
 	    
+	    #CASO DE CRIAÇÃO DE UM NOVO CONTROLO
 	    if actionType == DRAG_COPY_ACTION:
 		    
 		    newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
 		    
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)
-		    
-		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
-		    #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS  (Colocar este código nos if desses controlos e criar metodos para tratar cada um dos sinais)
-		    QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTTabViewTabs)		    
-		    #*****************************************************************
+		    #atribuir os sinais ao controlo criado
+		    self.assignSignalsToControlWidget(newControlWidget)		    
 		    
 		    newControlWidget.move(dropPos)
 		    newControlWidget.show()
@@ -223,8 +236,7 @@ class DrawArea(QtGui.QWidget):
 	    typeControl = str(self.monitor.getTypeSelectedControl())
 	    idControl = str(self.monitor.getIdSelectedControl())
 	    	
-	    #Alterar as prorpriedades Left e Top de acordo com a nova posição
-	    
+	    #Alterar as prorpriedades Left e Top de acordo com a nova posição	    
 	    self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
 	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
 	    
@@ -234,10 +246,11 @@ class DrawArea(QtGui.QWidget):
 	    #self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(event.source().height()))
 	    #******************************************************************
 	
-	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)
-    	    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
-	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)
-
+	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)    	    
+	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
+	    #Envio do sinal, indicando que a interface foi alterada
+	    self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
+	    
 	else:
             event.ignore()
 
@@ -571,11 +584,15 @@ class MainWindow(QtGui.QMainWindow):
 	self.setCentralWidget(self.centralWidget)	
 	
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
-        self.setWindowTitle("Qooxdoo GUI Builder")
+        self.setWindowTitle(TITLE_MAIN_WINDOW)
         self.setMinimumSize(800, 600)
 
-    
+	#Definição do estado da interface actual
+	self.interfaceSaved = true
 
+	#Definição do ficheiro currente relativo à interface
+	self.curFile = QtCore.QString("")
+	
     def createActions(self):
 
         self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface", self)
@@ -593,14 +610,12 @@ class MainWindow(QtGui.QMainWindow):
         self.openTemplateAction.setStatusTip("Open an existing template")
         self.connect(self.openTemplateAction, QtCore.SIGNAL("triggered()"), self.openTemplateAct)
 
-        self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "&Save interface", self)
-        self.saveInterfaceAction.setDisabled(True)
+        self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "&Save interface", self)       
         self.saveInterfaceAction.setShortcut("Ctrl+S")
         self.saveInterfaceAction.setStatusTip("Save the interface")
         self.connect(self.saveInterfaceAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAct)
 
-        self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), "Save interface &as...", self)
-        self.saveInterfaceAsAction.setDisabled(True)
+        self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), "Save interface &as...", self)        
         self.saveInterfaceAsAction.setStatusTip("Save the interface under a new name")
         self.connect(self.saveInterfaceAsAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAsAct)
 
@@ -792,6 +807,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.changeControlName)
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED), self.setInterfaceSaved)
     
     def changeControlName(self, typeControl, idControl):
 	typeControl = str(typeControl)
@@ -802,31 +818,146 @@ class MainWindow(QtGui.QMainWindow):
     
     def clearControlName(self):
 	self.controlName.setText(CONTROL_LABEL)
+
+    
+    def setInterfaceSaved(self, isSaved = false):
+	self.interfaceSaved = isSaved
+	
+    def isInterfaceSaved(self):
+	return self.interfaceSaved
+    
+    def loadInterface(self, fileName):
+        
+	file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_READ_FILE).arg(fileName).arg(file.errorString()))
+            return
+        instr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*********Leitura da interface*********	
+	controlsInfoList = CYamlInterpreter().readInterface(QStringToString(instr.readAll()))
+	
+	#Limpar a interface gráfica
+	self.monitor.deleteAllControls()
+	
+	for controlInfo in controlsInfoList:
+		listProperties = controlInfo.getControlProperties()
+		
+		newControlWidget = self.monitor.addNewControl(controlInfo.getTypeControl(), self.drawArea, listProperties, false)	    
+		
+		#atribuir os sinais ao controlo criado
+		self.drawArea.assignSignalsToControlWidget(newControlWidget)		
+		newControlWidget.show()
+		
+	#*************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        	
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
+        
+	
+    def saveInterface(self, fileName):
+        file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileName).arg(file.errorString()))
+            return False
+        
+	outstr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*************Armazenamento da interface************	
+	outstr << CYamlInterpreter().writeInterface(self.monitor.getControlsInfo())	
+	#***************************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)
+        
+	self.setInterfaceSaved(true)
+	return True
+
+
+    def setCurrentInterfaceFile(self, fileName):
+        self.curFile = fileName
+        if self.curFile.isEmpty():
+            self.setWindowTitle(TITLE_MAIN_WINDOW)
+        else:
+            self.setWindowTitle(self.tr("%1 - %2").arg(TITLE_MAIN_WINDOW).arg(self.strippedName(self.curFile)))
+    
+    def strippedName(self, fullFileName):
+        return QtCore.QFileInfo(fullFileName).fileName()
     
     
+    #SLOTs - ACÇÕES do utilizador sobre a interface
     def newInterfaceAct(self):
 	
         return
 
 
+    def openTemplateAct(self):	
+	#(...)
+	return
+
+    
     def openInterfaceAct(self):
-	print self.monitor.DControlsInfo[TList]
-        return
+	#verificar se a interface foi armazenada
+	if not self.isInterfaceSaved():
+		
+		if self.curFile.isEmpty():
+			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				MSG_INTERFACE_TO_SAVE,                                
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+		
+		else:
+			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_INTERFACE_FILE_TO_SAVE)
+                                .arg(QtCore.QDir.convertSeparators(self.curFile)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
 
-
-    def openTemplateAct(self):
+		
+		if ret == QtGui.QMessageBox.Yes:
+			self.saveInterfaceAct()
 	
-        return
+	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
+	if not fileName.isEmpty():
+		self.loadInterface(fileName)       
+		
+    
 
+    def saveInterfaceAct(self):	
 
-    def saveInterfaceAct(self):
-
-        return
+	if self.curFile.isEmpty():
+		return self.saveInterfaceAsAct()
+        else:
+		return self.saveInterface(self.curFile)
 
 
     def saveInterfaceAsAct(self):
-
-        return
+	fileName = QtGui.QFileDialog.getSaveFileName(self, 
+					TITLE_SAVE_DIALOG, 
+					ROOT_DIRECTORY, 
+					FILES_FILTER, 
+					FILE_EXTENSION)
+					
+	if fileName.isEmpty():
+            return False
+        
+	
+        """
+	#verificar se o ficheira já existe
+	if QtCore.QFile.exists(fileName):
+            ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_FILE_ALREADY_EXISTS).arg(QtCore.QDir.convertSeparators(fileName)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+            if ret == QtGui.QMessageBox.No:
+                return
+        """
+	
+	self.saveInterface(fileName)	
 
 
     def configureAct(self):
@@ -896,7 +1027,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def aboutAct(self):
 
-        QtGui.QMessageBox.about(self, "About", "<b>Qooxdoo GUI Builder</b><p>System of visual construction of interfaces, for the qooxdoo framework.<p><br>Authors:<p>- Cláudia Oliveira&nbsp;&nbsp;&nbsp;<a href=claudia.i.h.oliveira@gmail.com>claudia.i.h.oliveira@gmail.com</a><p>- Cláudio Pedro&nbsp;&nbsp;&nbsp;<a href=claudio.pedro@gmail.com>claudio.pedro@gmail.com</a><p>- Nuno Coelho&nbsp;&nbsp;&nbsp;<a href=nuno.a.coelho@gmail.com>nuno.a.coelho@gmail.com</a><p><br>Official Web Site:&nbsp;&nbsp;&nbsp;<a href=http://qooxdooguibuilder.googlepages.com>http://qooxdooguibuilder.googlepages.com</a>")
+        QtGui.QMessageBox.about(self, "About", "<b>"+TITLE_MAIN_WINDOW+"</b><p>System of visual construction of interfaces, for the qooxdoo framework.<p><br>Authors:<p>- Cláudia Oliveira&nbsp;&nbsp;&nbsp;<a href=claudia.i.h.oliveira@gmail.com>claudia.i.h.oliveira@gmail.com</a><p>- Cláudio Pedro&nbsp;&nbsp;&nbsp;<a href=claudio.pedro@gmail.com>claudio.pedro@gmail.com</a><p>- Nuno Coelho&nbsp;&nbsp;&nbsp;<a href=nuno.a.coelho@gmail.com>nuno.a.coelho@gmail.com</a><p><br>Official Web Site:&nbsp;&nbsp;&nbsp;<a href=http://qooxdooguibuilder.googlepages.com>http://qooxdooguibuilder.googlepages.com</a>")
 
 
     def applyTemplateAct(self):
@@ -907,6 +1038,7 @@ class MainWindow(QtGui.QMainWindow):
     def saveTemplateAsAct(self):
 
         return
+
 
 
     control_beeing_added = 0

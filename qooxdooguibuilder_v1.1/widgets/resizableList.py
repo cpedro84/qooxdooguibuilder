@@ -19,7 +19,7 @@ class ResizableList(ResizableWidget):
 	def addItemText(self, item):
 		self.ListView.addItem(item)
 	
-	# textItemsList -> ELEMENT TYPE: editItem 
+	# textItemsList -> ELEMENT TYPE: CEditItem 
 	def setItems(self, textItemsList):
 		self.ListView.clear()
 		for item in textItemsList:			
@@ -40,7 +40,7 @@ class ResizableList(ResizableWidget):
 		nElements = self.countItems()
 		elem = 0		
 		while elem < nElements:
-			textItems.append(editItem(self.getItemText(elem)))
+			textItems.append(CEditItem(self.getItemText(elem)))
 			elem = elem + 1
 		
 		return textItems

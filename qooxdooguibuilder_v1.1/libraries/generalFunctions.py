@@ -4,7 +4,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 from const import *
-from editItem import editItem
+from editItem import CEditItem
 from projectExceptions import *
 from tableData import *
 import cPickle as pickle
@@ -107,8 +107,6 @@ def unserializeObject(pickleObject):
 	return pickle.loads(pickleObject)
 
 
-
-
 def indexValue(list, value):
 	
 	for elem in list:
@@ -116,4 +114,12 @@ def indexValue(list, value):
 			return true
 	
 	return false
+	
+	
+def writeToFile(fileContent, filePath):
+	
+	file = open(filePath, "w")	
+	file.write(fileContent)	
+	file.close()
+
 		

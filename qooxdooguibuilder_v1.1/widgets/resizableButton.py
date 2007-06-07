@@ -24,6 +24,3 @@ class ResizableButton(ResizableAbstractIO):
 	def setIconHeight(self, height):
 		width = self.iconSize().width()
 		self.setIconSize(QtCore.QSize(width, height))
-		
-	def mousePressEvent(self, bool):		
-		self.parent().activeWindow()
