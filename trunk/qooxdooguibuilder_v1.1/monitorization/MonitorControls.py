@@ -315,7 +315,7 @@ class CMonitorControls(QtCore.QObject):
 	# @Param parentWidget QWidget
 	#
 	# @return memory reference
-	def addNewControl(self, typeControl, parentWidget):
+	def addNewControl(self, typeControl, parentWidget, controlProperties = None, applySelectEffect = true):
 		
 		#DPropertiesControls = {}
 		DPropertiesControls = copy.deepcopy(self.getDefaultProperties(typeControl))
@@ -326,7 +326,7 @@ class CMonitorControls(QtCore.QObject):
 		
 		#calcular um Id para o control		
 		IdControl = self.generateNewIDControl(typeControl)
-		#print IdControl 
+		
 		#adicionar o novo controlo ao mapa
 		DControl = { }
 		DControl[IdControl] = { self.positionProperties : DPropertiesControls, self.positionMemRef : { } }
@@ -357,23 +357,16 @@ class CMonitorControls(QtCore.QObject):
 		#Armazenar informações sobre o controlo na estrutura
 		self.DControlsInfo[typeControl].update(DControl)
 		
-		#Alteração das propriedades por defeito do controlo criado
-		#(...) - o metodo changeProperty vai ser chamado n vezes, onde n é igual ao nº de propriedades a alterar	
-		for idProperty in DPropertiesControls.keys():
-			#Obter o nome do metodo a ser executado
-			#propertyMethod = self.getPropertyMethod(TypeControl, idProperty)
-			#Obter o valor a propriedade por defeito 			
-			#paramProperty = {self.paramPropertiesResizable : self.getDefaultPropertyValue(TypeControl, idProperty) }
-			#Executar o metodo para alteração da propriedade do controlo
-			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
-			typeProperty = self.getTypeProperty(typeControl, IdControl, idProperty)
-			
-			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING or typeProperty == TALIGN: #Só as propriedades do tipo TDEFAULT ou TBOOLEAN é que serão inicialmente ser inicializadas				
-				self.changeProperty(typeControl, IdControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
-		#**********************************************************************************
+		#verificar se existem propriedades para atribuir ao novo controlo criado
+		if controlProperties == None: #serão atribuidas as propriedades por defeito
+			self.assignDefaultProperties(typeControl, IdControl, DPropertiesControls)
+		else: #serão atribuidas as propriedades referênciadas por parametro
+			self.assignProperties(widget, typeControl, IdControl, controlProperties)
+	
 		
-		#seleccionar a Resizable criada
-		self.setSelectedControl(typeControl, IdControl)
+		if applySelectEffect:
+			#seleccionar a Resizable criada
+			self.setSelectedControl(typeControl, IdControl)
 		
 		#Armazenar o último IdControl
 		self.lastIdControl = IdControl
@@ -410,6 +403,97 @@ class CMonitorControls(QtCore.QObject):
 				#del self.DControlsInfo[typeControl][idControl] 
 			return idControl
 	
+	
+	def deleteAllControls(self):
+		
+		#Eliminar todas as referências de memória dos controlos
+		for typeControl in self.DControlsInfo.keys():
+			for idControl in self.DControlsInfo[typeControl].keys():
+				self.deleteControl(typeControl, idControl)
+		
+		# Limpar a estrutura com os dados dos controlos
+		self.DControlsInfo.clear()
+	
+	
+	
+
+	##
+	# Assign to a control, identified with tge given typeControl and idControl, the default properties
+	#if a problem occured -1 will be returned
+	#
+	# @Param typeControl string
+	# @Param idControl string	
+	def assignDefaultProperties(self, typeControl, idControl, controlDefaultProperties):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		if self.haveIdControl(typeControl, idControl) == false:
+			return self.error
+		
+		#Alteração das propriedades por defeito do controlo criado
+		#(...) - o metodo changeProperty vai ser chamado n vezes, onde n é igual ao nº de propriedades a alterar	
+		for idProperty in controlDefaultProperties.keys():
+			#Obter o nome do metodo a ser executado
+			#propertyMethod = self.getPropertyMethod(TypeControl, idProperty)
+			#Obter o valor a propriedade por defeito 			
+			#paramProperty = {self.paramPropertiesResizable : self.getDefaultPropertyValue(TypeControl, idProperty) }
+			#Executar o metodo para alteração da propriedade do controlo
+			#callProcedureResizableProperty(memRefName+"."+propertyMethod, paramProperty)			
+			typeProperty = self.getTypeProperty(typeControl, idProperty)
+			
+			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING or typeProperty == TALIGN:
+				self.changeProperty(typeControl, idControl, idProperty, self.getDefaultPropertyValue(typeControl, idProperty))
+		#**********************************************************************************
+	
+	
+	# controlProperties - list of CControlProperty
+	def assignProperties(self, controlWidgetReference, typeControl, idControl, controlProperties):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		if self.haveIdControl(typeControl, idControl) == false:
+			return self.error
+			
+		
+		for property in controlProperties:
+			idProperty = property.getIdProperty()				
+			typeProperty = self.getTypeProperty(typeControl, idProperty)
+			valueProperty = property.getValueProperty()
+			if typeProperty == TINT or typeProperty == TBOOLEAN or typeProperty == TSTRING or typeProperty == TALIGN:
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)			
+			elif typeProperty == TITEMS and valueProperty <> self.emptyParamValue:
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
+				#Acrescentar Items ao controlo
+				listItems = []
+				for itemText in valueProperty:					
+					listItems.append(CEditItem(itemText))
+				controlWidgetReference.setItems(listItems)
+				
+			elif typeProperty == TTABS and valueProperty <> self.emptyParamValue:
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
+				#Acrescentar Items ao controlo
+				listItems = []
+				for itemText in valueProperty:					
+					listItems.append(CEditItem(itemText, QtGui.QWidget()))
+					controlWidgetReference.setTabs(listItems)
+
+			elif typeProperty == TTABLEITEMS and valueProperty <> self.emptyParamValue:
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
+				
+				#Construir TableData para preencher a tabela
+				
+				columns = valueProperty.keys()
+				rows = []
+				for column in valueProperty.keys():
+					rows = valueProperty[column].keys()
+					break
+				
+				tableData = CTableData()				
+				tableData.setTableColumns(columns) 
+				tableData.setTableRows(rows) 
+				tableData.setTableItems(valueProperty) 
+				controlWidgetReference.setTable(tableData)
+
 	##
 	# Set a value property for be used in the resizable methods. This is a method used internaly inthe class.
 	# The formated value is returned
@@ -426,7 +510,7 @@ class CMonitorControls(QtCore.QObject):
 		idProperty = str(idProperty)
 		
 		#Para propriedades do tipo TBOOLEAN é necessário converter o valor (value) para um tipo booleano
-		typeProperty = self.getTypeProperty(typeControl, idControl, idProperty)
+		typeProperty = self.getTypeProperty(typeControl, idProperty)
 		if typeProperty == TBOOLEAN:
 			#transformar o conteudo do valor
 			if value == 'false':
@@ -436,7 +520,6 @@ class CMonitorControls(QtCore.QObject):
 		
 
 		return value
-
 
 	##
 	# Change a property value in tha maintain system and their layout for a given value property of a typeControl.
@@ -458,7 +541,7 @@ class CMonitorControls(QtCore.QObject):
 			
 			#carregar o metodo a ser chamado na resizable para efectuar a alteração visual
 			resizablePropertyMethodCall = self.getPropertyMethod(typeControl, idProperty) #carregar metodo a ser executado
-				
+	
 			#validar string com o metodo a ser chamado
 			if resizablePropertyMethodCall == self.emptyPropertyMethod or len(resizablePropertyMethodCall) == 0:
 				return self.errorEmptyMethod
@@ -477,10 +560,9 @@ class CMonitorControls(QtCore.QObject):
 			#if paramProperty == self.emptyParamValue:
 			if value == self.emptyParamValue:
 				return self.errorEmptyParamValue
-			
-			#Antes de executar o metodo é necessário saber qual a referencia ao controlo (....)
+
+			#Antes de executar o metodo é necessário saber qual a referencia ao controlo
 			callProcedureResizableProperty(widgetName+"."+resizablePropertyMethodCall, paramProperty)
-	
 	
 	
 	## Special method for Controls with Items related properties.
@@ -493,19 +575,19 @@ class CMonitorControls(QtCore.QObject):
 		typeControl = str(typeControl)
 		idControl = str(idControl)
 	
-		idPropertyItems = getIdItemsProperty(typeControl, idControl)
+		idPropertyItems = self.getIdItemsProperty(typeControl, idControl)
 			
 		#caso tenha sido encontrada a propriedade de Items
 		if idPropertyItems <> -1:
 			#???????????transformar todos os items editItem em texto ?????????????
-			#list = []			
-			#for item in listItems:
-			#	list.append(item.getText())
+			list = []			
+			for item in listItems:
+				list.append(item.getText())
 			#****************************************************
 			#pickleList = serializeObject(listItems)
 			
-			#armazenar a lista de items			
-			self.changeProperty(typeControl, idControl, idPropertyItems, listItems)
+			#armazenar a lista de items	- Para estes controlos não existe nunhum metodo associado à resizable para a adição de items
+			self.changeProperty(typeControl, idControl, idPropertyItems, list)
 		
 	
 	## Special method for Controls with Tabs related properties.
@@ -521,16 +603,22 @@ class CMonitorControls(QtCore.QObject):
 		self.changeItemsProperties(typeControl, idControl, listTabs)
 	
 	
-	
+	#tableItems -> CTableData
 	def changeTableItemsProperties(self, typeControl, idControl, tableItems):		
 		typeControl = str(typeControl)
 		idControl = str(idControl)
 		
-		idPropertyItems = getIdItemsProperty(typeControl, idControl)
+		idPropertyItems = self.getIdItemsProperty(typeControl, idControl)
+		
+		print "**"
+		print idPropertyItems
+		print tableItems
+		print "**"
 		
 		#caso tenha sido encontrada a propriedade de Items
-		if idPropertyItems <> -1:
-			#armazenar a lista de items			
+		if idPropertyItems <> -1:			
+			#armazenar a lista de items
+			
 			self.changeProperty(typeControl, idControl, idPropertyItems, tableItems)
 	
 	
@@ -634,7 +722,7 @@ class CMonitorControls(QtCore.QObject):
 	#
 	# @return boolean
 	def isMultiProperty(self, typeControl, idControl, idProperty):
-		property = self.getTypeProperty(typeControl, idControl, idProperty)
+		property = self.getTypeProperty(typeControl, idProperty)
 		
 		if property <> self.error:
 			try:
@@ -793,7 +881,7 @@ class CMonitorControls(QtCore.QObject):
 		#Verificar qual a propriedade de Items
 		if controlInfo.hasProperties():
 			for controlProperty in controlInfo.getControlProperties():
-				if controlProperty.getTypeProperty() == TITEMS or controlProperty.getTypeProperty() ==  TTABS:
+				if controlProperty.getTypeProperty() == TITEMS or controlProperty.getTypeProperty() ==  TTABS or controlProperty.getTypeProperty() ==  TTABLEITEMS:
 					idPropertyItems = controlProperty.getIdProperty()
 					break
 		
@@ -835,6 +923,23 @@ class CMonitorControls(QtCore.QObject):
 				controlInfo.addControlProperty(controlProperty)
 				
 		return controlInfo
+	
+	
+	##
+	# Returns the related information from all Control.
+	#
+	# @return list of CControlInfo
+	# @see CControlInfo
+	def getControlsInfo(self):
+		
+		controlsInfoList = []
+		
+		for typeControl in self.DControlsInfo.keys():			
+			for idControl in self.DControlsInfo[typeControl]:
+				if self.DControlsInfo[typeControl][idControl] <> self.deletedControl: #verificar se o controlo não está referênciado como apagado
+					controlsInfoList.append(self.getControlInfo(typeControl, idControl))
+		
+		return controlsInfoList
 	
 	##
 	# Returns the name in memory that makes reference to the Control identified with the given typeControl and idControl.
@@ -896,11 +1001,11 @@ class CMonitorControls(QtCore.QObject):
 	# @Param idProperty string
 	#
 	# @return typeProperty string
-	def getTypeProperty(self,  typeControl, idControl, idProperty):
-		typeControl = str(typeControl)
-		idControl = idControl
+	def getTypeProperty(self,  typeControl, idProperty):
+		typeControl = str(typeControl)		
 		idProperty = str(idProperty)
 		
+		"""
 		if  self.haveTypeControls(typeControl) == false:
 			return self.error
 			
@@ -909,8 +1014,12 @@ class CMonitorControls(QtCore.QObject):
 			return self.DControlsInfo[typeControl][idControl][self.positionProperties][idProperty][self.TypeProperty]
 		except:
 			return self.error
-			
-	
+		"""
+		
+		try:
+			return self.DControlDefaultProperties[typeControl][idProperty][self.TypeProperty]
+		except:
+			return self.error
 	
 		
 	

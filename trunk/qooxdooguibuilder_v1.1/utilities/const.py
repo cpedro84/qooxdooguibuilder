@@ -27,7 +27,7 @@ SIGNAL_CONTROL_CLICKED = "Control_Clicked(const QString &, const QString &)"
 SIGNAL_PROPERTY_CHANGED = "Property_Changed" #ENVIO IMPLICITO DE: idProperty; propertyValue
 SIGNAL_NONE_CONTROL_SELECTED = "None_Control_Selected" # INDICAÇÃO QUE A DRAW AREA FOI CLICADA
 SIGNAL_RESIZABLE_DELETE = "Resizable_Delete(const QString &, const QString &)" #ENVIO DE: typeControl; idControl 
-
+SINGNAL_INTERFACE_CHANGED = "InterfaceChanged" #INDICAÇÃO QUE A INTERFACE FOI ALTERADA
 
 #DEFINICÃO DOS FICHEIROS COM AS INFORMAÇÕES SOBRE OS CONTROLOS
 FILE_CONTROLS_PROPERTIES= "ControlsDataTypes.dat"
@@ -106,6 +106,7 @@ TFLOAT = "TFloat"
 TSTRING = "TString"
 TBOOLEAN = "TBoolean"
 TITEMS = "TItems"
+TTABLEITEMS = "TTableItems" 
 TTABS = "TTabs"
 TICON = "TIcon"
 TALIGN = "TAlign"
@@ -127,7 +128,7 @@ tableControls = [TTable]
 multiPropretyValues = [TBOOLEAN]
 
 #LISTA QUE IDENTIFICA QUAIS OS TIPOS DE DADOS DE PROPRIEDADE QUE NÃO SÃO PARA SER APRESENTADOS NA WIDGET DE ALTERAÇÃO DE PROPRIEDADES
-specificTypeProperties = [TITEMS, TTABS]
+specificTypeProperties = [TITEMS, TTABLEITEMS, TTABS]
 
 #TIPOS DE ERROS
 generalError = -1
@@ -138,6 +139,7 @@ ERROR_OPEN_FILE = "Erro na abertura do ficheiro."
 ERROR_ACCESS_STRUCTURE = "Erro no acesso á estrutura de dados."
 
 #TITULOS DAS JANELAS
+TITLE_MAIN_WINDOW = "Qooxdoo GUI Builder"
 TITLE_EDIT_ITEMS = "Qooxdoo GUI Builder - Edit Items"
 TITLE_EDIT_TABS = "Qooxdoo GUI Builder - Edit Tabs"
 TITLE_EDIT_TABLE = "Qooxdoo GUI Builder - Edit Table"
@@ -185,3 +187,25 @@ ID_LEFT = "G02"
 ID_TOP = "G01"
 ID_HEIGHT = "G08"
 ID_WIDTH = "G05"
+
+
+#DEFINIÇÕES SOBRE AS DIALOGS DE ABRIR/GRAVAR FICHEIROS
+TITLE_OPEN_DIALOG = "Open Interface File ..."
+TITLE_SAVE_DIALOG = "Save Interface File ..."
+ROOT_DIRECTORY = "./"
+FILES_FILTER = "Interface Files(*.ym)"
+FILE_EXTENSION = "*.ym"
+
+
+#DEFINIÇÃO DO TIMEOUT DAS MENSAGENS DA STATUSBAR
+TIMEOUT_MSG = 2000
+
+#MENSAGENS UTILIZADOR
+MSG_FILE_ALREADY_EXISTS = "File &1 already exists.\n"+"Do you want to overwrite it?"
+MSG_CANNOT_SAVE_FILE = "Cannot write interface file %1:\n %2."
+MSG_CANNOT_READ_FILE = "Cannot read file %1:\n%2."
+MSG_FILE_SAVED = "File Saved"
+MSG_FILE_LOADED = "File loaded"
+MSG_INTERFACE_TO_SAVE = "Do you want to save the changes you made?"
+MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1' ?"
+

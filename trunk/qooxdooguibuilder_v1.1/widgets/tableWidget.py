@@ -56,13 +56,13 @@ class CTableWidget(QtGui.QTableWidget):
 		#adicionar as colunas e linhas em primeiro lugar para que as celulas sejam criadas	
 		for columnItem in tableData.getTableColumns():
 			self.insertColumn(itrColumn)
-			self.setHorizontalHeaderItem(itrColumn, QtGui.QTableWidgetItem(columnItem.getText()))
+			self.setHorizontalHeaderItem(itrColumn, QtGui.QTableWidgetItem(columnItem))
 			itrColumn +=1
 		
 		#LINHAS
 		for rowItem in tableData.getTableRows():
 			self.insertRow(itrRow)
-			self.setVerticalHeaderItem(itrRow, QtGui.QTableWidgetItem(rowItem.getText()))
+			self.setVerticalHeaderItem(itrRow, QtGui.QTableWidgetItem(rowItem))
 			itrRow +=1
 		
 		itrColumn = 0
@@ -75,7 +75,7 @@ class CTableWidget(QtGui.QTableWidget):
 			#Adicionar as linhas e os respectivos items 
 			for rowItem in tableDataItems[columnItem].keys():				
 				#Adicionar o item á celula
-				self.setItem(itrRow, itrColumn, QtGui.QTableWidgetItem(tableDataItems[columnItem][rowItem].getText()))
+				self.setItem(itrRow, itrColumn, QtGui.QTableWidgetItem(tableDataItems[columnItem][rowItem]))
 			
 				itrRow +=1
 			itrColumn +=1
@@ -96,14 +96,14 @@ class CTableWidget(QtGui.QTableWidget):
 		itrRow = 0
 		#copiar todos os items da self
 		while itrColumn < self.columnCount():
-			columnItem = editItem(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
+			columnItem = QStringToString(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
 			itrRow = 0 
 			tableItems[columnItem] = {}
 			for rowItem in rowsList:
 				tableItem = self.item(itrRow, itrColumn)
 				if tableItem == None:
 					tableItem = QtGui.QTableWidgetItem("")
-				cellItem = editItem(QtGui.QTableWidgetItem(tableItem).text())
+				cellItem = QStringToString(QtGui.QTableWidgetItem(tableItem).text())
 				tableItems[columnItem].update({rowItem: cellItem})
 				itrRow +=1
 				
@@ -124,7 +124,7 @@ class CTableWidget(QtGui.QTableWidget):
 		itr = 0
 		#armazenar todas as descrições das linhas	da self	
 		while itr < self.rowCount():
-			rowsList.append(editItem(QtGui.QTableWidgetItem(self.verticalHeaderItem(itr)).text()))
+			rowsList.append(QStringToString(QtGui.QTableWidgetItem(self.verticalHeaderItem(itr)).text()))
 			itr +=1
 			
 		return rowsList
@@ -134,7 +134,7 @@ class CTableWidget(QtGui.QTableWidget):
 		itr = 0
 		#armazenar todas as descrições das linhas	da self	
 		while itr < self.columnCount():
-			columnsList.append(editItem(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itr)).text()))
+			columnsList.append(QStringToString(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itr)).text()))
 			itr +=1
 		
 		return columnsList

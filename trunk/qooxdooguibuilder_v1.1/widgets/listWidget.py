@@ -27,6 +27,6 @@ class CListWidget(QtGui.QListWidget):
 		nElements =  self.count()				
 		while elem < nElements:
 			item = self.item(elem)
-			itemsList.append(editItem(str(item.text())))
+			itemsList.append(CEditItem(str(item.text())))
 			
 		return itemsList

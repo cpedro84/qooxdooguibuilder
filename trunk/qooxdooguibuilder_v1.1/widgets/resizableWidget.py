@@ -764,7 +764,7 @@ class ResizableWidget(QtGui.QWidget):
 			
 			#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
 			#tableData = QtCore.QObject(tableData)
-			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), str(self.typeControl), str(self.idControl), tableData)
+			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), str(self.typeControl), str(self.idControl), tableData.getTableItems())
 
 	
 	#********************************************************************

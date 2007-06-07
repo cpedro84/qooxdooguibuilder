@@ -83,7 +83,7 @@ class editItemsWidget(QtGui.QDialog):
 	#************SLOTS*****************
 	def listItemDoubleClicked(self, listWidgetItem):
 		self.itemsListView.openPersistentEditor(listWidgetItem)
-		self.itemsListView.editItem(listWidgetItem)
+		self.itemsListView.CEditItem(listWidgetItem)
 	
 	def listItemClicked(self, listWidgetItem):
 		self.setLineEdit(listWidgetItem.text())
@@ -116,7 +116,7 @@ class editItemsWidget(QtGui.QDialog):
 		#if self.textInput.text() != "":			
 		self.itemsListView.addItem(self.newItemText)
 		
-		self.ItemsList.append(editItem(self.newItemText))
+		self.ItemsList.append(CEditItem(self.newItemText))
 		
 		#focar na janela a LineEdit
 		self.textInput.setFocus()
