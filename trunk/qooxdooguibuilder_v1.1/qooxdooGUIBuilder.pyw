@@ -595,7 +595,7 @@ class MainWindow(QtGui.QMainWindow):
 	
     def createActions(self):
 
-        self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface", self)
+        self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface...", self)
         self.newInterfaceAction.setDisabled(True)
         self.newInterfaceAction.setShortcut("Ctrl+N")
         self.newInterfaceAction.setStatusTip("Create a new interface")
