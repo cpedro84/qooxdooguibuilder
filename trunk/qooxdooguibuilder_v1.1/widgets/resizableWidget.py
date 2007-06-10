@@ -526,6 +526,7 @@ class ResizableWidget(QtGui.QWidget):
 		menu.addAction(self.cutAction)
 		menu.addAction(self.copyAction)
 		menu.addAction(self.pasteAction)
+		menu.addSeparator()
 		menu.addAction(self.deleteAction)
 		menu.addSeparator()
 		menu.addAction(self.applyTemplateAction)

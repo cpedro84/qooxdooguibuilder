@@ -20,32 +20,34 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../utilities"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../widgets"))
 
+
+
 from PyQt4 import QtCore, QtGui
 from const import *
-from monitorControls import *
+from MonitorControls import *
 from tableWidget import *
+from ComboBoxProperties import *
+from LineEditProperty import *
+from InputMask import *
+from yamlInterpreter import *
 
-
-
-pathButtonPixmap = DIR_CONTROLS + "Button.png"
-pathCheckPixmap = DIR_CONTROLS + "CheckBox.png"
-pathComboPixmap = DIR_CONTROLS + "ComboBox.png"
-pathGroupPixmap = DIR_CONTROLS + "GroupBox.png"
-pathIframePixmap = DIR_CONTROLS + "Iframe.png"
-pathLabelPixmap = DIR_CONTROLS + "Label.png"
-pathListPixmap = DIR_CONTROLS + "List.png"
-pathMenuBarPixmap = DIR_CONTROLS + "MenuBar.png"
-pathPasswordFieldPixmap = DIR_CONTROLS + "PasswordField.png"
-pathRadioPixmap = DIR_CONTROLS + "RadioButton.png"
-pathSpinnerPixmap = DIR_CONTROLS + "Spinner.png"
-pathTabViewPixmap = DIR_CONTROLS + "TabView.png"
-pathTablePixmap = DIR_CONTROLS + "Table.png"
-pathTextAreaPixmap = DIR_CONTROLS + "TextArea.png"
-pathTextFieldPixmap = DIR_CONTROLS + "TextField.png"
-pathToolbarPixmap = DIR_CONTROLS + "ToolBar.png"
-pathTreePixmap = DIR_CONTROLS + "Tree.png"
-
-
+pathButtonPixmap = DIR_CONTROLS+"Button.png"
+pathCheckPixmap = DIR_CONTROLS+"CheckBox.png"
+pathComboPixmap = DIR_CONTROLS+"ComboBox.png"
+pathGroupPixmap = DIR_CONTROLS+"GroupBox.png"
+pathIframePixmap = DIR_CONTROLS+"Iframe.png"
+pathLabelPixmap = DIR_CONTROLS+"Label.png"
+pathListPixmap = DIR_CONTROLS+"List.png"
+pathMenuBarPixmap = DIR_CONTROLS+"MenuBar.png"
+pathPasswordFieldPixmap = DIR_CONTROLS+"PasswordField.png"
+pathRadioPixmap = DIR_CONTROLS+"RadioButton.png"
+pathSpinnerPixmap = DIR_CONTROLS+"Spinner.png"
+pathTabViewPixmap = DIR_CONTROLS+"TabView.png"
+pathTablePixmap = DIR_CONTROLS+"Table.png"
+pathTextAreaPixmap = DIR_CONTROLS+"TextArea.png"
+pathTextFieldPixmap = DIR_CONTROLS+"TextField.png"
+pathToolbarPixmap = DIR_CONTROLS+"ToolBar.png"
+pathTreePixmap = DIR_CONTROLS+"Tree.png"
 
 class DragLabel(QtGui.QLabel):
 
@@ -81,7 +83,7 @@ class DrawArea(QtGui.QWidget):
 	
 	self.parent = parent
 	
-	#definir que o evento MouseMove é accionado por qualquer movimento do rato mesmo que este não seja clicado
+	#definir que o evento MouseMove é assionado por qualquer movimento do rato mesmo que este não seja clicado
 	self.setMouseTracking(true)
 	self.monitor = monitor
 	
@@ -89,19 +91,26 @@ class DrawArea(QtGui.QWidget):
 
 	#********Variavéis que controlam o QRuberHand*********	
 	self.rubberHand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, self)
-	self.mousePressed = false	
+	self.mousePressed = false
 	#*********************************************
 	
-        self.setAcceptDrops(True)
-        self.setBackgroundRole(DRAW_AREA_COLOR)
-        self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
-      
+	self.setAcceptDrops(True)
+	self.setAutoFillBackground(true)
+	self.setBackgroundRole(QtGui.QPalette.Light)
+	
+	
+	#self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
+	self.setGeometry(self.x(), self.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
+
 	#DEFINIÇÃO DE TAMANHOS
 	self.PenWidth = 2 
 	self.RectSize = 4
 	
+	
+	self.originPressed = QtCore.QPoint()
 
     def mousePressEvent(self, event):
+
 	self.mouseClicked = true
 	#Des-Seleccionar todos os controlos que tiverem seleccionados
 	self.monitor.disableAllSelectedControls()		
@@ -109,7 +118,10 @@ class DrawArea(QtGui.QWidget):
 	
 	self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, QtCore.QSize()))
 	self.rubberHand.show()
-		
+	
+	#enviar sinal para inicar que nenhum controlo está seleccionado
+	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
+	
     def mouseReleaseEvent(self, event):
 	self.mouseClicked = true
 	rubberRect = QtCore.QRect(self.rubberHand.geometry())
@@ -121,25 +133,65 @@ class DrawArea(QtGui.QWidget):
 		self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, event.pos()).normalized())
 	
 	#verificar se existem vários controlos selecciondos 
+
+    
+    #***************PROCESSAMENTO DE SINAIS***************
+    def SignalProcess_resizableReleased(self, typeControl, idControl):	
+	typeControl = str(typeControl)
+	idControl =str(idControl)
 	
+	#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
+	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
+
+
+    def SignalProcess_resizableClicked(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	#Envio do sinal, indicando que a interface foi alterada
+	self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
+    
+	self.monitor.setSelectedControl(typeControl, idControl)
+    
+    def deleteControl(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	#enviar sinal para inicar que nenhum controlo está seleccionado	
+	self.monitor.deleteControl(typeControl, idControl)
+	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
+
+    # Items -> QStringList
+    def saveTListItems(self, typeControl, idControl, items):
+	self.monitor.changeItemsProperties(typeControl, idControl, items)
+	
+    def saveTTabViewTabs(self, typeControl, idControl, tabs):
+	self.monitor.changeTabsProperties(typeControl, idControl, tabs)
+
+    def saveTTableItems(self, typeControl, idControl, tableItems):
+	self.monitor.changeTableItemsProperties(typeControl, idControl, tableItems)
+
+    #********************************************************* 
+    #************************************************************
+    def assignSignalsToControlWidget(self, newControlWidget):
+	#PROCESSAMENTO DOS SINAIS DA RESIZABLE WIDGET
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)		    
+        #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
+        #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
+	#PARA  CONTROLOS DO TIPO TTABLE QUE TENHAM PROPRIEDADES DE TTABLEITEMS 
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.saveTTableItems)
+	#*****************************************************************
+
 
     def dragEnterEvent(self, event):	
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             event.acceptProposedAction() #Indicação do possivel drop	    
 	else:
             event.ignore()
-
-    
-    #***************PROCESSAMENTO DE SINAIS***************
-    def SignalProcess_resizableCliked(self, typeControl, idControl):	
-	typeControl = str(typeControl)
-	idControl =str(idControl)
-	
-	#Envio do sinal de que um controlo foi clicado, com as suas propriedades
-	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
-	
-	self.monitor.setSelectedControl(typeControl, idControl)
-    #************************************************************
 
     def dropEvent(self, event):
         
@@ -158,71 +210,47 @@ class DrawArea(QtGui.QWidget):
 	    dropPos.setY(dropPos.y() - (dropPos.y() % STEP_MOVE))
 	    #*************************************************************************************************
 	    
+	    #CASO DE CRIAÇÃO DE UM NOVO CONTROLO
 	    if actionType == DRAG_COPY_ACTION:
-
-		    if main_window.control_beeing_added == 1:
-			self.newIcon = DragLabel("Button", self)
-		    elif main_window.control_beeing_added == 2:
-			self.newIcon = DragLabel("Check Box", self)
-		    elif main_window.control_beeing_added == 3:
-			self.newIcon = DragLabel("Combo Box", self)
-		    elif main_window.control_beeing_added == 4:
-			self.newIcon = DragLabel("Group Box", self)
-		    elif main_window.control_beeing_added == 5:
-			self.newIcon = DragLabel("Iframe", self)
-		    elif main_window.control_beeing_added == 6:
-			self.newIcon = DragLabel("Label", self)
-		    elif main_window.control_beeing_added == 7:
-			self.newIcon = DragLabel("List", self)
-		    elif main_window.control_beeing_added == 8:
-			self.newIcon = DragLabel("Menu Bar", self)
-		    elif main_window.control_beeing_added == 9:
-			self.newIcon = DragLabel("Password Field", self)
-		    elif main_window.control_beeing_added == 10:
-			self.newIcon = DragLabel("Radio Button", self)
-		    elif main_window.control_beeing_added == 11:
-			self.newIcon = DragLabel("Spinner", self)
-		    elif main_window.control_beeing_added == 12:
-			self.newIcon = DragLabel("Tab View", self)
-		    elif main_window.control_beeing_added == 13:
-			self.newIcon = DragLabel("Table", self)
-		    elif main_window.control_beeing_added == 14:
-			self.newIcon = DragLabel("Text Area", self)            
-			
-		    #*********************************************************
-		    #TEXTFIELD
-		    elif main_window.control_beeing_added == 15:
-			#self.newIcon = DragLabel("Text Field", self)		
-			self.newIcon = self.monitor.addNewControl(TList, self)
-			self.newIcon.setGeometry(self.newIcon.x(), self.newIcon.y(), 100, 80)
-		    #*********************************************************	    
 		    
-		    elif main_window.control_beeing_added == 16:
-			self.newIcon = DragLabel("Tool Bar", self)
-		    elif main_window.control_beeing_added == 17:
-			self.newIcon = DragLabel("Tree", self)
- 		    
-		    QtCore.QObject.connect(self.newIcon, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableCliked)
+		    newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
 		    
-		    #Envio do sinal de que um controlo foi clicado, com as suas propriedades
-		    #(...)-> é necessário saber o ID (monitor.getLastIdControl() ) e o tipo (typeControl acima inserido) para ir carregar as propriedades
-		    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), TList, self.monitor.getLastIdControl())
+		    #atribuir os sinais ao controlo criado
+		    self.assignSignalsToControlWidget(newControlWidget)		    
 		    
-		    
-		    self.newIcon.move(dropPos)
-		    self.newIcon.show()
+		    newControlWidget.move(dropPos)
+		    newControlWidget.show()
 	    
 	    #CASO DE UM DRAG DE "MOVE"
 	    elif actionType == DRAG_MOVE_ACTION:		  
 		event.source().move(dropPos)		
 		
+	    
 	    #Indicação de operação de Drop sucedida
             if event.source() in self.children():           
 		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
             else:
                 event.acceptProposedAction()
-        
+	
+	    typeControl = str(self.monitor.getTypeSelectedControl())
+	    idControl = str(self.monitor.getIdSelectedControl())
+	    	
+	    #Alterar as prorpriedades Left e Top de acordo com a nova posição	    
+	    self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
+	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
+	    
+	    #*************FAZER**********************************************
+	    #print QtGui.QWidget(event.source()).geometry().width()
+	    #self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(event.source().width()))
+	    #self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(event.source().height()))
+	    #******************************************************************
+	
+	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)    	    
+	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
+	    #Envio do sinal, indicando que a interface foi alterada
+	    self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
+	    
 	else:
             event.ignore()
 
@@ -251,44 +279,113 @@ class PropertiesWidget(CTableWidget):
     def __init__(self, monitor, parent = None):
 
         CTableWidget.__init__(self, parent)
-
+	self.connect(self, QtCore.SIGNAL("cellClicked(int, int)"), self.cellClicked)
+	#self.connect(self, QtCore.SIGNAL("cellDoubleClicked(int, int)"), self.cellDoubleClicked)
+	
 	self.monitor = monitor
-        self.setAlternatingRowColors(True)
+       
+	self.setAlternatingRowColors(True)
         
         self.addColumn(PROPERTIES_WIDGET_COLUMN1)
 	self.addColumn(PROPERTIES_WIDGET_COLUMN2)
 	
-	#self.setItem()
-	
+	self.columnProperties = 0
+	self.columnValues = 1
+		
 	
         self.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.verticalHeader().hide()
 
 
-    def fillControlPropertys(self, typeControl, idControl ):
-	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
+
+    def fillControlPropertys(self, typeControl, idControl):
 	
-	tableData = CTableData()
-	tableData.addColumn(PROPERTIES_WIDGET_COLUMN1)
-	tableData.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	typeControl = str(typeControl)
+	idControl = str(idControl)	
+		
+	#carregar as informações do controlo clicado
+	controlInfo = self.monitor.getControlInfo(typeControl, idControl)
+		
+	#self.addColumn(PROPERTIES_WIDGET_COLUMN1)
+	#self.addColumn(PROPERTIES_WIDGET_COLUMN2)
+	self.clearProperties()	
 	
 	currentRow = 0
-	columnProperties = 0
-	columnValues = 1
-	
 	if controlInfo.hasProperties():
-		for controlProperty in controlInfo.getControlProperties():
+		for controlProperty in controlInfo.getControlProperties():			
 			
-			tableData.addRow("")
-			tableData.setItem(columnProperties, currentRow, controlProperty.getNameProperty())
-			tableData.setItem(columnValues, currentRow, controlProperty.getValueProperty())
-			currentRow +=1
-			#print controlProperty.getNameProperty()
-			#print controlProperty.getValueProperty()
+			#Verificar se a propriedade é especifica (caso seja não pode ser apresentada na dock Widget)
+			try:
+				specificTypeProperties.index(controlProperty.getTypeProperty())
+				continue
+			except ValueError: #caso a propriedade não seja especifica será adicionada à lista na interface		
+				self.addRow("")
+
+				#Coluna 1 - NOME DA PROPRIEDADE
+				item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
+				item.setFlags(QtCore.Qt.ItemIsEnabled)			
+				self.setItem(currentRow, self.columnProperties, item)			
 	
-	self.setTableWidget(tableData)
+				#Coluna 2 - VALOR DA PROPRIEDADE
+				typeControl = controlInfo.getTypeControl()
+				idControl = controlInfo.getIdControl()
+				idProperty = controlProperty.getIdProperty()
+				
+				#De acordo com o tipo de propriedade, colocar a widget mais indicada na cell			
+				if controlProperty.hasOptions():
+					cellValue = CComboBoxProperties(idProperty, self)
+					for option in controlProperty.getOptions():
+						cellValue.addPropertyValue(option)	
+					#posicionar na propriedade por defeito
+					propertyVal = str(controlProperty.getValueProperty())
+					cellValue.setSelectedItem(propertyVal)
+				else:
+					cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
+					
+				#conectar o sinal de alteração de propriedade da cell com o valor da propriedade
+				self.connect(cellValue, QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), self.changePropertyValue)
+				
+				self.setCellWidget(currentRow, self.columnValues, cellValue)
 	
-	#(....)
+				currentRow +=1
+		
+		#ordenar a tabela por ordem alfabética na coluna dos nomes das propriedes
+		self.sortItems(self.columnProperties, QtCore.Qt.AscendingOrder)
+
+    def clearProperties(self):
+	self.removeRows()
+
+    def changePropertyValue(self, idProperty, propertyValue):
+
+	typeControl = str(self.monitor.getTypeSelectedControl())
+	idControl = str(self.monitor.getIdSelectedControl())
+	idProperty = str(idProperty)
+	
+	#print typeControl+"-"+idControl+"-"+idProperty
+	#print "******"
+	#print self.monitor.getControlProperties(typeControl, idControl)
+	#print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
+	self.monitor.changeProperty(typeControl, idControl, idProperty, propertyValue)	
+	#print self.monitor.getControlProperties(typeControl, idControl)
+	#print self.monitor.getPropertyControlValue(typeControl, idControl, idProperty)
+	
+	#print idProperty+"-"+propertyValue
+	
+	
+    def cellClicked(self, row, column):
+	#seleccionar toda a linha
+	self.selectRow(row)
+	#if column == self.columnProperties:
+	#	self.setCurrentCell(row, self.columnValues)
+     
+     
+    #def cellDoubleClicked(self, row, column):
+	
+	
+	
+	#if column == self.columnProperties:
+	#	self.setCurrentCell(row, self.columnValues)
+     
 
 class ControlsDockWidget(QtGui.QDockWidget):
 
@@ -391,42 +488,43 @@ class ControlsWidget(QtGui.QWidget):
 
         child = self.childAt(event.pos())
 
+
         if not child:
             return
         elif event.y() >= 2 and event.y() < 23:
-            main_window.control_beeing_added = 1
+            main_window.control_beeing_added = TButton
         elif event.y() >= 23 and event.y() < 44:
-            main_window.control_beeing_added = 2
+            main_window.control_beeing_added = TCheckBox
         elif event.y() >= 44 and event.y() < 65:
-            main_window.control_beeing_added = 3
+            main_window.control_beeing_added = TCombo
         elif event.y() >= 65 and event.y() < 86:
-            main_window.control_beeing_added = 4
+            main_window.control_beeing_added = TGroupBox
         elif event.y() >= 86 and event.y() < 107:
-            main_window.control_beeing_added = 5
+            main_window.control_beeing_added = TIframe
         elif event.y() >= 107 and event.y() < 128:
-            main_window.control_beeing_added = 6
+            main_window.control_beeing_added = TLabel
         elif event.y() >= 128 and event.y() < 149:
-            main_window.control_beeing_added = 7
+            main_window.control_beeing_added = TList
         elif event.y() >= 149 and event.y() < 170:
-            main_window.control_beeing_added = 8
+            main_window.control_beeing_added = TMenuBar
         elif event.y() >= 170 and event.y() < 191:
-            main_window.control_beeing_added = 9
+            main_window.control_beeing_added = TPasswordField
         elif event.y() >= 191 and event.y() < 212:
-            main_window.control_beeing_added = 10
+            main_window.control_beeing_added = TRadioButton
         elif event.y() >= 212 and event.y() < 233:
-            main_window.control_beeing_added = 11
+            main_window.control_beeing_added = TSpinner
         elif event.y() >= 233 and event.y() < 254:
-            main_window.control_beeing_added = 12
+            main_window.control_beeing_added = TTabView
         elif event.y() >= 254 and event.y() < 275:
-            main_window.control_beeing_added = 13
+            main_window.control_beeing_added = TTable
         elif event.y() >= 275 and event.y() < 296:
-            main_window.control_beeing_added = 14
+            main_window.control_beeing_added = TTextArea
         elif event.y() >= 296 and event.y() < 317:
-            main_window.control_beeing_added = 15
+            main_window.control_beeing_added = TTextField
         elif event.y() >= 317 and event.y() < 338:
-            main_window.control_beeing_added = 16
+            main_window.control_beeing_added = TToolBar
         elif event.y() >= 338 and event.y() < 359:
-            main_window.control_beeing_added = 17
+            main_window.control_beeing_added = TTree
 
         itemData = QtCore.QByteArray()
 	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
@@ -452,7 +550,7 @@ class MainWindow(QtGui.QMainWindow):
 
         QtGui.QMainWindow.__init__(self, parent)
 	
-	self.monitor = MonitorControls()
+	self.monitor = CMonitorControls()
 
         self.createActions()
         self.createMenus()
@@ -461,21 +559,40 @@ class MainWindow(QtGui.QMainWindow):
         self.createDockWindows()
         self.createDrawArea()
 
-        self.centralWidget = QtGui.QScrollArea(self)
+	#Conectar o evento de clique na drawArea (para que sejam des-seleccionados todos os controlos) com a remoção das propriedades
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.propertiesWidget.clearProperties)
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.clearControlName)
+
+	#formatar a central Widget
+        self.centralWidget = QtGui.QScrollArea()
         self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
-	self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
+	#self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
 	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 	self.centralWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	
-        self.centralWidget.setWidget(self.drawArea)
 
-	self.centralWidget.show()
-        self.setCentralWidget(self.centralWidget)
-
+	#Widget intermédia entre a scrollBar e a DrawArea
+	designWidget = QtGui.QWidget()
+	self.centralWidget.setWidget(designWidget)
+	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)	
+	designWidget.setBackgroundRole(BACKGROUNDS_COLOR)
+	
+	#Colocar a drawArea na zona intermédia (designWidget)	
+	self.drawArea.setParent(designWidget)
+	#self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-(MARGIN*2), self.drawArea.height()-(MARGIN*2))
+	self.drawArea.setGeometry(MARGIN, MARGIN, DRAW_AREA_WIDTH-(MARGIN), DRAW_AREA_HEIGHT-(MARGIN*2))
+		
+	self.setCentralWidget(self.centralWidget)	
+	
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
-        self.setWindowTitle("Qooxdoo GUI Builder")
+        self.setWindowTitle(TITLE_MAIN_WINDOW)
         self.setMinimumSize(800, 600)
 
+	#Definição do estado da interface actual
+	self.interfaceSaved = true
 
+	#Definição do ficheiro currente relativo à interface
+	self.curFile = QtCore.QString("")
+	
     def createActions(self):
 
         self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface...", self)
@@ -493,14 +610,12 @@ class MainWindow(QtGui.QMainWindow):
         self.openTemplateAction.setStatusTip("Open an existing template")
         self.connect(self.openTemplateAction, QtCore.SIGNAL("triggered()"), self.openTemplateAct)
 
-        self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "&Save interface", self)
-        self.saveInterfaceAction.setDisabled(True)
+        self.saveInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "&Save interface", self)       
         self.saveInterfaceAction.setShortcut("Ctrl+S")
         self.saveInterfaceAction.setStatusTip("Save the interface")
         self.connect(self.saveInterfaceAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAct)
 
-        self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), "Save interface &as...", self)
-        self.saveInterfaceAsAction.setDisabled(True)
+        self.saveInterfaceAsAction = QtGui.QAction(QtGui.QIcon("icons/file_saveas.png"), "Save interface &as...", self)        
         self.saveInterfaceAsAction.setStatusTip("Save the interface under a new name")
         self.connect(self.saveInterfaceAsAction, QtCore.SIGNAL("triggered()"), self.saveInterfaceAsAct)
 
@@ -651,6 +766,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDockWindows(self):
 
+	#CONTROLS
         self.controlsWidget = ControlsWidget(self.monitor)
 
         self.intermediateWidget = QtGui.QScrollArea(self)
@@ -661,11 +777,27 @@ class MainWindow(QtGui.QMainWindow):
         self.controlsDockWidget.setWidget(self.intermediateWidget)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
 
-        self.propertiesWidget = PropertiesWidget(self.monitor)
+        
+	#PROPERTIES 	
+	self.controlInfoWidget = QtGui.QWidget()	
+	
+	self.controlName = QtGui.QLabel("Control: ")
+	self.propertiesWidget = PropertiesWidget(self.monitor)
+	
+	
+	propertiesLayout = QtGui.QBoxLayout(QtGui.QBoxLayout.TopToBottom)
+	propertiesLayout.addWidget(self.controlName)
+	propertiesLayout.addWidget(self.propertiesWidget)
+	
+	self.controlName.setParent(self.controlInfoWidget)
+	self.propertiesWidget.setParent(self.controlInfoWidget)
+	
+	self.controlInfoWidget.setLayout(propertiesLayout) 
 
         self.propertiesDockWidget = PropertiesDockWidget()
-        self.propertiesDockWidget.setWidget(self.propertiesWidget)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
+        #self.propertiesDockWidget.setWidget(self.propertiesWidget)
+        self.propertiesDockWidget.setWidget(self.controlInfoWidget)
+	self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
 
 
     def createDrawArea(self):
@@ -674,30 +806,158 @@ class MainWindow(QtGui.QMainWindow):
 	self.drawArea.setAttribute(QtCore.Qt.WA_AcceptDrops)
 
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.changeControlName)
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED), self.setInterfaceSaved)
+    
+    def changeControlName(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl = str(idControl)
+	
+	#Preencher a label com o nome do controlo	
+	self.controlName.setText(CONTROL_LABEL + CONTROLS_DESIGNATIONS[typeControl])
+    
+    def clearControlName(self):
+	self.controlName.setText(CONTROL_LABEL)
 
+    
+    def setInterfaceSaved(self, isSaved = false):
+	self.interfaceSaved = isSaved
+	
+    def isInterfaceSaved(self):
+	return self.interfaceSaved
+    
+    def loadInterface(self, fileName):
+        
+	file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_READ_FILE).arg(fileName).arg(file.errorString()))
+            return
+        instr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*********Leitura da interface*********	
+	controlsInfoList = CYamlInterpreter().readInterface(QStringToString(instr.readAll()))
+	
+	#Limpar a interface gráfica
+	self.monitor.deleteAllControls()
+	
+	for controlInfo in controlsInfoList:
+		listProperties = controlInfo.getControlProperties()
+		
+		newControlWidget = self.monitor.addNewControl(controlInfo.getTypeControl(), self.drawArea, listProperties, false)	    
+		
+		#atribuir os sinais ao controlo criado
+		self.drawArea.assignSignalsToControlWidget(newControlWidget)		
+		newControlWidget.show()
+		
+	#*************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        	
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
+        
+	
+    def saveInterface(self, fileName):
+        file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileName).arg(file.errorString()))
+            return False
+        
+	outstr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*************Armazenamento da interface************	
+	outstr << CYamlInterpreter().writeInterface(self.monitor.getControlsInfo())	
+	#***************************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)
+        
+	self.setInterfaceSaved(true)
+	return True
+
+
+    def setCurrentInterfaceFile(self, fileName):
+        self.curFile = fileName
+        if self.curFile.isEmpty():
+            self.setWindowTitle(TITLE_MAIN_WINDOW)
+        else:
+            self.setWindowTitle(self.tr("%1 - %2").arg(TITLE_MAIN_WINDOW).arg(self.strippedName(self.curFile)))
+    
+    def strippedName(self, fullFileName):
+        return QtCore.QFileInfo(fullFileName).fileName()
+    
+    
+    #SLOTs - ACÇÕES do utilizador sobre a interface
     def newInterfaceAct(self):
 	
         return
 
 
+    def openTemplateAct(self):	
+	#(...)
+	return
+
+    
     def openInterfaceAct(self):
+	#verificar se a interface foi armazenada
+	if not self.isInterfaceSaved():
+		
+		if self.curFile.isEmpty():
+			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				MSG_INTERFACE_TO_SAVE,                                
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+		
+		else:
+			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_INTERFACE_FILE_TO_SAVE)
+                                .arg(QtCore.QDir.convertSeparators(self.curFile)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+
+		
+		if ret == QtGui.QMessageBox.Yes:
+			self.saveInterfaceAct()
 	
-        return
+	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
+	if not fileName.isEmpty():
+		self.loadInterface(fileName)       
+		
+    
 
+    def saveInterfaceAct(self):	
 
-    def openTemplateAct(self):
-
-        return
-
-
-    def saveInterfaceAct(self):
-
-        return
+	if self.curFile.isEmpty():
+		return self.saveInterfaceAsAct()
+        else:
+		return self.saveInterface(self.curFile)
 
 
     def saveInterfaceAsAct(self):
-
-        return
+	fileName = QtGui.QFileDialog.getSaveFileName(self, 
+					TITLE_SAVE_DIALOG, 
+					ROOT_DIRECTORY, 
+					FILES_FILTER, 
+					FILE_EXTENSION)
+					
+	if fileName.isEmpty():
+            return False
+        
+	
+        """
+	#verificar se o ficheira já existe
+	if QtCore.QFile.exists(fileName):
+            ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_FILE_ALREADY_EXISTS).arg(QtCore.QDir.convertSeparators(fileName)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+            if ret == QtGui.QMessageBox.No:
+                return
+        """
+	
+	self.saveInterface(fileName)	
 
 
     def configureAct(self):
@@ -767,7 +1027,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def aboutAct(self):
 
-        QtGui.QMessageBox.about(self, "About", "<b>Qooxdoo GUI Builder</b><p>System of visual construction of interfaces, for the qooxdoo framework.<p><br>Authors:<p>- Cláudia Oliveira&nbsp;&nbsp;&nbsp;<a href=claudia.i.h.oliveira@gmail.com>claudia.i.h.oliveira@gmail.com</a><p>- Cláudio Pedro&nbsp;&nbsp;&nbsp;<a href=claudio.pedro@gmail.com>claudio.pedro@gmail.com</a><p>- Nuno Coelho&nbsp;&nbsp;&nbsp;<a href=nuno.a.coelho@gmail.com>nuno.a.coelho@gmail.com</a><p><br>Official Web Site:&nbsp;&nbsp;&nbsp;<a href=http://qooxdooguibuilder.googlepages.com>http://qooxdooguibuilder.googlepages.com</a>")
+        QtGui.QMessageBox.about(self, "About", "<b>"+TITLE_MAIN_WINDOW+"</b><p>System of visual construction of interfaces, for the qooxdoo framework.<p><br>Authors:<p>- Cláudia Oliveira&nbsp;&nbsp;&nbsp;<a href=claudia.i.h.oliveira@gmail.com>claudia.i.h.oliveira@gmail.com</a><p>- Cláudio Pedro&nbsp;&nbsp;&nbsp;<a href=claudio.pedro@gmail.com>claudio.pedro@gmail.com</a><p>- Nuno Coelho&nbsp;&nbsp;&nbsp;<a href=nuno.a.coelho@gmail.com>nuno.a.coelho@gmail.com</a><p><br>Official Web Site:&nbsp;&nbsp;&nbsp;<a href=http://qooxdooguibuilder.googlepages.com>http://qooxdooguibuilder.googlepages.com</a>")
 
 
     def applyTemplateAct(self):
@@ -778,6 +1038,7 @@ class MainWindow(QtGui.QMainWindow):
     def saveTemplateAsAct(self):
 
         return
+
 
 
     control_beeing_added = 0

@@ -658,7 +658,7 @@ class MainWindow(QtGui.QMainWindow):
         self.pasteAction.setStatusTip("Paste into the current selection")
         self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
 
-        self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), "&Delete", self)
+        self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), "&Delete...", self)
         self.deleteAction.setDisabled(True)
         self.deleteAction.setShortcut("Ctrl+D")
         self.deleteAction.setStatusTip("Delete the current selection")
