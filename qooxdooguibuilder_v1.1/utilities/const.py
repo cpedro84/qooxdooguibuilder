@@ -135,14 +135,14 @@ generalError = -1
 structureError = -2
 
 #MENSAGENS DE ERRO
-ERROR_OPEN_FILE = "Erro na abertura do ficheiro."
-ERROR_ACCESS_STRUCTURE = "Erro no acesso á estrutura de dados."
+ERROR_OPEN_FILE = "Error opening file."
+ERROR_ACCESS_STRUCTURE = "Error accessing the data structure."
 
 #TITULOS DAS JANELAS
 TITLE_MAIN_WINDOW = "Qooxdoo GUI Builder"
-TITLE_EDIT_ITEMS = "Qooxdoo GUI Builder - Edit Items"
-TITLE_EDIT_TABS = "Qooxdoo GUI Builder - Edit Tabs"
-TITLE_EDIT_TABLE = "Qooxdoo GUI Builder - Edit Table"
+TITLE_EDIT_ITEMS = "Edit items"
+TITLE_EDIT_TABS = "Edit tabs"
+TITLE_EDIT_TABLE = "Edit table"
 
 #DRAW AREA VIEWPORT MARGINS
 MARGIN = 15
@@ -190,11 +190,11 @@ ID_WIDTH = "G05"
 
 
 #DEFINIÇÕES SOBRE AS DIALOGS DE ABRIR/GRAVAR FICHEIROS
-TITLE_OPEN_DIALOG = "Open Interface File ..."
-TITLE_SAVE_DIALOG = "Save Interface File ..."
+TITLE_OPEN_DIALOG = "Open interface"
+TITLE_SAVE_DIALOG = "Save interface"
 ROOT_DIRECTORY = "./"
-FILES_FILTER = "Interface Files(*.ym)"
-FILE_EXTENSION = "*.ym"
+FILES_FILTER = "YAML Files (*.yaml)"
+FILE_EXTENSION = "*.yaml"
 
 
 #DEFINIÇÃO DO TIMEOUT DAS MENSAGENS DA STATUSBAR
@@ -204,7 +204,7 @@ TIMEOUT_MSG = 2000
 MSG_FILE_ALREADY_EXISTS = "File &1 already exists.\n"+"Do you want to overwrite it?"
 MSG_CANNOT_SAVE_FILE = "Cannot write interface file %1:\n %2."
 MSG_CANNOT_READ_FILE = "Cannot read file %1:\n%2."
-MSG_FILE_SAVED = "File Saved"
+MSG_FILE_SAVED = "File saved"
 MSG_FILE_LOADED = "File loaded"
 MSG_INTERFACE_TO_SAVE = "Do you want to save the changes you made?"
 MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1' ?"

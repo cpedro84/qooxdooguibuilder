@@ -135,7 +135,7 @@ class ResizableWidget(QtGui.QWidget):
 		self.pasteAction.setStatusTip(self.tr("Paste into the current selection"))
 		self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
 	
-		self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), self.tr("&Delete"), self)
+		self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), self.tr("&Delete..."), self)
 		self.deleteAction.setShortcut(self.tr("Ctrl+D"))
 		self.deleteAction.setStatusTip(self.tr("Delete the current selection"))
 		self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
@@ -187,8 +187,8 @@ class ResizableWidget(QtGui.QWidget):
 	#****************************************************************************************
 	def setExtraPopUpMenus(self, typeControl):
 		if self.isItemsControl(typeControl):			
-			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Items..."), self)
-			self.editItemsAction.setStatusTip(self.tr("Edit Items"))
+			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit items..."), self)
+			self.editItemsAction.setStatusTip(self.tr("Edit the items"))
 			self.connect(self.editItemsAction, QtCore.SIGNAL("triggered()"), self.editItems)			
 			
 			#Adicionar o pop-up menu extra á lista
@@ -196,8 +196,8 @@ class ResizableWidget(QtGui.QWidget):
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isTabsControl(typeControl):
-			self.editTabsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Tabs..."), self)
-			self.editTabsAction.setStatusTip(self.tr("Edit Tabs"))
+			self.editTabsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit tabs..."), self)
+			self.editTabsAction.setStatusTip(self.tr("Edit the tabs"))
 			self.connect(self.editTabsAction, QtCore.SIGNAL("triggered()"), self.editTabs)			
 			
 			#Adicionar o pop-up menu extra á lista
@@ -205,8 +205,8 @@ class ResizableWidget(QtGui.QWidget):
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isTableControl(typeControl):
-			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit Table..."), self)
-			self.editTableAction.setStatusTip(self.tr("Edit Table"))
+			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit table..."), self)
+			self.editTableAction.setStatusTip(self.tr("Edit the table"))
 			self.connect(self.editTableAction, QtCore.SIGNAL("triggered()"), self.editTable)			
 			
 			#Adicionar o pop-up menu extra á lista
