@@ -28,11 +28,15 @@ class ResizableWidget(QtGui.QWidget):
 		#Formatar output da Widget que representa o controlo
 		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
 		self.childWidget.setEnabled(false)		
+		#self.setEnabled(true)
 		#self.blockSignals(true)
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
 		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
 		#self.childWidget.setFrameShadow(QtGui.QFrame.Raised)
-			
+		#self.childWidget.setWindowState(self.childWidget.windowState() and not QtCore.Qt.WindowActive)
+		#self.childWidget.setWindowFlags(self.childWidget.windowFlags() | QtCore.Qt.FramelessWindowHint)
+
+
 		self.havePopUpMenusExtra = false
 		self.popUpMenusExtraList = []
 		
@@ -290,13 +294,13 @@ class ResizableWidget(QtGui.QWidget):
 			self.RectL.setRect(0, WidgetHeight/2.0, self.RectSize, self.RectSize)
 			self.RectR.setRect(WidgetWidth-self.RectSize, WidgetHeight/2.0, self.RectSize, self.RectSize)
 			
-			painter.drawRect(self.RectLT)
-			painter.drawRect(self.RectCT)
-			painter.drawRect(self.RectRT)
-			painter.drawRect(self.RectLB)
+			#painter.drawRect(self.RectLT)
+			#painter.drawRect(self.RectCT)
+			#painter.drawRect(self.RectRT)
+			#painter.drawRect(self.RectLB)
+			#painter.drawRect(self.RectL)
 			painter.drawRect(self.RectCB)
-			painter.drawRect(self.RectRB)
-			painter.drawRect(self.RectL)
+			painter.drawRect(self.RectRB)			
 			painter.drawRect(self.RectR)
 			
 			painter.end()
@@ -317,7 +321,8 @@ class ResizableWidget(QtGui.QWidget):
 		
 		#CASO O BOTÃO DO RATO NÃO ESTEJA PRESSIONADO ENTÃO SERÁ VERIFICADO SE A SUA POSIÇÃO ESTA DE ACORDO COM ALGUM PONTO DE ALTERAÇÃO DE DIMENSÃO
 		if self.MouseState == self.MouseRelease:			
-			#VALIDAR POSICAO DO RATO DE ACORDO COM OS PONTOS DE REF. 
+			 
+			"""
 			if self.IsPointInsideRect(point, self.RectLT) == bool(1):  # LEFT TOP
 				self.pontoRef =self.RefRectLeftTop #definir como de referência do rato
 				self.setCursor(QtGui.QCursor(QtCore.Qt.SizeFDiagCursor))
@@ -345,6 +350,22 @@ class ResizableWidget(QtGui.QWidget):
 			else:			
 				self.pontoRef = self.noRef #definir como de referência do rato
 				self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+			"""
+		
+			#VALIDAR POSICAO DO RATO DE ACORDO COM OS PONTOS DE REF.
+			if self.IsPointInsideRect(point, self.RectCB) == bool(1): # CENTER BOTTOM
+				self.pontoRef =self.RefRectCenterBottom #definir como de referência do rato
+				self.setCursor(QtGui.QCursor(QtCore.Qt.SizeVerCursor))
+			elif self.IsPointInsideRect(point, self.RectRB) == bool(1): # RIGHT BOTTOM
+				self.pontoRef =self.RefRectRightBottom #definir como de referência do rato
+				self.setCursor(QtGui.QCursor(QtCore.Qt.SizeFDiagCursor))		
+			elif self.IsPointInsideRect(point, self.RectR) == bool(1): # RIGHT
+				self.pontoRef =self.RefRectRight #definir como de referência do rato
+				self.setCursor(QtGui.QCursor(QtCore.Qt.SizeHorCursor))		
+			else:			
+				self.pontoRef = self.noRef #definir como de referência do rato
+				self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+		
 		
 		#************PROCESSAMENTO DO DRAG ******************
 		#CASO O BOTÃO ESQUERDO DO RATO ESTEJA PRESSIONADO ENTÃO SERÁ PROCESSADO O DRAG

@@ -566,7 +566,7 @@ class CMonitorControls(QtCore.QObject):
 	
 	
 	## Special method for Controls with Items related properties.
-	# Save the items values (listItems) for a control with Item property related.
+	# Save the items values (listItems) for a control with Item property related, idendified with the given typeControl, idControl.
 	#
 	# @Param typeControl string
 	# @Param idControl string
@@ -591,7 +591,7 @@ class CMonitorControls(QtCore.QObject):
 		
 	
 	## Special method for Controls with Tabs related properties.
-	# Save the Tabs values (listItems) for a control with Tabs property related.
+	# Save the Tabs values (listItems) for a control with Tabs property related, idendified with the given typeControl, idControl.
 	#
 	# @Param typeControl string
 	# @Param idControl string
@@ -603,22 +603,21 @@ class CMonitorControls(QtCore.QObject):
 		self.changeItemsProperties(typeControl, idControl, listTabs)
 	
 	
-	#tableItems -> CTableData
+	## Special method for Controls with TableItens related properties.
+	# Save the TableItems values for a control with TableItems property related, idendified with the given typeControl, idControl.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param listTabs python List
 	def changeTableItemsProperties(self, typeControl, idControl, tableItems):		
 		typeControl = str(typeControl)
 		idControl = str(idControl)
 		
 		idPropertyItems = self.getIdItemsProperty(typeControl, idControl)
 		
-		print "**"
-		print idPropertyItems
-		print tableItems
-		print "**"
-		
 		#caso tenha sido encontrada a propriedade de Items
 		if idPropertyItems <> -1:			
-			#armazenar a lista de items
-			
+			#armazenar a lista de items			
 			self.changeProperty(typeControl, idControl, idPropertyItems, tableItems)
 	
 	

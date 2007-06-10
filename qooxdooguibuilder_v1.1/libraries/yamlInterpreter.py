@@ -38,6 +38,21 @@ class CYamlInterpreter:
 		return  yaml.dump(controlsList)
 		
 
+	def writeTemplate(self, controlInfo):
+		
+		controlMap = {}		
+		propertiesMap = {}
+			
+		typeControl = controlInfo.getTypeControl()		
+		controlPropertiesList = controlInfo.getControlProperties()
+		
+		for controlProperty in controlPropertiesList:
+			propertiesMap[controlProperty.getIdProperty()] = controlProperty.getValueProperty()
+			
+		controlMap = {typeControl :  propertiesMap }
+
+		return  yaml.dump(controlMap)
+
 	def readInterfaceFile(self, filePath):
 		
 		file = open(filePath)
@@ -66,3 +81,22 @@ class CYamlInterpreter:
 
 
 		return controlsInfoList
+
+	def readTemplate(self, yamlInterfaceCode):
+		
+		controlMap = yaml.load(yamlInterfaceCode)
+		
+		controlInfo = None
+		
+		propertiesMap = ControlMap[typeControl]		
+		for typeControl in ControlMap.keys(): 
+			controlInfo = CControlInfo(typeControl,"")
+
+			#Carregamento das propreidades (ids e valores)
+			for idProperty in propertiesMap.keys():					
+				propertyValue = propertiesMap[idProperty]
+				controlInfo.addControlProperty(CControlProperty(idProperty, "", propertyValue))
+		
+			break
+			
+		return controlInfo 

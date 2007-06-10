@@ -195,7 +195,7 @@ TITLE_SAVE_DIALOG = "Save interface"
 ROOT_DIRECTORY = "./"
 FILES_FILTER = "YAML Files (*.yaml)"
 FILE_EXTENSION = "*.yaml"
-
+FILES_FILTER_TEMPLATE = "Template Files (*.temp)"
 
 #DEFINIÇÃO DO TIMEOUT DAS MENSAGENS DA STATUSBAR
 TIMEOUT_MSG = 2000
@@ -208,4 +208,4 @@ MSG_FILE_SAVED = "File saved"
 MSG_FILE_LOADED = "File loaded"
 MSG_INTERFACE_TO_SAVE = "Do you want to save the changes you made?"
 MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1' ?"
-
+MSG_QUESTION_DELETE_CONTROL = "Do you realy wish to delete the selected control(s)?"

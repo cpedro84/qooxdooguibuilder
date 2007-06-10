@@ -132,13 +132,20 @@ class DrawArea(QtGui.QWidget):
 	if self.mouseClicked: 
 		self.rubberHand.setGeometry(QtCore.QRect(self.originPressed, event.pos()).normalized())
 	
-	#verificar se existem vários controlos selecciondos 
+	# (...) - verificar se existem vários controlos selecciondos 
 
     
     #***************PROCESSAMENTO DE SINAIS***************
     def SignalProcess_resizableReleased(self, typeControl, idControl):	
 	typeControl = str(typeControl)
 	idControl =str(idControl)
+	
+	#verificar o tamanho da widget (width / height)
+	widgetControl = self.monitor.getValueMemRef(typeControl, idControl)
+		
+	#Alterar as prorpriedades Left e Top de acordo com a nova posição	    
+	self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(widgetControl.geometry().width()))
+	self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(widgetControl.geometry().height()))
 	
 	#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
 	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
@@ -157,9 +164,17 @@ class DrawArea(QtGui.QWidget):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
 	
-	#enviar sinal para inicar que nenhum controlo está seleccionado	
-	self.monitor.deleteControl(typeControl, idControl)
-	self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
+	
+	ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
+				MSG_QUESTION_DELETE_CONTROL,                                
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+				QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+	
+	if ret == QtGui.QMessageBox.Yes:	
+		#enviar sinal para inicar que nenhum controlo está seleccionado	
+		self.monitor.deleteControl(typeControl, idControl)
+		self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
+
 
     # Items -> QStringList
     def saveTListItems(self, typeControl, idControl, items):
@@ -239,13 +254,7 @@ class DrawArea(QtGui.QWidget):
 	    #Alterar as prorpriedades Left e Top de acordo com a nova posição	    
 	    self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
 	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
-	    
-	    #*************FAZER**********************************************
-	    #print QtGui.QWidget(event.source()).geometry().width()
-	    #self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(event.source().width()))
-	    #self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(event.source().height()))
-	    #******************************************************************
-	
+	   
 	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)    	    
 	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
 	    #Envio do sinal, indicando que a interface foi alterada
@@ -589,14 +598,14 @@ class MainWindow(QtGui.QMainWindow):
 
 	#Definição do estado da interface actual
 	self.interfaceSaved = true
+	
 
 	#Definição do ficheiro currente relativo à interface
 	self.curFile = QtCore.QString("")
 	
     def createActions(self):
 
-        self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface...", self)
-        self.newInterfaceAction.setDisabled(True)
+        self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface...", self)     
         self.newInterfaceAction.setShortcut("Ctrl+N")
         self.newInterfaceAction.setStatusTip("Create a new interface")
         self.connect(self.newInterfaceAction, QtCore.SIGNAL("triggered()"), self.newInterfaceAct)
@@ -625,8 +634,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.quitAction = QtGui.QAction(QtGui.QIcon("icons/file_quit.png"), "&Quit", self)
         self.quitAction.setShortcut("Ctrl+Q")
-        self.quitAction.setStatusTip("Quit the application")
-        self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
+        self.quitAction.setStatusTip("Quit the application")        
+	self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), self.closeAct)
 
         self.undoAction = QtGui.QAction(QtGui.QIcon("icons/edit_undo.png"), "&Undo", self)
         self.undoAction.setDisabled(True)
@@ -690,13 +699,11 @@ class MainWindow(QtGui.QMainWindow):
         self.aboutAction.setStatusTip("Show the application's About box")
         self.connect(self.aboutAction, QtCore.SIGNAL("triggered()"), self.aboutAct)
 
-        self.applyTemplateAction = QtGui.QAction(QtGui.QIcon("icons/file_open.png"), "Apply template...", self)
-        self.applyTemplateAction.setDisabled(True)
+        self.applyTemplateAction = QtGui.QAction(QtGui.QIcon("icons/file_open.png"), "Apply template...", self)        
         self.applyTemplateAction.setStatusTip("Apply an existing template")
         self.connect(self.applyTemplateAction, QtCore.SIGNAL("triggered()"), self.applyTemplateAct)
 
-        self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "Save template as...", self)
-        self.saveTemplateAsAction.setDisabled(True)
+        self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "Save template as...", self)        
         self.saveTemplateAsAction.setStatusTip("Save the template")
         self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
 
@@ -819,7 +826,6 @@ class MainWindow(QtGui.QMainWindow):
     def clearControlName(self):
 	self.controlName.setText(CONTROL_LABEL)
 
-    
     def setInterfaceSaved(self, isSaved = false):
 	self.interfaceSaved = isSaved
 	
@@ -827,8 +833,7 @@ class MainWindow(QtGui.QMainWindow):
 	return self.interfaceSaved
     
     def loadInterface(self, fileName):
-        
-	file = QtCore.QFile(fileName)
+        file = QtCore.QFile(fileName)
         if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
                     self.tr(MSG_CANNOT_READ_FILE).arg(fileName).arg(file.errorString()))
@@ -877,6 +882,28 @@ class MainWindow(QtGui.QMainWindow):
 	self.setInterfaceSaved(true)
 	return True
 
+    
+    
+    def saveTemplate(self, fileName):
+	# (...)
+	file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileName).arg(file.errorString()))
+            return False
+        
+	outstr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*************Armazenamento da interface************	
+	typeControl = self.monitor.getTypeSelectedControl()
+	idControl = getIdSelectedControl()
+	outstr << CYamlInterpreter().writeTemplate(self.monitor.getControlInfo(typeControl, idControl))	
+	#***************************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)
+
 
     def setCurrentInterfaceFile(self, fileName):
         self.curFile = fileName
@@ -891,8 +918,30 @@ class MainWindow(QtGui.QMainWindow):
     
     #SLOTs - ACÇÕES do utilizador sobre a interface
     def newInterfaceAct(self):
+	#verificar se a interface foi armazenada
+	if not self.isInterfaceSaved():
+		
+		if self.curFile.isEmpty():
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
+				MSG_INTERFACE_TO_SAVE,                                
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+		
+		else:
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_INTERFACE_FILE_TO_SAVE)
+                                .arg(QtCore.QDir.convertSeparators(self.curFile)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+
+		
+		if ret == QtGui.QMessageBox.Yes:
+			self.saveInterfaceAct()
 	
-        return
+	
+	#Limpar a interface gráfica
+	self.monitor.deleteAllControls()
+        
 
 
     def openTemplateAct(self):	
@@ -905,13 +954,13 @@ class MainWindow(QtGui.QMainWindow):
 	if not self.isInterfaceSaved():
 		
 		if self.curFile.isEmpty():
-			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
 				MSG_INTERFACE_TO_SAVE,                                
                                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
                                 QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
 		
 		else:
-			ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
 				self.tr(MSG_INTERFACE_FILE_TO_SAVE)
                                 .arg(QtCore.QDir.convertSeparators(self.curFile)),
                                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
@@ -1031,14 +1080,45 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def applyTemplateAct(self):
-
+	# (...)
         return
 
 
     def saveTemplateAsAct(self):
+	# (...)
+	fileName = QtGui.QFileDialog.getSaveFileName(self, 
+					TITLE_SAVE_DIALOG, 
+					ROOT_DIRECTORY, 
+					FILES_FILTER, 
+					FILE_EXTENSION)
+					
+	if fileName.isEmpty():
+            return False
 
-        return
+	self.saveTemplate(fileName)
 
+
+    def closeAct(self):
+	if not self.isInterfaceSaved():
+		
+		if self.curFile.isEmpty():
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
+				MSG_INTERFACE_TO_SAVE,                                
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+		
+		else:
+			ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
+				self.tr(MSG_INTERFACE_FILE_TO_SAVE)
+                                .arg(QtCore.QDir.convertSeparators(self.curFile)),
+                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
+
+		
+		if ret == QtGui.QMessageBox.Yes:
+			self.saveInterfaceAct()
+	
+	self.close()
 
 
     control_beeing_added = 0

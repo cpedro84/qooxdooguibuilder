@@ -68,7 +68,7 @@ class CTableWidget(QtGui.QTableWidget):
 		itrColumn = 0
 		itrRow = 0
 		#percorrer a estrutura para o preenchimento dos dados na tabelWidget
-		tableDataItems = tableData.getTableItems()	
+		tableDataItems = tableData.getTableItems()		
 		#Adicionar as colunas à tabela
 		for columnItem in tableDataItems.keys():		
 			itrRow=0
@@ -97,6 +97,7 @@ class CTableWidget(QtGui.QTableWidget):
 		#copiar todos os items da self
 		while itrColumn < self.columnCount():
 			columnItem = QStringToString(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
+			
 			itrRow = 0 
 			tableItems[columnItem] = {}
 			for rowItem in rowsList:
