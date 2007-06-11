@@ -17,7 +17,8 @@ class editItemsWidget(QtGui.QDialog):
 		
 		QtGui.QDialog.__init__(self, parent)		
 		
-		self.setWindowTitle(windowTitle)				
+		self.setWindowTitle(windowTitle)
+		self.setWindowIcon(QtGui.QIcon("icons/editors.png"))		
 		
 		self.originalItemsList = []
 		self.originalItemsList = initialItemsList

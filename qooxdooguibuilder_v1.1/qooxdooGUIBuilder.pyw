@@ -49,32 +49,6 @@ pathTextFieldPixmap = DIR_CONTROLS+"TextField.png"
 pathToolbarPixmap = DIR_CONTROLS+"ToolBar.png"
 pathTreePixmap = DIR_CONTROLS+"Tree.png"
 
-class DragLabel(QtGui.QLabel):
-
-
-    def __init__(self, text, parent=None):
-
-        QtGui.QLabel.__init__(self, text, parent)
-
-        self.setFrameShape(QtGui.QFrame.Panel)
-        self.setFrameShadow(QtGui.QFrame.Raised)
-
-    def mousePressEvent(self, event):
-
-        itemData = QtCore.QByteArray()
-
-        mimeData = QtCore.QMimeData()
-        mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
-
-	drag = QtGui.QDrag(self)
-	drag.setMimeData(mimeData)
-	drag.setHotSpot(event.pos() - self.rect().topLeft())
-
-        dropAction = drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
-        if dropAction == QtCore.Qt.MoveAction:
-            self.close()
-            self.update()
-
 
 class DrawArea(QtGui.QWidget):
     def __init__(self, monitor, parent = None):	
@@ -668,7 +642,6 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.pasteAction, QtCore.SIGNAL("triggered()"), self.pasteAct)
 
         self.deleteAction = QtGui.QAction(QtGui.QIcon("icons/edit_delete.png"), "&Delete...", self)
-        self.deleteAction.setDisabled(True)
         self.deleteAction.setShortcut("Ctrl+D")
         self.deleteAction.setStatusTip("Delete the current selection")
         self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
@@ -946,7 +919,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def openTemplateAct(self):	
 	#(...)
-	return
+	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_TEMPLATE_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
 
     
     def openInterfaceAct(self):
@@ -1081,13 +1054,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def applyTemplateAct(self):
 	# (...)
-        return
+	fileName = QtGui.QFileDialog.getOpenFileName(self,
+					TITLE_APPLY_TEMPLATE_DIALOG,
+					ROOT_DIRECTORY,
+					FILES_FILTER)
 
 
     def saveTemplateAsAct(self):
 	# (...)
 	fileName = QtGui.QFileDialog.getSaveFileName(self, 
-					TITLE_SAVE_DIALOG, 
+					TITLE_SAVE_TEMPLATE_DIALOG, 
 					ROOT_DIRECTORY, 
 					FILES_FILTER, 
 					FILE_EXTENSION)

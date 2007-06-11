@@ -20,6 +20,8 @@ class CEditTableItemsWidget(QtGui.QDialog):
 		QtGui.QDialog.__init__(self, parent)		
 		
 		self.setWindowTitle(windowTitle)
+		self.setWindowIcon(QtGui.QIcon("icons/editors.png"))
+		
 		#FIXAR O TAMANHO DA WIDGET AO TAMANHO ACTUAL
 		self.setFixedSize(513, 292)
 		

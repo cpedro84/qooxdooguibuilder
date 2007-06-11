@@ -191,7 +191,7 @@ class ResizableWidget(QtGui.QWidget):
 	#****************************************************************************************
 	def setExtraPopUpMenus(self, typeControl):
 		if self.isItemsControl(typeControl):			
-			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit items..."), self)
+			self.editItemsAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit items..."), self)
 			self.editItemsAction.setStatusTip(self.tr("Edit the items"))
 			self.connect(self.editItemsAction, QtCore.SIGNAL("triggered()"), self.editItems)			
 			
@@ -200,7 +200,7 @@ class ResizableWidget(QtGui.QWidget):
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isTabsControl(typeControl):
-			self.editTabsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit tabs..."), self)
+			self.editTabsAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit tabs..."), self)
 			self.editTabsAction.setStatusTip(self.tr("Edit the tabs"))
 			self.connect(self.editTabsAction, QtCore.SIGNAL("triggered()"), self.editTabs)			
 			
@@ -209,7 +209,7 @@ class ResizableWidget(QtGui.QWidget):
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isTableControl(typeControl):
-			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), self.tr("Edit table..."), self)
+			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit table..."), self)
 			self.editTableAction.setStatusTip(self.tr("Edit the table"))
 			self.connect(self.editTableAction, QtCore.SIGNAL("triggered()"), self.editTable)			
 			
@@ -493,9 +493,7 @@ class ResizableWidget(QtGui.QWidget):
 			
 		#verificar se a tecla pressionada foi o DEL
 		if keyPressed == QtCore.Qt.Key_Delete: #Eliminar Widget
-			#ENVIO DO SINAL PARA INFORMAR QUE O CONTROLO SELECCIONADO È PARA SER ELIMINADO
-			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), str(self.typeControl), str(self.idControl))
-			return
+			self.deleteAct()
 		
 		#obter  largura e altura da widget pai 
 		widthArea = self.parentWidget().geometry().width()

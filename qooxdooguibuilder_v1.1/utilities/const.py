@@ -192,6 +192,9 @@ ID_WIDTH = "G05"
 #DEFINIÇÕES SOBRE AS DIALOGS DE ABRIR/GRAVAR FICHEIROS
 TITLE_OPEN_DIALOG = "Open interface"
 TITLE_SAVE_DIALOG = "Save interface"
+TITLE_OPEN_TEMPLATE_DIALOG = "Open template"
+TITLE_SAVE_TEMPLATE_DIALOG = "Save template"
+TITLE_APPLY_TEMPLATE_DIALOG = "Apply template"
 ROOT_DIRECTORY = "./"
 FILES_FILTER = "YAML Files (*.yaml)"
 FILE_EXTENSION = "*.yaml"
@@ -202,10 +205,10 @@ TIMEOUT_MSG = 2000
 
 #MENSAGENS UTILIZADOR
 MSG_FILE_ALREADY_EXISTS = "File &1 already exists.\n"+"Do you want to overwrite it?"
-MSG_CANNOT_SAVE_FILE = "Cannot write interface file %1:\n %2."
+MSG_CANNOT_SAVE_FILE = "Cannot write YAML file %1:\n %2."
 MSG_CANNOT_READ_FILE = "Cannot read file %1:\n%2."
 MSG_FILE_SAVED = "File saved"
 MSG_FILE_LOADED = "File loaded"
 MSG_INTERFACE_TO_SAVE = "Do you want to save the changes you made?"
-MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1' ?"
-MSG_QUESTION_DELETE_CONTROL = "Do you realy wish to delete the selected control(s)?"
+MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1'?"
+MSG_QUESTION_DELETE_CONTROL = "Do you really wish to delete the selected control(s)?"
