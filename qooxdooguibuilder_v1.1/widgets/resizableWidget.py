@@ -566,10 +566,12 @@ class ResizableWidget(QtGui.QWidget):
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), str(self.typeControl), str(self.idControl))
 		
 	def applyTemplateAct(self):
-		print("")
+		#ENVIO DO SINAL PARA INFORMAR QUE É PARA APLICAR UMA TEMPLATE SOBRE O CONTROLO SELECCIONADO 
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), str(self.typeControl), str(self.idControl))
 
 	def saveTemplateAsAct(self):
-		print("")
+		#ENVIO DO SINAL PARA INFORMAR QUE É PARA GRAVAR UMA TEMPLATE DO CONTROLO SELECCIONADO 
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), str(self.typeControl), str(self.idControl))
 
 	
 #*******************************************************************
@@ -720,6 +722,7 @@ class ResizableWidget(QtGui.QWidget):
 	
 	def enableSelected(self):
 		self.isSelected = true
+		self.setFocus()
 		self.repaint()
 	
 	#****************PROCEDIMENTOS ESPECIAS SOBRE ACÇÕES DE POP-UP MENUS*******************

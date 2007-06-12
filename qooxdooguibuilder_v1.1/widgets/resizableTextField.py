@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 from resizableWidget import *
 from const import *
 
-class resizableTextField(ResizableAbstractIO):
+class ResizableTextField(ResizableAbstractIO):
 	
 	def __init__(self, typeControl, id, parent=None):
 		self.TextField = QtGui.QLineEdit()

@@ -28,6 +28,9 @@ SIGNAL_PROPERTY_CHANGED = "Property_Changed" #ENVIO IMPLICITO DE: idProperty; pr
 SIGNAL_NONE_CONTROL_SELECTED = "None_Control_Selected" # INDICAÇÃO QUE A DRAW AREA FOI CLICADA
 SIGNAL_RESIZABLE_DELETE = "Resizable_Delete(const QString &, const QString &)" #ENVIO DE: typeControl; idControl 
 SINGNAL_INTERFACE_CHANGED = "InterfaceChanged" #INDICAÇÃO QUE A INTERFACE FOI ALTERADA
+SIGNAL_RESIZABLE_SAVE_TEMPLATE = "Resizable_SaveTemplate(const QString &, const QString &)" #ENVIO DE: typeControl; idControl 
+SIGNAL_RESIZABLE_APPLY_TEMPLATE = "Resizable_ApplyTemplate(const QString &, const QString &)" #ENVIO DE: typeControl; idControl 
+
 
 #DEFINICÃO DOS FICHEIROS COM AS INFORMAÇÕES SOBRE OS CONTROLOS
 FILE_CONTROLS_PROPERTIES= "ControlsDataTypes.dat"
@@ -183,8 +186,8 @@ PROPERTIES_WIDGET_COLUMN2 = "Value"
 
 
 #ID's de Propriedades GENERICAS
-ID_LEFT = "G02"
 ID_TOP = "G01"
+ID_LEFT = "G02"
 ID_HEIGHT = "G08"
 ID_WIDTH = "G05"
 
@@ -198,7 +201,7 @@ TITLE_APPLY_TEMPLATE_DIALOG = "Apply template"
 ROOT_DIRECTORY = "./"
 FILES_FILTER = "YAML Files (*.yaml)"
 FILE_EXTENSION = "*.yaml"
-FILES_FILTER_TEMPLATE = "Template Files (*.temp)"
+FILES_FILTER_TEMPLATE = "Template Files (*.yamlt)"
 
 #DEFINIÇÃO DO TIMEOUT DAS MENSAGENS DA STATUSBAR
 TIMEOUT_MSG = 2000

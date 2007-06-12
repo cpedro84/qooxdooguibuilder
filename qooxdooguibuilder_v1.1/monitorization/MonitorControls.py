@@ -669,6 +669,9 @@ class CMonitorControls(QtCore.QObject):
 	# @Param idControl string
 	# @Param unSelectedOtherControls boolean	
 	def setSelectedControl(self, typeControl, idControl, unSelectedOtherControls = true):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
 		#caso o controlo já seleccionado seja igual ao que se pretende seleccionar então não será processada a selecção
 		if self.controlSelected[self.positionTypeControl] == typeControl and self.controlSelected[self.positionIdControl] == idControl:			
 			return
@@ -700,16 +703,24 @@ class CMonitorControls(QtCore.QObject):
 		LWidgetsRects = []
 		LWidgetsRects = self.getResizableWidgetsRects()
 		
+		nControlsSelected = 0
+		typeControlSel = -1
+		idControlSel = -1
+		
 		for widgetInfo in LWidgetsRects:			
-			typeControl = widgetInfo[0]
-			idControl = widgetInfo[1]
-			widgetRect = widgetInfo[2]			
+			typeControl = str(widgetInfo[0])
+			idControl = str(widgetInfo[1])
+			widgetRect = widgetInfo[2]
 			
 			if intersection.intersects(widgetRect):				
 				self.setSelectedControl(str(typeControl), str(idControl), false)
+				nControlsSelected +=1
+				
 		
-		self.clearIndicationSeletedControl()
-	
+		if nControlsSelected > 1:
+			self.clearIndicationSeletedControl()
+		elif nControlsSelected  == 1 and typeControlSel <> -1 and idControlSel <> -1:
+			self.setSelectedControl(typeControlSel, idControlSel)
 	
 	
 	##

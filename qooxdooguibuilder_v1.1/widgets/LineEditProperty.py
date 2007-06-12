@@ -14,6 +14,8 @@ class CLineEditProperty(QtGui.QLineEdit):
 	
 	def __init__(self, idProperty, propertyValue = "", parent = None,  typeProperty = TINT):
 		
+		propertyValue = str(propertyValue)
+		
 		QtGui.QLineEdit.__init__(self, propertyValue, parent)
 		
 		self.typeProperty = typeProperty

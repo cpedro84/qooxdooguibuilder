@@ -58,6 +58,21 @@ class CControlInfo(QtCore.QObject):
 	
 	
 	##
+	# Set the value of a Property.
+	#
+	# @Param idProperty string
+	# @Param value string
+	def setControlProperty(self, idProperty, value):
+		
+		controlProperty = self.getControlProperty(idProperty)	
+		if controlProperty == -1:
+			return -1
+		else:			
+			controlProperty.setValueProperty(value)
+		
+		
+		
+	##
 	# Get control type.
 	#	
 	# @return typeControl string
@@ -89,9 +104,11 @@ class CControlInfo(QtCore.QObject):
 	# @see CControlProperty
 	def getControlProperty(self, idProperty):
 		for controlProperty in self.controlProperties:
-			if CControlProperty(controlProperty).getIdProperty() == idPoperty:
-				return CControlProperty(controlProperty)
-			
+			if controlProperty.getIdProperty() == idProperty:
+				return controlProperty
+		
+		return -1
+		
 	##
 	# Check if control have properties.
 	#

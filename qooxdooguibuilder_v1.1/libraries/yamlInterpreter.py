@@ -64,6 +64,9 @@ class CYamlInterpreter:
 	def readInterface(self, yamlInterfaceCode):
 		
 		controlsList = yaml.load(yamlInterfaceCode)
+		if controlsList == None:
+			return -1
+		
 		controlsInfoList = []
 		
 		for ControlMap in controlsList: #Lista
@@ -83,13 +86,15 @@ class CYamlInterpreter:
 		return controlsInfoList
 
 	def readTemplate(self, yamlInterfaceCode):
+				
+		controlMap = yaml.load(yamlInterfaceCode)		
+		if controlMap == None:
+			return -1
 		
-		controlMap = yaml.load(yamlInterfaceCode)
-		
-		controlInfo = None
-		
-		propertiesMap = ControlMap[typeControl]		
-		for typeControl in ControlMap.keys(): 
+		controlInfo = -1		
+			
+		for typeControl in controlMap.keys(): 
+			propertiesMap = controlMap[typeControl]
 			controlInfo = CControlInfo(typeControl,"")
 
 			#Carregamento das propreidades (ids e valores)
