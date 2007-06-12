@@ -101,6 +101,14 @@ class DrawArea(QtGui.QWidget):
 	rubberRect = QtCore.QRect(self.rubberHand.geometry())
 	self.rubberHand.hide()	
 	self.monitor.setSelectedControlsIntersection(rubberRect)
+	
+	#verificar se existe um unico controlo seleccionado
+	typeControl = self.monitor.getTypeSelectedControl()
+	idControl = self.monitor.getIdSelectedControl()
+	if typeControl <> -1 and idControl <> -1:
+		#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
+		self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
+
 
     def mouseMoveEvent(self, event):		
 	if self.mouseClicked: 
@@ -134,6 +142,21 @@ class DrawArea(QtGui.QWidget):
     
 	self.monitor.setSelectedControl(typeControl, idControl)
     
+    
+    def Signal_Redirect_SaveTemplateControl(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), typeControl, idControl)
+    
+    
+    def Signal_Redirect_ApplyTemplateControl(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), typeControl, idControl)
+
+
     def deleteControl(self, typeControl, idControl):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
@@ -173,6 +196,8 @@ class DrawArea(QtGui.QWidget):
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
 	#PARA  CONTROLOS DO TIPO TTABLE QUE TENHAM PROPRIEDADES DE TTABLEITEMS 
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.saveTTableItems)
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), self.Signal_Redirect_SaveTemplateControl)
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), self.Signal_Redirect_ApplyTemplateControl)
 	#*****************************************************************
 
 
@@ -534,7 +559,7 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self, parent)
 	
 	self.monitor = CMonitorControls()
-
+	
         self.createActions()
         self.createMenus()
         self.createToolBars()
@@ -545,7 +570,9 @@ class MainWindow(QtGui.QMainWindow):
 	#Conectar o evento de clique na drawArea (para que sejam des-seleccionados todos os controlos) com a remoção das propriedades
 	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.propertiesWidget.clearProperties)
 	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED), self.clearControlName)
-
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), self.saveTemplateAsAct)
+	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), self.applyTemplateAct)
+		
 	#formatar a central Widget
         self.centralWidget = QtGui.QScrollArea()
         self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
@@ -679,7 +706,7 @@ class MainWindow(QtGui.QMainWindow):
         self.saveTemplateAsAction = QtGui.QAction(QtGui.QIcon("icons/file_save.png"), "Save template as...", self)        
         self.saveTemplateAsAction.setStatusTip("Save the template")
         self.connect(self.saveTemplateAsAction, QtCore.SIGNAL("triggered()"), self.saveTemplateAsAct)
-
+	
 
     def createMenus(self):
 
@@ -815,6 +842,10 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         #*********Leitura da interface*********	
 	controlsInfoList = CYamlInterpreter().readInterface(QStringToString(instr.readAll()))
+	#caso tenha ocorrido erro na leitura do código YAML o processo é terminado
+	if controlsInfoList == -1:
+		QtGui.QApplication.restoreOverrideCursor()
+		return
 	
 	#Limpar a interface gráfica
 	self.monitor.deleteAllControls()
@@ -834,7 +865,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setCurrentInterfaceFile(fileName)
         self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
         
-	
+
     def saveInterface(self, fileName):
         file = QtCore.QFile(fileName)
         if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
@@ -856,9 +887,44 @@ class MainWindow(QtGui.QMainWindow):
 	return True
 
     
+    def applyTemplate(self, fileName):
+
+	file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_READ_FILE).arg(fileName).arg(file.errorString()))
+            return
+        instr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+	#*********Leitura da Template*********	
+	controlInfo = CYamlInterpreter().readTemplate(QStringToString(instr.readAll()))
+	#caso tenha ocorrido erro na leitura do código YAML o processo é terminado
+	if controlInfo == -1:
+		QtGui.QApplication.restoreOverrideCursor()
+		return
+
+	#obter a referencia em memoria do controlo
+	typeControl = self.monitor.getTypeSelectedControl()
+	idControl = self.monitor.getIdSelectedControl()
+	widgetControl = self.monitor.getValueMemRef(typeControl, idControl)
+	#verificar se existe referencia em memória e o tipo de controlo seleccionado é igual ao guardado no template
+	if widgetControl  <> -1 and controlInfo.getTypeControl() == typeControl:	
+		#Armazenar as propriedades Top e Left, dado que estas não são para serem alterardas
+		controlInfo.setControlProperty(ID_LEFT, str(widgetControl.x()))
+		controlInfo.setControlProperty(ID_TOP, str(widgetControl.y()))
+		
+		self.monitor.assignProperties(widgetControl, typeControl, idControl, controlInfo.getControlProperties())
+		#Actualizar a lista de propriedades do controlo
+		self.propertiesWidget.fillControlPropertys(typeControl, idControl)
+	
+	#************************************
+	QtGui.QApplication.restoreOverrideCursor()
+
+        self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
+    
     
     def saveTemplate(self, fileName):
-	# (...)
+
 	file = QtCore.QFile(fileName)
         if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
@@ -869,12 +935,11 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         #*************Armazenamento da interface************	
 	typeControl = self.monitor.getTypeSelectedControl()
-	idControl = getIdSelectedControl()
+	idControl = self.monitor.getIdSelectedControl()
 	outstr << CYamlInterpreter().writeTemplate(self.monitor.getControlInfo(typeControl, idControl))	
 	#***************************************************
         QtGui.QApplication.restoreOverrideCursor()
         
-        self.setCurrentInterfaceFile(fileName)
         self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)
 
 
@@ -916,7 +981,7 @@ class MainWindow(QtGui.QMainWindow):
 	self.monitor.deleteAllControls()
         
 
-
+    # ABRE UM CONTROLO E COLOCA-O NA INTERFACE ???? valerá a pena....
     def openTemplateAct(self):	
 	#(...)
 	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_TEMPLATE_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
@@ -1014,7 +1079,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def deleteAct(self):
 
-        return
+	typeControl = self.monitor.getTypeSelectedControl()
+	idControl = self.monitor.getIdSelectedControl()
+	if typeControl  <> -1 and idControl <> -1:
+		self.drawArea.deleteControl(typeControl, idControl)
 
 
     def previewInApplicationAct(self):
@@ -1053,19 +1121,21 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def applyTemplateAct(self):
-	# (...)
+
 	fileName = QtGui.QFileDialog.getOpenFileName(self,
 					TITLE_APPLY_TEMPLATE_DIALOG,
 					ROOT_DIRECTORY,
-					FILES_FILTER)
+					FILES_FILTER_TEMPLATE)
 
+	if not fileName.isEmpty():
+		self.applyTemplate(fileName) 
 
-    def saveTemplateAsAct(self):
-	# (...)
+    def saveTemplateAsAct(self):	
+
 	fileName = QtGui.QFileDialog.getSaveFileName(self, 
 					TITLE_SAVE_TEMPLATE_DIALOG, 
 					ROOT_DIRECTORY, 
-					FILES_FILTER, 
+					FILES_FILTER_TEMPLATE, 
 					FILE_EXTENSION)
 					
 	if fileName.isEmpty():
