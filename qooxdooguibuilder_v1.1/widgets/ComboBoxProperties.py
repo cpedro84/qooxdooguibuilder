@@ -14,9 +14,11 @@ from generalFunctions import *
 class CComboBoxProperties(QtGui.QComboBox):
 	
 	## The constructor.	
+	# Constructs a ComboBox owned by the given parent.
+	# This widget represents a idProperty identified with the given idProperty.
 	#
 	# @Param idProperty string
-	# @Param parent QWidget reference
+	# @Param parent QWidget
 	def __init__(self, idProperty, parent = None):
 		
 		QtGui.QComboBox.__init__(self, parent)

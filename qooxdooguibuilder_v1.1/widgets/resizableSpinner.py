@@ -6,8 +6,21 @@ from resizableWidget import *
 from const import *
 
 
-class ResizableSpinner(ResizableWidget):
+## Documentation for CResizableSpinner.
+#
+# Provide a Resizable Spinner which represents the Spinner Control. 
+#
+# Inherits @see CResizableWidget
+class CResizableSpinner(ResizableWidget):
 	
+	
+	## The constructor.	
+	# Constructs a Resizable Spinner owned by the given parent. 
+	# The resizable is identified with a given typeControl as a id.
+	#
+	# @Param typeControl string
+	# @Param id string
+	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.Spinner = QtGui.QSpinBox()
 		ResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)

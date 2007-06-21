@@ -6,25 +6,53 @@ from resizableWidget import *
 from const import *
 
 
-
-class ResizableComboBox(ResizableWidget):
-	
+## Documentation for CResizableComboBox.
+#
+# Provide a Resizable ComboBox which represents the ComboBox Control. 
+#
+# Inherits @see CResizableWidget
+class CResizableComboBox(ResizableWidget):
+		
+	## The constructor.	
+	# Constructs a Resizable ComboBox owned by the given parent. 
+	# The resizable is identified with a given typeControl as a id.
+	#
+	# @Param typeControl string
+	# @Param id string
+	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.ComboBox = QtGui.QComboBox()
 		ResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
 	
-	#??????????????????????????????????
+	
+	##
+	# Add a item text to the ComboBox.
+	#
+	# @Param item string	
 	def addItemText(self, item):
 		self.ComboBox.addItem(item)
 	
-	def addItemIcon(self, strText, Icon):
-		self.ComboBox.addItem(Icon, strText)
-	
+	##
+	# Insert a item text to the ComboBox in the given index.
+	#
+	# @Param index int
+	# @Param item string
 	def insertItem(self, index, strText):
 		self.ComboBox.insertItem(index, strText)
 	
-	
-	# textItemsList -> ELEMENT TYPE: CEditItem
+	##
+	# Add a item text, with a associated Icon, to the ComboBox.
+	#
+	# @Param strText string
+	# @Param icon QtGui.QIcon	
+	def addItemIcon(self, strText, icon):
+		self.ComboBox.addItem(icon, strText)
+		
+	##
+	# Set the items of the ComboBox with teh given list of CEditItem.
+	# @see CEditItem
+	#
+	# @Param textItemsList python list
 	def setItems(self, textItemsList):
 		self.ComboBox.clear()
 		for item in textItemsList:			
@@ -50,13 +78,22 @@ class ResizableComboBox(ResizableWidget):
 	def countItems(self):
 		self.ComboBox.count()
 	
+	
+	##
+	# Get a item text inthe given index from the ComboBox.
+	#
+	# @Param index int
 	def getItemText(self, index):		
 		if indexValidation(index, self.countItems()):
 			return str(self.ComboBox.itemText(index))
 		
 		return structureError
 		
-		
+	##
+	# Return the list of items (CEditItem) from the ComboBox.
+	# @see CEditItem
+	#
+	# @Return python list
 	def getItems(self):
 		items = []
 		nElements = self.countItems()
