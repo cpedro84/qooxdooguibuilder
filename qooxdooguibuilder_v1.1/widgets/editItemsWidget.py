@@ -11,8 +11,20 @@ from editItem import *
 from listWidget import *
 
 
-class editItemsWidget(QtGui.QDialog):
-		
+## Documentation for CEditItemsWidget.
+#
+# Dialog Window for setting edit items. It's possible add, delete and change the entry order of the items. 
+class CEditItemsWidget(QtGui.QDialog):
+	
+	## The constructor.
+	# Initializes the window dialog and sets the parent with given parent reference.
+	# The window title is formated width the given windowTitle string.
+	# A initial set of items, designated with the given itemDesignation, can be formated with the given initialItemsList.
+	#
+	# @Param windowTitle string
+	# @Param parent QWidget reference
+	# @Param initialItemsList python list
+	# @Param itemDesignation string
 	def __init__(self, windowTitle, parent=None,  initialItemsList = [], itemDesignation = "Items"):
 		
 		QtGui.QDialog.__init__(self, parent)		
@@ -182,6 +194,10 @@ class editItemsWidget(QtGui.QDialog):
 			return
 		
 	
+	##
+	# Get the items list, formated in the window dialog.
+	#
+	# @Return python list
 	def getItemsList(self):
 		return self.ItemsList
 	

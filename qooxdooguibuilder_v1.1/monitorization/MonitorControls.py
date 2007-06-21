@@ -84,7 +84,7 @@ def callProcedureResizableProperty(procedure, DparametersValues = { }):
 ## Documentation for CMonitorControls.
 #
 # Monotorize, manage and maintain the interactions with the resizableWidgets,
-# where is possible to create (@see addNewControl) and delete (@see deleteControl) resizable Widgets, 
+# where is possible to create (@see addNewControl), delete (@see deleteControl) resizable Widgets, 
 # change properties (@see changeProperties) and some more actions related with.
 class CMonitorControls(QtCore.QObject):
 	

@@ -90,14 +90,14 @@ class CTableData(QtCore.QObject):
 	##
 	# Set the rows with the given rows list.	
 	#
-	# @Param rowsList python list
+	# @Param python list
 	def setTableRows(self, rowsList):
 		self.tableData[self.posRows] = rowsList
 	
 	##
 	# Set the columns with the given columns list.	
 	#
-	# @Param rowsList python list
+	# @Param python list
 	def setTableColumns(self, columnsList):
 		#print columnsList	
 		self.tableData[self.posColumns] = columnsList
@@ -127,13 +127,13 @@ class CTableData(QtCore.QObject):
 	##
 	# Get table items dictionary.
 	#	
-	# @return python dict
+	# @return python dictionary
 	def getTableItems(self):
 		return self.tableData[self.posItems]
 	
 
 	##
-	# Get tableData reference..
+	# Get tableData reference.
 	#	
 	# @return CTableData
 	def getTableData(self):
