@@ -64,6 +64,7 @@ class CYamlInterpreter:
 	def readInterface(self, yamlInterfaceCode):
 		
 		controlsList = yaml.load(yamlInterfaceCode)
+		print controlsList
 		if controlsList == None:
 			return -1
 		

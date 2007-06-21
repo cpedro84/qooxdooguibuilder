@@ -731,7 +731,7 @@ class ResizableWidget(QtGui.QWidget):
 		try:
 			list = []
 			list = self.getItems()
-			widgetItems = editItemsWidget(TITLE_EDIT_ITEMS, self, list)
+			widgetItems = CEditItemsWidget(TITLE_EDIT_ITEMS, self, list)
 			if widgetItems.exec_() == QtGui.QDialog.Accepted:				 
 				list = widgetItems.getItemsList()
 				#Alterar na resizable respectiva do controlo os items escolhidos
@@ -748,7 +748,7 @@ class ResizableWidget(QtGui.QWidget):
 		try:
 			list = []
 			list = self.getTabs() # (....) ? 
-			widgetItems = editItemsWidget(TITLE_EDIT_TABS, self, list, "Tabs")
+			widgetItems = CEditItemsWidget(TITLE_EDIT_TABS, self, list, "Tabs")
 			if widgetItems.exec_() == QtGui.QDialog.Accepted:				 
 				list = widgetItems.getItemsList()
 				

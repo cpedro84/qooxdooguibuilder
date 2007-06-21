@@ -12,9 +12,21 @@ from generalFunctions import *
 from tableData import *
 from tableWidget import *
 
-
+## Documentation for CEditTableItemsWidget.
+#
+# Dialog Window for setting edit table items. It's possible add, delete and change the entry order of the table Cell items, rows and columns text. 
 class CEditTableItemsWidget(QtGui.QDialog):
-		
+	
+
+
+	## The constructor.
+	# Initializes the window dialog and sets the parent with given parent reference.
+	# The window title is formated width the given windowTitle string.
+	# A initial set of items (rows, columns and cell items) can be formated with the given inicialTableData.
+	#
+	# @Param windowTitle string
+	# @Param parent QWidget reference
+	# @Param inicialTableData python dictionary
 	def __init__(self, windowTitle, parent=None, inicialTableData = { }):
 		
 		QtGui.QDialog.__init__(self, parent)		
@@ -556,7 +568,10 @@ class CEditTableItemsWidget(QtGui.QDialog):
 			self.renameRowsButton.setText(self.RenameState)
 			self.btnRowState = self.RenameState
 	
-	
+	##
+	# Get the table items, formated in the window dialog.
+	#	
+	# @return CTableData
 	def getTableData(self):
 		return self.TableItems.getTableData()
 	
