@@ -40,6 +40,7 @@ class CInputMask(QtCore.QString):
 			self.mask = "#0000,000"
 		elif type == self.TSTRING_MASK:
 			self.mask = "nnnnnnnnnnnnnnnnnnnnnnnnn"
+			#self.mask = "NNNNNNNNNNNNNNNNNNNNNNNNNN"
 		elif type == self.TLONG_STRING_MASK:
 			self.mask = """nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 					nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn

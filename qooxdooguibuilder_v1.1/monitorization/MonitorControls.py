@@ -660,7 +660,6 @@ class CMonitorControls(QtCore.QObject):
 		self.controlSelected[self.positionIdControl] = self.noneSelected
 	
 	
-	
 	##
 	# Set a new control to be selected. The new control is identified with typeControl and idControl.
 	# If unSelectedOtherControls is true, then other seleted controls will be deselecte. Otherwise maintain the selected effect.
@@ -716,11 +715,13 @@ class CMonitorControls(QtCore.QObject):
 				self.setSelectedControl(str(typeControl), str(idControl), false)
 				nControlsSelected +=1
 				
-		
 		if nControlsSelected > 1:
-			self.clearIndicationSeletedControl()
+			self.clearIndicationSeletedControl()			
 		elif nControlsSelected  == 1 and typeControlSel <> -1 and idControlSel <> -1:
 			self.setSelectedControl(typeControlSel, idControlSel)
+	
+	
+	
 	
 	
 	##
@@ -1078,8 +1079,12 @@ class CMonitorControls(QtCore.QObject):
 		return LWidgetsRects
 
 
-	
-	
+	##
+	# Returns a list with the information about all selected controls.
+	#
+	# @Param python list
+	def getSelectedControls(self):		
+		return self.LControlsSelected
 
 		
 	

@@ -46,6 +46,7 @@ class CResizableWidget(QtGui.QWidget):
 		#Formatar output da Widget que representa o controlo
 		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
 		self.childWidget.setEnabled(false)		
+		#self.childWidget.grabMouse()
 		#self.lower()
 		#self.blockSignals(true)
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
@@ -495,7 +496,7 @@ class CResizableWidget(QtGui.QWidget):
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))
 		
 		#Enviar sinal indicando que o processo de drag foi terminando, informando que as propriedades podem ser actualizadas
-		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
+		#self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 		
 		self.mouseButtonClicked = event.button()
 		
@@ -509,6 +510,7 @@ class CResizableWidget(QtGui.QWidget):
 		#ALTERAR O CURSOR DO RATO PARA O ESTADO ORIGINAL
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 	
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), str(self.typeControl), str(self.idControl))
 	
 	def keyPressEvent(self, event):

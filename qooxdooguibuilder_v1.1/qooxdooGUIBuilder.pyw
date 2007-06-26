@@ -28,6 +28,7 @@ from MonitorControls import *
 from tableWidget import *
 from ComboBoxProperties import *
 from LineEditProperty import *
+from spinnerEditProperty import *
 from InputMask import *
 from yamlInterpreter import *
 
@@ -143,6 +144,14 @@ class DrawArea(QtGui.QWidget):
 	self.monitor.setSelectedControl(typeControl, idControl)
     
     
+    def Signal_Redirect_PropertiesToChange(self, typeControl, idControl):
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), typeControl, idControl)
+
+    
+    
     def Signal_Redirect_SaveTemplateControl(self, typeControl, idControl):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
@@ -160,8 +169,7 @@ class DrawArea(QtGui.QWidget):
     def deleteControl(self, typeControl, idControl):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
-	
-	
+		
 	ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
 				MSG_QUESTION_DELETE_CONTROL,                                
                                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
@@ -189,8 +197,9 @@ class DrawArea(QtGui.QWidget):
 	#PROCESSAMENTO DOS SINAIS DA RESIZABLE WIDGET
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
-        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)		    
-        #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), self.Signal_Redirect_PropertiesToChange)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)		            
+	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
         #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
@@ -226,37 +235,45 @@ class DrawArea(QtGui.QWidget):
 	    
 	    #CASO DE CRIAÇÃO DE UM NOVO CONTROLO
 	    if actionType == DRAG_COPY_ACTION:
+
+		newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
 		    
-		    newControlWidget = self.monitor.addNewControl(main_window.control_beeing_added, self)
+		#atribuir os sinais ao controlo criado
+		self.assignSignalsToControlWidget(newControlWidget)		    
 		    
-		    #atribuir os sinais ao controlo criado
-		    self.assignSignalsToControlWidget(newControlWidget)		    
+		newControlWidget.move(dropPos)
+		newControlWidget.show()
 		    
-		    newControlWidget.move(dropPos)
-		    newControlWidget.show()
-	    
+		typeControl = str(self.monitor.getTypeSelectedControl())
+		idControl = str(self.monitor.getIdSelectedControl())
+		#Alterar as prorpriedades Left e Top de acordo com a nova posição	    
+		self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
+		self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))	
+		#Enviar sinal indicando que o processo de drag foi terminando, informando que as propriedades podem ser actualizadas
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), typeControl, idControl)
+	
 	    #CASO DE UM DRAG DE "MOVE"
 	    elif actionType == DRAG_MOVE_ACTION:		  
-		event.source().move(dropPos)		
+
+		event.source().move(dropPos)
+				
+		typeControl = str(self.monitor.getTypeSelectedControl())
+		idControl = str(self.monitor.getIdSelectedControl())	
+		#Alterar as prorpriedades Left e Top de acordo com a nova posição	    
+		self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
+		self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))	
 		
-	    
+		
 	    #Indicação de operação de Drop sucedida
-            if event.source() in self.children():           
-		
+            if event.source() in self.children():
 		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
             else:
-                event.acceptProposedAction()
+                event.acceptProposedAction()	    
+
 	
-	    typeControl = str(self.monitor.getTypeSelectedControl())
-	    idControl = str(self.monitor.getIdSelectedControl())
-	    	
-	    #Alterar as prorpriedades Left e Top de acordo com a nova posição	    
-	    self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
-	    self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))
-	   
 	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)    	    
-	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
+	    #self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
 	    #Envio do sinal, indicando que a interface foi alterada
 	    self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
 	    
@@ -349,7 +366,12 @@ class PropertiesWidget(CTableWidget):
 					propertyVal = str(controlProperty.getValueProperty())
 					cellValue.setSelectedItem(propertyVal)
 				else:
-					cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, controlProperty.getTypeProperty())
+					typeProperty = controlProperty.getTypeProperty()
+					if typeProperty == TINT:
+						cellValue = CSpinnerEditProperty(idProperty, controlProperty.getValueProperty(), self)
+					elif typeProperty == TSTRING or typeProperty == TBOOLEAN or typeProperty == TICON:	
+						cellValue = CLineEditProperty(idProperty, controlProperty.getValueProperty(), self, typeProperty)
+						
 					
 				#conectar o sinal de alteração de propriedade da cell com o valor da propriedade
 				self.connect(cellValue, QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), self.changePropertyValue)
@@ -813,7 +835,7 @@ class MainWindow(QtGui.QMainWindow):
         self.drawArea = DrawArea(self.monitor)
 	self.drawArea.setAttribute(QtCore.Qt.WA_AcceptDrops)
 
-	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.propertiesWidget.fillControlPropertys)
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), self.propertiesWidget.fillControlPropertys)
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.changeControlName)
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED), self.setInterfaceSaved)
     

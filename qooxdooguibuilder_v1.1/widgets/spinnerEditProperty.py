@@ -1,23 +1,16 @@
-#!/usr/bin/env python
-# -*- encoding: latin1 -*-
-
-
-
-import sys
-from PyQt4 import QtCore, QtGui
 from const import *
 from projectExceptions import *
 from generalFunctions import *
 from InputMask import *
 
 
-## Documentation for CLineEditProperty.
+## Documentation for CSpinnerEditProperty.
 #
-# Custumized LineEdit Widget that herits all properties from Qt QLineEdit.
-class CLineEditProperty(QtGui.QLineEdit):
+# Custumized Spinner Widget that herits all properties from Qt QLineEdit.
+class CSpinnerEditProperty(QtGui.QSpinBox):
 	
 	## The constructor.	
-	# Initializes the LineEdit Widget for the given parent, with a optional initial value.
+	# Initializes the Spinner Widget for the given parent, with a optional initial value.
 	# the type of input can be set to the given typeProperty.
 	# Thhis controls represents a property identified with the idProperty.
 	#
@@ -25,26 +18,23 @@ class CLineEditProperty(QtGui.QLineEdit):
 	# @Param propertyValue string
 	# @Param parent reference
 	# @Param typeProperty string
-	def __init__(self, idProperty, propertyValue = "", parent = None,  typeProperty = TSTRING):
+	def __init__(self, idProperty, propertyValue = 0, parent = None):
 		
 		propertyValue = str(propertyValue)
 		
-		QtGui.QLineEdit.__init__(self, propertyValue, parent)
+		QtGui.QSpinBox.__init__(self, parent)		
+		self.setMinimum(MIN_TINT_PROPERTY_VALUE)
+		self.setMaximum(MAX_TINT_PROPERTY_VALUE)
 		
-		self.typeProperty = typeProperty
+		if propertyValue == "-":
+			propertyValue = int(0)
+		
+		self.setValue(int(propertyValue))
+		
 		self.idProperty = idProperty
 		
-		if typeProperty <> TSTRING:
-			self.setReadOnly(true)
-		
-		#Formatar a mascara de entrada da lineEdit de acordo com o tipo de propriedade
-		#mask = CInputMask(typeProperty)
-		#self.setInputMask(mask)
-	
-		self.connect(self, QtCore.SIGNAL("returnPressed()"), self.valueChanged)
+		self.connect(self, QtCore.SIGNAL("valueChanged(int)"), self.valueChanged)
 		self.connect(self, QtCore.SIGNAL("editingFinished()"), self.valueChanged)
-		#self.connect(self, QtCore.SIGNAL("selectionChanged()"), self.valueChanged)
-	
 	
 	##
 	# Set the idProperty, that the controls is associated, with the given idProperty.
@@ -65,7 +55,7 @@ class CLineEditProperty(QtGui.QLineEdit):
 	#
 	# @Return string
 	def getPropertyValue(self):
-		return self.text().toLatin1().__str__()
+		return str(self.value())
 	
 	##
 	# Get the idProperty, that the controls is associated.
@@ -73,10 +63,8 @@ class CLineEditProperty(QtGui.QLineEdit):
 	# @Return string
 	def getIdProperty(self):
 		return self.idProperty
-		
 	
-	def valueChanged(self):		
+	def valueChanged(self, value):
+		print "teste"
 		#ENVIO DO SINAL PARA  INFORMAR QUE A PROPRIEDADE FOI ALTERADA DE ESTADO
 		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), str(self.getIdProperty()), self.getPropertyValue())
-		
-		
