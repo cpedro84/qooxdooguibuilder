@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable CheckBox which represents the CheckBox Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizableCheckBox(ResizableAbstractIO):
+class CResizableCheckBox(CResizableAbstractIO):
 	
 	
 	## The constructor.	
@@ -23,7 +23,7 @@ class CResizableCheckBox(ResizableAbstractIO):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.checkBox = QtGui.QCheckBox()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.checkBox, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.checkBox, parent)
 	
 	
 	##

@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable ComboBox which represents the ComboBox Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableComboBox(ResizableWidget):
+class CResizableComboBox(CResizableWidget):
 		
 	## The constructor.	
 	# Constructs a Resizable ComboBox owned by the given parent. 
@@ -22,7 +22,7 @@ class CResizableComboBox(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.ComboBox = QtGui.QComboBox()
-		ResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
+		CResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
 	
 	
 	##

@@ -12,7 +12,7 @@ from const import *
 # Provide a Resizable TextField which represents the TextField Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizableTextField(ResizableAbstractIO):
+class CResizableTextField(CResizableAbstractIO):
 	
 	## The constructor.	
 	# Constructs a Resizable TextField owned by the given parent. 
@@ -23,5 +23,5 @@ class CResizableTextField(ResizableAbstractIO):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.TextField = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.TextField, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.TextField, parent)
 		self.TextField.setEchoMode(QtGui.QLineEdit.Normal)

@@ -10,7 +10,7 @@ from const import *
 # Provide a Resizable GroupBox which represents the GroupBox Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableGroupBox(ResizableWidget):
+class CResizableGroupBox(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -22,7 +22,7 @@ class CResizableGroupBox(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.GroupBox = QtGui.QGroupBox()
-		ResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
 
 
 	##

@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable Label which represents the Label Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizableLabel(ResizableAbstractIO):
+class CResizableLabel(CResizableAbstractIO):
 	
 	
 	## The constructor.	
@@ -23,7 +23,7 @@ class CResizableLabel(ResizableAbstractIO):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.Label = QtGui.QLabel()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.Label, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.Label, parent)
 	
 	
 	##

@@ -16,8 +16,26 @@ from projectExceptions import *
 from tableWidget import *
 from listWidget import *
 
-class ResizableWidget(QtGui.QWidget):
+
+
+## Documentation for CResizableWidget.
+#
+# Provide widget for the representation of a control. 
+# This class also provide a resizable feature which made possible the user change the size of the widget through mouse control.
+#
+# Inherits Qt.QWidget
+class CResizableWidget(QtGui.QWidget):
     
+
+	## The constructor.	
+	# Constructs a Resizable Widget owned by the given parent.
+	# The childWidget is provided by the given widget, which is assigned to the Resizable Widget as child.
+	# The resizable is identified with a given typeControl as a id.
+	#	
+	# @Param typeControl string
+	# @Param id string
+	# @Param widget QWidget
+	# @Param parent QWidget
 	def __init__(self, typeControl, Id, widget=None, parent=None):
 		
 		QtGui.QWidget.__init__(self, parent)
@@ -28,7 +46,7 @@ class ResizableWidget(QtGui.QWidget):
 		#Formatar output da Widget que representa o controlo
 		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
 		self.childWidget.setEnabled(false)		
-		#self.setEnabled(true)
+		#self.lower()
 		#self.blockSignals(true)
 		self.childWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))		
 		#self.childWidget.setFrameShape(QtGui.QFrame.Panel)
@@ -397,13 +415,18 @@ class ResizableWidget(QtGui.QWidget):
 				self.MouseState = self.MouseRelease
 				self.mouseButtonClicked = QtCore.Qt.NoButton
 				self.show()
+			
+			#Enviar sinal indicando que o processo de drag foi terminando, informando que as propriedades podem ser actualizadas
+			self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
+			
+			
 			self.setFocus()
 			self.isSelected = true			
 			self.update()
 		#****************************************************************	
 		#****************************************************************
 		#****************************************************************
-	
+		
 		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)		
 		if self.MouseState == self.MouseClicked:
 
@@ -470,6 +493,9 @@ class ResizableWidget(QtGui.QWidget):
 
 		#ENVIO DO SINAL DE CLIQUE PARA INFORMAR O TIPO E O ID DO CONTROLO
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), str(self.typeControl), str(self.idControl))
+		
+		#Enviar sinal indicando que o processo de drag foi terminando, informando que as propriedades podem ser actualizadas
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 		
 		self.mouseButtonClicked = event.button()
 		
@@ -576,25 +602,11 @@ class ResizableWidget(QtGui.QWidget):
 	
 #*******************************************************************
 	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
-	def getChildWidget(self):
-		return self.childWidget
-
-	def getX(self):
-		return self.childWidget.x()
-		
-	def getY(self):
-		return self.childWidget.y()
-		
-	def getWidth(self):
-		return self.childWidget.width()
-		
-	def getHeight(self):
-		return self.childWidget.height()	
-	
 	
 	def setFont(self, Font):
 		self.childWidget.setFont(Font)
 
+	
 	def disable(self):
 		self.childWidget.setDisable(bool(1))
 	
@@ -630,7 +642,31 @@ class ResizableWidget(QtGui.QWidget):
 		self.clipLeft = bool(0)
 		self.clipTop = bool(0)
 		
+	
+
+
+	##
+	# Get the child widget.
+	#
+	# @return CResizableWidget
+	def getChildWidget(self):
+		return self.childWidget
+
+
+	def getX(self):
+		return self.childWidget.x()
 		
+	def getY(self):
+		return self.childWidget.y()
+		
+	def getWidth(self):
+		return self.childWidget.width()
+		
+	def getHeight(self):
+		return self.childWidget.height()	
+
+
+
 	#************DEFINIÇÃO DE CORES************???
 	#BackGround Color
 	def setBaseColor(self, color):
@@ -649,18 +685,30 @@ class ResizableWidget(QtGui.QWidget):
 		self.childWidget.update()
 	
 	#************************************************
+	##
+	# Set the Left position of the Resizable Widget.
+	#
+	# @Param left float 
 	def setLeft(self, left):
 		left = float(left)
 		self.left = left
 		widgetRect = self.geometry()
 		self.setGeometry(left, widgetRect.y(), widgetRect.width(), widgetRect.height())
-		
+	
+	##
+	# Set the Top position of the Resizable Widget.
+	#
+	# @Param top float 
 	def setTop(self, top):
 		top = float(top)
 		self.top = top
 		widgetRect = self.geometry()
 		self.setGeometry(widgetRect.x(), top, widgetRect.width(), widgetRect.height())
 	
+	##
+	# Set the Height of the Resizable Widget.
+	#
+	# @Param height float 
 	def setHeight(self, height):		
 		height = float(height)
 		self.height = height
@@ -669,7 +717,10 @@ class ResizableWidget(QtGui.QWidget):
 		widgetRect = self.geometry()	
 		self.setGeometry(widgetRect.x(), widgetRect.y(), widgetRect.width(), height)
 		
-
+	##
+	# Set the Width of the Resizable Widget.
+	#
+	# @Param width float
 	def setWidth(self, width):		
 		width = float(width)
 		self.width = width
@@ -678,6 +729,7 @@ class ResizableWidget(QtGui.QWidget):
 		widgetRect = self.geometry()
 		self.setGeometry(widgetRect.x(), widgetRect.y(), width, widgetRect.height())
 			
+	
 	def setMaxHeight(self, maxHeight):
 		self.maxHeight = maxHeight
 	
@@ -724,6 +776,8 @@ class ResizableWidget(QtGui.QWidget):
 		self.isSelected = true
 		self.setFocus()
 		self.repaint()
+	
+	
 	
 	#****************PROCEDIMENTOS ESPECIAS SOBRE ACÇÕES DE POP-UP MENUS*******************
 	#TCOMBO;TLIST
@@ -792,15 +846,49 @@ class ResizableWidget(QtGui.QWidget):
 	
 	#********************************************************************
 	
-#*******************************************************************
-#*******************************************************************
+
 #*******************************************************************
 
 
-class ResizableAbstractButton(ResizableWidget):
+## Documentation for CResizableAbstractIO.
+#
+# CResizableAbstractIO class is the abstract base class of widgets that have text properties, providing commonly functions.
+#
+# Inherits @see CResizableWidget
+class CResizableAbstractIO(CResizableWidget):
+
+	## The constructor.	
+	# Constructs a Resizable Widget owned by the given parent. 
+	# The resizable is identified with a given typeControl as a id.
+	#
+	# @Param typeControl string
+	# @Param id string
+	# @Param parent QWidget
+	def __init__(self, typeControl, id, widget = None, parent=None):
+		self.AbstractIOWidget = widget
+		CResizableWidget.__init__(self, typeControl, id, self.AbstractIOWidget,  parent)
+	
+	##
+	# Set text property by the given text.	
+	#
+	# @Param strText string
+	def setText(self, strText):
+		self.AbstractIOWidget.setText(strText)
+	
+	##
+	# Get the text property
+	#
+	# @Return  string
+	def getText(self):
+		return self.AbstractIOWidget.text()
+
+
+#*******************************************************************
+
+class CResizableAbstractButton(CResizableWidget):
 	def __init__(self, id, widget = None, parent=None):
 		self.AbstractButtonWidget = widget
-		ResizableWidget.__init__(self, id, self.AbstractButtonWidget,  parent)
+		CResizableWidget.__init__(self, id, self.AbstractButtonWidget,  parent)
 		
 	def setText(self, strText):
 		self.AbstractButtonWidget.setText(strText)
@@ -810,24 +898,11 @@ class ResizableAbstractButton(ResizableWidget):
 
 
 #-------------------------------------------------------------------------------------
-class ResizableAbstractIO(ResizableWidget):
-
-	def __init__(self, typeControl, id, widget = None, parent=None):
-		self.AbstractIOWidget = widget
-		ResizableWidget.__init__(self, typeControl, id, self.AbstractIOWidget,  parent)
-		
-	def setText(self, strText):
-		self.AbstractIOWidget.setText(strText)
-				
-	def getText(self):
-		return self.AbstractIOWidget.text()
-	
-#-------------------------------------------------------------------------------------
 #??????
-class ResizableDialogWindow(ResizableWidget):
+class ResizableDialogWindow(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.DialogWindow = QtGui.QDialog()
-		ResizableWidget.__init__(self, typeControl, id, self.DialogWindow, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.DialogWindow, parent)
 
 #??????
 class editMenu(QtGui.QMenu):
@@ -849,10 +924,10 @@ class editMenu(QtGui.QMenu):
 """
 #-------------------------------------------------------------------------------------
 #??????
-class ResizableMenuBar(ResizableWidget):	
+class ResizableMenuBar(CResizableWidget):	
 	def __init__(self, typeControl, id, app, parent=None):
 		self.MenuBar = QtGui.QMenuBar()
-		ResizableWidget.__init__(self, typeControl, id, self.MenuBar, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.MenuBar, parent)
 		
 		self.MenuBar.setEnabled(true)
 		

@@ -42,14 +42,17 @@ class CTableWidget(QtGui.QTableWidget):
 		
 	##
 	# Add a row text to the table.
+	# Return the position of the new Row
 	#
 	# @Param text string
+	# @Return int	
 	def addRow(self, text):		
 		pos = len(self.rows)		
 		self.insertRow(pos)
 		self.setVerticalHeaderItem(pos, QtGui.QTableWidgetItem(text))
 		self.rows.append(text)
 		
+		return pos
 		#self.setVerticalHeaderLabels(self.rows)
 
 	##
@@ -103,6 +106,8 @@ class CTableWidget(QtGui.QTableWidget):
 			
 				itrRow +=1
 			itrColumn +=1
+	
+	
 	
 	
 	

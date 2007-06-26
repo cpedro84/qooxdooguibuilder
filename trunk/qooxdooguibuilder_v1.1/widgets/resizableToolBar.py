@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable ToolBar which represents the ToolBar Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableToolBar(ResizableWidget):
+class CResizableToolBar(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -23,5 +23,5 @@ class CResizableToolBar(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.ToolBar = QtGui.QToolBar()
-		ResizableWidget.__init__(self, typeControl, id, self.ToolBar, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.ToolBar, parent)
 	

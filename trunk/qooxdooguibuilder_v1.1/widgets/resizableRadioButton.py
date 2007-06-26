@@ -15,7 +15,7 @@ from const import *
 # Provide a Resizable Radio Button which represents the Radio Button Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizableRadioButton(ResizableAbstractIO):
+class CResizableRadioButton(CResizableAbstractIO):
 	
 	
 	## The constructor.	
@@ -27,7 +27,7 @@ class CResizableRadioButton(ResizableAbstractIO):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.RadioButton = QtGui.QRadioButton()		
-		ResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
 
 
 	##

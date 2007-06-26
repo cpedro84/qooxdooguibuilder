@@ -10,7 +10,7 @@ from const import *
 # Provide a Resizable List which represents the List Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableList(ResizableWidget):
+class CResizableList(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -22,7 +22,7 @@ class CResizableList(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.ListView = CListWidget()
-		ResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
+		CResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
 		self.items = []
 		#PROPREIDADES
 		self.selectable = bool(1)

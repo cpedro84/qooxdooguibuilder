@@ -17,6 +17,7 @@ DIR_UTILITIES = "utilities/"
 #DEFINIÇÃO DE SINAIS
 SIGNAL_RESIZABLE_CLICKED = "Resizable_Clicked(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi seleccionada a resizable (para que das outras resizable seja retirado o rebordo)
+SIGNAL_PROPERTIES_TO_CHANGE = "PropertiesToChange(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 #SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Items_Changed" #ENVIO DE: typeControl; idControl; lista de items
 #SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
@@ -153,6 +154,10 @@ MARGIN = 15
 #LIMITES MINIMOS DE REDIMENSIONAMENTO
 MIN_RESIZABLE_WIDTH = 15
 MIN_RESIZABLE_HEIGHT = 15
+
+#ALTURA DAS LINHAS DA DOCK DAS PROPRIEDADES
+PROPERTIES_ROWS_HEIGHT = 20
+
 
 #DEFINIÇÃO DE CORES
 DRAW_AREA_COLOR = QtGui.QPalette.Button

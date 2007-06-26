@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable Spinner which represents the Spinner Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableSpinner(ResizableWidget):
+class CResizableSpinner(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -23,4 +23,4 @@ class CResizableSpinner(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.Spinner = QtGui.QSpinBox()
-		ResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)
