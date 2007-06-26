@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable TabView which represents the TabView Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableTabView(ResizableWidget):
+class CResizableTabView(CResizableWidget):
 	
 	## The constructor.	
 	# Constructs a Resizable TabView owned by the given parent. 
@@ -22,7 +22,7 @@ class CResizableTabView(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.TabView = QtGui.QTabWidget()
-		ResizableWidget.__init__(self, typeControl, id, self.TabView, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.TabView, parent)
 		self.TabView.setEnabled(true)
 	
 	##

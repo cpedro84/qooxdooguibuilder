@@ -10,7 +10,7 @@ from const import *
 # Provide a Resizable PasswordField which represents the PasswordField Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizablePasswordField(ResizableAbstractIO):
+class CResizablePasswordField(CResizableAbstractIO):
 	
 	
 	## The constructor.	
@@ -22,5 +22,5 @@ class CResizablePasswordField(ResizableAbstractIO):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.PasswordEdit = QtGui.QLineEdit()
-		ResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
 		self.PasswordEdit.setEchoMode(QtGui.QLineEdit.Password)

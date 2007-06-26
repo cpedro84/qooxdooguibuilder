@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable Table which represents the Table Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableTable(ResizableWidget):
+class CResizableTable(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -25,7 +25,7 @@ class CResizableTable(ResizableWidget):
 	# @see CTableWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.tableWidget = CTableWidget()		
-		ResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
 		
 	
 	"""def setHeaderCellHeight(self, height):

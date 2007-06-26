@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable TextArea which represents the TextArea Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableTextArea(ResizableWidget):
+class CResizableTextArea(CResizableWidget):
 	
 	
 	## The constructor.	
@@ -23,7 +23,7 @@ class CResizableTextArea(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.textArea = QtGui.QTextEdit()
-		ResizableWidget.__init__(self, typeControl, id, self.textArea, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.textArea, parent)
 	
 	##
 	# Set the text of the TextArea with the given text.

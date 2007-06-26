@@ -12,7 +12,7 @@ from resizableWidget import *
 # Provide a Resizable Button which represents the Button Control. 
 #
 # Inherits @see CResizableAbstractIO
-class CResizableButton(ResizableAbstractIO):
+class CResizableButton(CResizableAbstractIO):
 	
 	## The constructor.	
 	# Constructs a Resizable Button owned by the given parent. 
@@ -24,7 +24,7 @@ class CResizableButton(ResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		
 		self.Button = QtGui.QPushButton()		
-		ResizableAbstractIO.__init__(self, typeControl, id, self.Button, parent)
+		CResizableAbstractIO.__init__(self, typeControl, id, self.Button, parent)
 	
 	##
 	# Set a icon for the Resizable Button

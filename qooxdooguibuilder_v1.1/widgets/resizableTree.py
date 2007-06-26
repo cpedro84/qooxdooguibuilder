@@ -11,7 +11,7 @@ from const import *
 # Provide a Resizable Tree which represents the Tree Control. 
 #
 # Inherits @see CResizableWidget
-class CResizableTree(ResizableWidget):
+class CResizableTree(CResizableWidget):
 		
 	## The constructor.	
 	# Constructs a Resizable Tree owned by the given parent. 
@@ -22,4 +22,4 @@ class CResizableTree(ResizableWidget):
 	# @Param parent QWidget
 	def __init__(self, typeControl, id, parent=None):
 		self.Tree = QtGui.QTreeView()
-		ResizableWidget.__init__(self, typeControl, id, self.Tree, parent)
+		CResizableWidget.__init__(self, typeControl, id, self.Tree, parent)

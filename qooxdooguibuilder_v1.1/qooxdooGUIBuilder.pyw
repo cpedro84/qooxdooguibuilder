@@ -242,6 +242,7 @@ class DrawArea(QtGui.QWidget):
 	    
 	    #Indicação de operação de Drop sucedida
             if event.source() in self.children():           
+		
 		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
             else:
@@ -305,7 +306,6 @@ class PropertiesWidget(CTableWidget):
         self.verticalHeader().hide()
 
 
-
     def fillControlPropertys(self, typeControl, idControl):
 	
 	typeControl = str(typeControl)
@@ -327,7 +327,8 @@ class PropertiesWidget(CTableWidget):
 				specificTypeProperties.index(controlProperty.getTypeProperty())
 				continue
 			except ValueError: #caso a propriedade não seja especifica será adicionada à lista na interface		
-				self.addRow("")
+				pos = self.addRow("")
+				self.setRowHeight(pos, PROPERTIES_ROWS_HEIGHT)
 
 				#Coluna 1 - NOME DA PROPRIEDADE
 				item = QtGui.QTableWidgetItem(controlProperty.getNameProperty())
