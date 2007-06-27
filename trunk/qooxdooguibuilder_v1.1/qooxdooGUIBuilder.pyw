@@ -166,10 +166,8 @@ class DrawArea(QtGui.QWidget):
 	self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), typeControl, idControl)
 
 
-    def deleteControl(self, typeControl, idControl):
-	typeControl = str(typeControl)
-	idControl =str(idControl)
-		
+    def deleteSelectedControls(self):
+
 	ret = QtGui.QMessageBox.question(self, TITLE_MAIN_WINDOW,
 				MSG_QUESTION_DELETE_CONTROL,                                
                                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
@@ -177,7 +175,8 @@ class DrawArea(QtGui.QWidget):
 	
 	if ret == QtGui.QMessageBox.Yes:	
 		#enviar sinal para inicar que nenhum controlo está seleccionado	
-		self.monitor.deleteControl(typeControl, idControl)
+		#self.monitor.deleteControl(typeControl, idControl)
+		self.monitor.deleteSelectedControls()
 		self.emit(QtCore.SIGNAL(SIGNAL_NONE_CONTROL_SELECTED))
 
 
@@ -198,7 +197,7 @@ class DrawArea(QtGui.QWidget):
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), self.Signal_Redirect_PropertiesToChange)
-        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteControl)		            
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteSelectedControls)
 	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
         #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
@@ -1105,7 +1104,7 @@ class MainWindow(QtGui.QMainWindow):
 	typeControl = self.monitor.getTypeSelectedControl()
 	idControl = self.monitor.getIdSelectedControl()
 	if typeControl  <> -1 and idControl <> -1:
-		self.drawArea.deleteControl(typeControl, idControl)
+		self.drawArea.deleteSelectedControls(typeControl, idControl)
 
 
     def previewInApplicationAct(self):
