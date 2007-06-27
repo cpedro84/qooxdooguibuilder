@@ -591,7 +591,7 @@ class CResizableWidget(QtGui.QWidget):
 
 	def deleteAct(self):
 		#ENVIO DO SINAL PARA INFORMAR QUE O CONTROLO SELECCIONADO È PARA SER ELIMINADO
-		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), str(self.typeControl), str(self.idControl))
+		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE))
 		
 	def applyTemplateAct(self):
 		#ENVIO DO SINAL PARA INFORMAR QUE É PARA APLICAR UMA TEMPLATE SOBRE O CONTROLO SELECCIONADO 

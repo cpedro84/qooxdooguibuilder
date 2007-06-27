@@ -404,6 +404,16 @@ class CMonitorControls(QtCore.QObject):
 			return idControl
 	
 	
+	def deleteSelectedControls(self):
+		
+		for infoControl in self.getSelectedControls():
+			typeControl = infoControl[self.positionTypeControl]
+			idControl = infoControl[self.positionIdControl]
+			
+			self.deleteControl(typeControl, idControl)
+			
+		
+	
 	def deleteAllControls(self):
 		
 		#Eliminar todas as referências de memória dos controlos
