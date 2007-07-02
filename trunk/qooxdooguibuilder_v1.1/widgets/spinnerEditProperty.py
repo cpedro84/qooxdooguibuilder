@@ -64,7 +64,10 @@ class CSpinnerEditProperty(QtGui.QSpinBox):
 	def getIdProperty(self):
 		return self.idProperty
 	
-	def valueChanged(self, value):
-		print "teste"
+	def valueChanged(self, value):		
+		#ENVIO DO SINAL PARA  INFORMAR QUE A PROPRIEDADE FOI ALTERADA DE ESTADO
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), str(self.getIdProperty()), value)
+	
+	def valueChanged(self):		
 		#ENVIO DO SINAL PARA  INFORMAR QUE A PROPRIEDADE FOI ALTERADA DE ESTADO
 		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTY_CHANGED), str(self.getIdProperty()), self.getPropertyValue())

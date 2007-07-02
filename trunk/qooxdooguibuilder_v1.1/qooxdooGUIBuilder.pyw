@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- encoding: latin1 -*-
 
-
+#teste controlo......
 
 import sys, os
 
@@ -123,12 +123,12 @@ class DrawArea(QtGui.QWidget):
 	typeControl = str(typeControl)
 	idControl =str(idControl)
 	
-	#verificar o tamanho da widget (width / height)
+	#Obter a referência de memória da resizable
 	widgetControl = self.monitor.getValueMemRef(typeControl, idControl)
 		
-	#Alterar as prorpriedades Left e Top de acordo com a nova posição	    
-	self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(widgetControl.geometry().width()))
-	self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(widgetControl.geometry().height()))
+	#Alterar as prorpriedades Height w Width
+	self.monitor.changeProperty(typeControl, idControl, ID_WIDTH, str(int(round(widgetControl.geometry().width()))))
+	self.monitor.changeProperty(typeControl, idControl, ID_HEIGHT, str(int(round(widgetControl.geometry().height()))))
 	
 	#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
 	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
@@ -1104,7 +1104,7 @@ class MainWindow(QtGui.QMainWindow):
 	typeControl = self.monitor.getTypeSelectedControl()
 	idControl = self.monitor.getIdSelectedControl()
 	if typeControl  <> -1 and idControl <> -1:
-		self.drawArea.deleteSelectedControls(typeControl, idControl)
+		self.drawArea.deleteSelectedControls()
 
 
     def previewInApplicationAct(self):
@@ -1198,3 +1198,5 @@ if __name__ == "__main__":
     main_window = MainWindow()
     main_window.showMaximized()
     sys.exit(app.exec_())
+    
+

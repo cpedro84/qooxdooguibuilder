@@ -5,7 +5,7 @@ G04:Bottom:10:-:TInt
 G05:Width:100:setWidth(param):TInt
 G06:MaxWidth:-:-:TInt
 G07:MinWidth:-:-:TInt
-G08:Height:40:setHeight(param):TInt
+G08:Height:30:setHeight(param):TInt
 G09:MaxHeigth:-:-:TInt
 G10:MinHeight:-:-:TInt
 G11:ClipWidth:-:-:TBoolean
