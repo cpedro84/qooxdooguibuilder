@@ -52,23 +52,27 @@ def customizeControlJS(control_id, properties):
                 js_control += text
                 js_control += '"));\n\t\t\t\t'
 
-        elif property_key == 'TextAlign' and properties['Type'] == 'Label':#por acabar
+        elif property_key == 'TextAlign' and properties['Type'] == 'Label':
             js_control += control_id
+            js_control += '.setTextAlign("'
+            js_control += properties[property_key]
+            js_control += '");\n\t\t\t\t'
+
+        elif property_key == 'Wrap' and properties['Type'] == 'Label':
+            js_control += control_id
+            js_control += '.setWrap('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Wrap' and properties['Type'] == 'Label':#por acabar
+        elif property_key == 'EnableInlineFind' and properties['Type'] == 'List':
             js_control += control_id
+            js_control += '.setEnableInlineFind('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'EnableInlineFind' and properties['Type'] == 'List':#por acabar
+        elif property_key == 'MarkLeadingItem' and properties['Type'] == 'List':
             js_control += control_id
-            js_control += properties[property_key]
-            js_control += ');\n\t\t\t\t'
-
-        elif property_key == 'MarkLeadingItem' and properties['Type'] == 'List':#por acabar
-            js_control += control_id
+            js_control += '.setMarkLeadingItem('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
@@ -79,65 +83,101 @@ def customizeControlJS(control_id, properties):
                 js_control += text
                 js_control += '"));\n\t\t\t\t'
 
-        elif property_key == 'Menus' and properties['Type'] == 'MenuBar':#por acabar
-            js_control += control_id
-            js_control += ');\n\t\t\t\t'
+        #elif property_key == 'Menus' and properties['Type'] == 'MenuBar':
+                #nao foi feito pois o controlo encontra-se inactivo na aplicação
 
-        elif property_key == 'HeaderCellHeight' and properties['Type'] == 'Table':#por acabar
+        elif property_key == 'HeaderCellHeight' and properties['Type'] == 'Table':
             js_control += control_id
+            js_control += '.setHeaderCellHeight('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'RowHeight' and properties['Type'] == 'Table':#por acabar
+        elif property_key == 'RowHeight' and properties['Type'] == 'Table':
             js_control += control_id
+            js_control += '.setRowHeight('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Items' and properties['Type'] == 'Table':#por acabar
-            js_control += control_id
-            js_control += ');\n\t\t\t\t'
+        #elif property_key == 'Items' and properties['Type'] == 'Table':
+            #os itens deverão vir indexados num dicionario de dados para depois aqui serem tratados devidamente
 
-        elif property_key == 'Tabs' and properties['Type'] == 'TabView':#por acabar
-            js_control += control_id
-            js_control += ');\n\t\t\t\t'
+        elif property_key == 'Tabs' and properties['Type'] == 'TabView':
+            for text in properties[property_key]:
+                js_control += 'var '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += '_button'
+                js_control += ' = new qx.ui.pageview.tabview.Button("'
+                js_control += text
+                js_control += '");\n\t\t\t\t'
+                js_control += control_id
+                js_control += '.getBar().add('
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += '_button'
+                js_control += ');\n\t\t\t\t'
+                js_control += 'var '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += '_page'
+                js_control += ' = new qx.ui.pageview.tabview.Page('
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += '_button'
+                js_control += ');\n\t\t\t\t'
+                js_control += control_id
+                js_control += '.getPane().add('
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += '_page'
+                js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Text' and properties['Type'] == 'TextArea':#por acabar
+        elif property_key == 'Wrap' and properties['Type'] == 'TextArea':
             js_control += control_id
+            js_control += '.setWrap('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Wrap' and properties['Type'] == 'TextArea':#por acabar
+        elif property_key == 'MaxLength' and properties['Type'] == 'TextField':
             js_control += control_id
+            js_control += '.setMaxLength('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Read Only' and properties['Type'] == 'TextArea':#por acabar
+        elif property_key == 'ReadOnly' and properties['Type'] == 'TextField':
             js_control += control_id
+            js_control += '.setReadOnly('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Text' and properties['Type'] == 'TextField':#por acabar
+        elif property_key == 'Icons' and properties['Type'] == 'ToolBar':
+            for text in properties[property_key]:
+                js_control += 'var '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += ' = new qx.ui.toolbar.MenuButton("'
+                js_control += text
+                js_control += '");\n\t\t\t\t'
             js_control += control_id
-            js_control += properties[property_key]
+            js_control += '.add('
+            first = True
+            for text in properties[property_key]:
+                if not first:
+                    js_control += ', '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                first = False
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'MaxLength' and properties['Type'] == 'TextField':#por acabar
-            js_control += control_id
-            js_control += properties[property_key]
-            js_control += ');\n\t\t\t\t'
-
-        elif property_key == 'ReadOnly' and properties['Type'] == 'TextField':#por acabar
-            js_control += control_id
-            js_control += properties[property_key]
-            js_control += ');\n\t\t\t\t'
-
-        elif property_key == 'Icons' and properties['Type'] == 'ToolBar':#por acabar
-            js_control += control_id
-            js_control += ');\n\t\t\t\t'
-
-        elif property_key == 'Items' and properties['Type'] == 'Tree':#por acabar
-            js_control += control_id
-            js_control += ');\n\t\t\t\t'
+        #elif property_key == 'Items' and properties['Type'] == 'Tree':
+            #nao foi feito pois o controlo encontra-se inactivo na aplicação
 
         elif property_key == 'Top':
             js_control += control_id
@@ -402,9 +442,17 @@ def generateControlsJS(data):
 
         elif data[control_id]['Type'] == 'TextArea':
             js_controls += ' = new qx.ui.form.TextArea('
+            if 'Text' in data[control_id]:
+                js_controls += '"'
+                js_controls += data[control_id]['Text']
+                js_controls += '"'
 
         elif data[control_id]['Type'] == 'TextField':
             js_controls += ' = new qx.ui.form.TextField('
+            if 'Text' in data[control_id]:
+                js_controls += '"'
+                js_controls += data[control_id]['Text']
+                js_controls += '"'
 
         elif data[control_id]['Type'] == 'ToolBar':
             js_controls += ' = new qx.ui.toolbar.ToolBar('
