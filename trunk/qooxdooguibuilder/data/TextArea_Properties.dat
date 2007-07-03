@@ -1,3 +1,2 @@
 01:Text:Text Area:setText(param):TString
 02:Wrap:false/true:setWrap(param):TBoolean
-03:Read Only:false/true:setReadOnly(param):TBoolean
