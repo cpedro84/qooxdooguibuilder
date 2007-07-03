@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Exemplo</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("Exemplo", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
+			qx.Proto.main = function(e)
+			{
+				var btn0 = new qx.ui.form.Button("Pressione-me");
+				btn0.setRight(10);
+				btn0.setBottom(10);
+				btn0.setTop(10);
+				btn0.setLeft(10);
+				btn0.addToDocument();
+			};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(Exemplo);
+		</script>
+	</body>
+</html>
