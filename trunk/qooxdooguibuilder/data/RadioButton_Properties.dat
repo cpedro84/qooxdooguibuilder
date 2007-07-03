@@ -1,2 +1,0 @@
-01:Text:Radio Button:setText(param):TString
-02:Checked:false/true:setChecked(param):TBoolean

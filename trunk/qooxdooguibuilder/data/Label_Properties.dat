@@ -1,4 +1,0 @@
-01:HTML:Label:setText(param):TString
-02:Mnemonic:-:-:TString
-03:TextAlign:left/center/right/justify:setTextAlign(param):TAlign
-04:Wrap:true/false:setWrap(param):TBoolean

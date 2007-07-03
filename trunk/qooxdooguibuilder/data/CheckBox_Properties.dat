@@ -1,2 +1,0 @@
-01:Text:Check Box:setText(param):TString
-02:Checked:true/false:setChecked(param):TBoolean
