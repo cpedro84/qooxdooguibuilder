@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Formulario 2</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("Application", qx.component.AbstractApplication, function() {
+  qx.component.AbstractApplication.call(this);
+});
+
+qx.Proto.main = function(e)
+{
+  // Create button
+  var lbl1 = new qx.ui.basic.Label("UserName:");
+  lbl1.setLeft(30);
+  lbl1.setTop(30);
+  
+  var tfl1 = new qx.ui.form.TextField("Text Field");
+  tfl1.setLeft(150);
+  tfl1.setTop(30);
+  tfl1.setWidth(100);
+  
+  
+  var lbl2 = new qx.ui.basic.Label("Email:");
+  lbl2.setLeft(30);
+  lbl2.setTop(60);
+  
+   var tfl2 = new qx.ui.form.TextField("Text Field");
+  tfl2.setLeft(150);
+  tfl2.setTop(60);
+  tfl2.setWidth(220);
+  
+  var lbl3 = new qx.ui.basic.Label("Password:");
+  lbl3.setLeft(30);
+  lbl3.setTop(90);
+  
+  var pfl2 = new qx.ui.form.PasswordField("123456");
+  pfl2.setLeft(150);
+  pfl2.setTop(90);
+  pfl2.setWidth(100);
+  
+  var lbl4 = new qx.ui.basic.Label("Control Number:");
+  lbl4.setLeft(30);
+  lbl4.setTop(120);
+  
+  var spn = new qx.ui.form.Spinner(-100, 0, 100);
+  spn.setLeft(150);
+  spn.setTop(120);
+  spn.setWidth(100);
+  
+  
+  var lbl5 = new qx.ui.basic.Label("Gender:");
+  lbl5.setLeft(30);
+  lbl5.setTop(150);
+  
+  var cmb = new qx.ui.form.ComboBox();
+  cmb.setLeft(150);
+  cmb.setTop(150);
+  cmb.setWidth(100);
+  
+  var chk = new qx.ui.form.CheckBox("Remember Password on Logon");
+  chk.setLeft(50);
+  chk.setTop(180);
+  chk.setWidth(100);
+  
+  var btn1 = new qx.ui.form.Button("Clear");
+  btn1.setLeft(200);
+  btn1.setTop(220);
+  btn1.setWidth(100);
+  
+  var btn2 = new qx.ui.form.Button("Submit");
+  btn2.setLeft(310);
+  btn2.setTop(220);
+  btn2.setWidth(100);
+  
+  lbl1.addToDocument();
+  lbl2.addToDocument();
+  lbl3.addToDocument();
+  lbl4.addToDocument();
+  lbl5.addToDocument();
+  tfl1.addToDocument();
+  tfl2.addToDocument();
+  pfl2.addToDocument();
+  spn.addToDocument();
+  cmb.addToDocument();
+  chk.addToDocument();
+  btn1.addToDocument();
+  btn2.addToDocument();
+};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(Application);
+		</script>
+	</body>
+</html>
