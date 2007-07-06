@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+  <title>Qooxdoo GUI Builder » Metodologia</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" href="CSS/style.css" type="text/css">
+
+  <!-- Hack to avoid flash of unstyled content in IE -->
+  <script> </script>
+</head>
+
+<body id="twocolumn-left">
+  <div id="container">
+    <div class="wrapper">
+      <div id="header">
+        <div class="wrapper">
+          <h1 id="page-title"><div id='g_title'><p style="TEXT-ALIGN: center">Qooxdoo GUI Builder</p></div></h1>
+          <div style="clear: both"></div>
+          <p class="description"><div id='g_description'><p style="TEXT-ALIGN: center">The Builder For The New Era Of Web Development</p></div></p>
+          <div style="clear: both"></div>
+        </div>
+      </div>
+      <!-- /wrapper --><!-- /header -->
+      <div id="main-content">
+        <div class="wrapper">
+          <div class="content-item"><div id='g_body'><h2>Metodologia</h2>
+<p>No desenvolvimento desta ferramenta foi adoptado o modelo cascata.</p>
+<p class="separator" style="CLEAR: both; TEXT-ALIGN: center" hashCode closure><a style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; MARGIN-LEFT: 1em; MARGIN-RIGHT: 1em; BACKGROUND-COLOR: transparent; BORDER-RIGHT-WIDTH: 0px; TEXT-DECORATION: none; cssFloat: " href="JPGs/cascata+.jpg" imageanchor="1" hashCode closure><img style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px; cssFloat: " tabindex="0" src="JPGs/cascata-.jpg" GALLERYIMG="no" hashCode closure></a></p>
+<p class="separator" style="CLEAR: both; TEXT-ALIGN: center" hashCode closure> </p>
+<p><br></p>
+<p><h4>Análise</h4></p>
+<p>Nesta fase:<br></p>
+<ul>
+<li>Estudaram-se ferramentas análogas de forma a reter as principais características a implementar;</li></ul>
+<ul>
+<li>Definiram-se as tecnologias a utilizar;</li></ul>
+<ul>
+<li>Elaborou-se o Diagrama de Casos de Uso da aplicação;</li></ul>
+<p class="separator" style="CLEAR: both; TEXT-ALIGN: center" hashCode closure><a style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; MARGIN-LEFT: 1em; MARGIN-RIGHT: 1em; BACKGROUND-COLOR: transparent; BORDER-RIGHT-WIDTH: 0px; TEXT-DECORATION: none; cssFloat: " href="JPGs/casos_de_uso+.jpg" imageanchor="1" hashCode closure><img style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px; cssFloat: " tabindex="0" src="JPGs/casos_de_uso-.jpg" closure hashCode GALLERYIMG="no" hashCode closure></a></p>
+<ul>
+<li> Preencheram-se as templates dos mesmos;</li></ul>
+<ul>
+<li> Descreveram-se três possíveis cenários de utilização para a aplicação.</li></ul>
+<p><br></p>
+<p><h4>Desenho</h4></p>
+<p>De uma forma geral, nesta fase desenhou-se o sistema de forma a identificar módulos de implementação e suas características. Especificamente:</p>
+<ul>
+<li>Elaborou-se o Diagrama de Classes;
+<li>Elaboraram-se os Diagramas de Transição;
+<li>Desenharam-se protótipos de baixa fidelidade da aplicação, dos quais fazem parte a janela da aplicação, que inclui as janelas de controlos e de propriedades, as janelas de abrir e guardar, e as janelas de diálogo para confirmação de acções;
+<li>Realizou-se uma avaliação heurística dos protótipos de baixa fidelidade elaborados e consequentes refinações sobre os mesmos.<br></li></ul>
+<p class="separator" style="CLEAR: both; TEXT-ALIGN: center" hashCode closure><a style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; MARGIN-LEFT: 1em; MARGIN-RIGHT: 1em; BACKGROUND-COLOR: transparent; BORDER-RIGHT-WIDTH: 0px; TEXT-DECORATION: none; cssFloat: " href="JPGs/prototipo_prototype+.jpg" imageanchor="1" hashCode closure><img style="BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px; cssFloat: " tabindex="0" src="JPGs/prototipo_prototype-.jpg" GALLERYIMG="no" hashCode closure></a></p>
+<p class="separator" style="CLEAR: both; TEXT-ALIGN: center" hashCode closure></p><p><br></p>
+<p><h4>Implementação</h4></p>
+<p>Nesta fase foi realizada todo a codificação dos seguintes módulos de implementação, identificados na fase de Desenho:</p>
+<ul>
+<li>Recolha de informação sobre os controlos visuais a disponibilizar ao utilizador, para a construção das interfaces e escolha dos mesmos;
+<li>Construção da interface gráfica da aplicação e implementação de mecanismos para interacção com os controlos visuais disponíveis;
+<li>Construção de um interpretador e gerador de código YAML que permite o armazenamento e carregamento das interfaces e Templates criadas pelo utilizador;
+<li>Construção de um gerador de código HTML que incluirá uma porção de código JavaScript, onde, através de comandos qooxdoo, se encontrará descrita a interface criada.</li></ul>
+<p><br></p>
+<p><h4>Testes</h4></p>Nesta fase procurou-se verificar que os requisitos detectados durante a fase de análise foram complementados.
+<p><br></p>
+<p><h4>Manutenção</h4></p>Esta fase não foi tomada em conta durante a realização deste projecto.<p><br></p>
+</div></div>
+          <div style="clear: both"></div>
+        </div>
+      </div>
+      <!-- /wrapper --><!-- /main-content -->
+      <div id="sidebar">
+        <div class="wrapper">
+          <div class="links">
+            <div class="wrapper"><div id='g_sidebar'>
+			<p><font face="verdana" size="1"><a href="index.htm">Início</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-orientador_e_autores.htm">Orientador e Autores</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-sumario.htm">Sumário</a></font></p>
+<p><font face="Verdana" size="1"><a href="pt-objectivo.htm">Objectivo</a></font></p>
+<p><font face="Verdana" size="1"><strong>Metodologia</strong></font></p>
+<p><font face="verdana" size="1"><a href="pt-tecnologias_utilizadas.htm">Tecnologias Utilizadas</a></font></p>
+<p><font face="Verdana" size="1"><a href="pt-funcionalidades_da_aplicacao.htm">Funcionalidades da Aplicação</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-documentacao.htm">Documentação</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-repositorio.htm">Repositório</a></font></p>
+<p><font face="Verdana" size="1"><a href="pt-trabalhos_futuros_e_conclusao.htm">Trabalhos Futuros e Conclusão</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-pre-visualizacoes.htm">Pré-visualizações</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-lancamentos.htm">Lançamentos</a></font></p>
+<p><font face="verdana" size="1"><a href="pt-deteccao_de_erros.htm">Detecção de Erros</a></font></p></div></div>
+            <div style="clear: both"></div>
+          </div>
+    <!-- /wrapper --><!-- /links -->
+        </div>
+      </div>
+      <!-- /wrapper --><!-- /sidebar -->
+      <div id="footer"><div class="wrapper">
+        <hr />
+        <p><div id='g_footer'><p style="TEXT-ALIGN: center">© 2007 <a href="mailto:qooxdooguibuilder@gmail.com"><font color="#0000ff">Qooxdoo GUI Builder</font></a>. All rights reserved.</p></div></p>
+        <div style="clear: both"></div>
+      </div></div>
+      <!-- /wrapper --><!-- /footer -->
+    </div>
+  </div>
+  <!-- /wrapper --><!-- /container -->
+
+<div id="extraDiv1"><span></span></div><div id="extraDiv2"><span></span></div>
+<div id="extraDiv3"><span></span></div><div id="extraDiv4"><span></span></div>
+<div id="extraDiv5"><span></span></div><div id="extraDiv6"><span></span></div>
+
+</body>
+</html>

@@ -1,0 +1,473 @@
+#g_title P {
+	MARGIN: 0px
+}
+#g_footer P {
+	MARGIN: 0px
+}
+#g_description P {
+	MARGIN: 0px
+}
+ HTML .wrapper {
+	HEIGHT: 0.1%
+}
+
+@media Tty    
+{
+I {
+	content: "";/*" "*/}} * html #container { height: 1%; }
+}
+    }
+.editable {
+	BORDER-RIGHT: blue 1px dashed; BORDER-TOP: blue 1px dashed; BORDER-LEFT: blue 1px dashed; BORDER-BOTTOM: blue 1px dashed
+}
+#footer {
+	CLEAR: both
+}
+#extraDiv1 {
+	DISPLAY: none
+}
+#extraDiv2 {
+	DISPLAY: none
+}
+#extraDiv3 {
+	DISPLAY: none
+}
+#extraDiv4 {
+	DISPLAY: none
+}
+#extraDiv5 {
+	DISPLAY: none
+}
+#extraDiv6 {
+	DISPLAY: none
+}
+A IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+:link IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+:visited IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+BODY {
+	TEXT-ALIGN: center
+}
+#container {
+	MARGIN: 0px auto; WIDTH: 718px; TEXT-ALIGN: left
+}
+#main-content {
+	FLOAT: right; WIDTH: 470px
+}
+#sidebar {
+	FLOAT: right; WIDTH: 230px
+}
+#footer {
+	CLEAR: both
+}
+H1 {
+	FONT-SIZE: 1em
+}
+H2 {
+	FONT-SIZE: 1em
+}
+H3 {
+	FONT-SIZE: 1em
+}
+H4 {
+	FONT-SIZE: 1em
+}
+H5 {
+	FONT-SIZE: 1em
+}
+H6 {
+	FONT-SIZE: 1em
+}
+PRE {
+	FONT-SIZE: 1em
+}
+CODE {
+	FONT-SIZE: 1em
+}
+P {
+	FONT-SIZE: 1em
+}
+DL {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+DT {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+DD {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H1 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H2 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H3 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H4 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H5 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+H6 {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+PRE {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+FORM {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+HTML {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+P {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+BLOCKQUOTE {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+FIELDSET {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+INPUT {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+A IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+:link IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+:visited IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+ADDRESS {
+	FONT-STYLE: normal
+}
+BODY {
+	FONT: 76% Verdana, sans-serif
+}
+H1 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H2 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H3 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H4 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H5 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H6 {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+P.description {
+	FONT-FAMILY: "Trebuchet MS", Trebuchet, sans-serif
+}
+H1 {
+	FONT-WEIGHT: bold; FONT-SIZE: 3em; LETTER-SPACING: 2px
+}
+H2 {
+	FONT-WEIGHT: normal; FONT-SIZE: 2em
+}
+H3 {
+	FONT-SIZE: 1.5em
+}
+H4 {
+	FONT-SIZE: 1.2em; LETTER-SPACING: 0.2em
+}
+H5 {
+	FONT-SIZE: 1.2em
+}
+H6 {
+	FONT-WEIGHT: bold; FONT-SIZE: 1em
+}
+P {
+	LINE-HEIGHT: 1.8em
+}
+TD {
+	LINE-HEIGHT: 1.8em
+}
+CODE {
+	FONT-SIZE: 1.25em
+}
+KBD {
+	FONT-SIZE: 1.25em
+}
+#footer {
+	HEIGHT: 1%
+}
+
+@media Tty    
+{
+I {
+	content: "";/*" "*/}} td, * html th { font-size: 0.8em; } h1 { height: 1%; }
+}
+    }
+A:link {
+	PADDING-RIGHT: 2px; PADDING-LEFT: 2px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+}
+BODY {
+	FONT: 80% "Lucida Grande", "Lucida Sans Unicode", sans-serif
+}
+BLOCKQUOTE {
+	MARGIN: 1em; FONT-STYLE: italic
+}
+CAPTION {
+	PADDING-RIGHT: 6px; PADDING-LEFT: 6px; FONT-SIZE: 1em; PADDING-BOTTOM: 4px; PADDING-TOP: 4px; TEXT-ALIGN: left
+}
+DD {
+	MARGIN: 0px 0px 1em 1em
+}
+HR {
+	BORDER-LEFT-COLOR: #222; BACKGROUND: #222; BORDER-BOTTOM-COLOR: #222; COLOR: #222; BORDER-TOP-COLOR: #222; BORDER-RIGHT-COLOR: #222
+}
+TD {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; PADDING-BOTTOM: 2px; VERTICAL-ALIGN: top; PADDING-TOP: 2px
+}
+TH {
+	BORDER-RIGHT: #000 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #000 1px solid; PADDING-LEFT: 5px; FONT-SIZE: 1em; PADDING-BOTTOM: 2px; PADDING-TOP: 2px; BORDER-BOTTOM: #000 1px solid; TEXT-ALIGN: left
+}
+TD P {
+	MARGIN-TOP: 0px
+}
+UL LI {
+	MARGIN-BOTTOM: 0.8em
+}
+OL LI {
+	MARGIN-BOTTOM: 0.8em; MARGIN-LEFT: 2em; LIST-STYLE-TYPE: lower-alpha
+}
+#container {
+	
+}
+#header {
+	MARGIN: 0px 0px 10px; BORDER-BOTTOM: #000 1px solid; POSITION: relative
+}
+P.description {
+	PADDING-RIGHT: 15px; PADDING-LEFT: 15px; FONT-SIZE: 1em; PADDING-BOTTOM: 0.5em; MARGIN: 0px; PADDING-TOP: 0.5em; BORDER-BOTTOM: #000 1px solid
+}
+#g_description {
+	MARGIN: 1em 0px 1em 15px
+}
+P {
+	MARGIN: 1em 0px; LINE-HEIGHT: 1.5
+}
+TD {
+	LINE-HEIGHT: 1.5
+}
+TD P {
+	LINE-HEIGHT: 1.5
+}
+H1 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H2 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H3 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H4 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H5 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H6 {
+	FONT-FAMILY: "Trebuchet MS", arial, sans-serif
+}
+H1 {
+	PADDING-RIGHT: 20px; BORDER-TOP: #000 1px solid; PADDING-LEFT: 15px; FONT-WEIGHT: bold; FONT-SIZE: 2em; PADDING-BOTTOM: 10px; MARGIN: 0px; LINE-HEIGHT: 1.5em; PADDING-TOP: 30px; BORDER-BOTTOM: #000 1px solid; TEXT-ALIGN: left
+}
+H2 {
+	FONT-SIZE: 1.5em; BACKGROUND: url(GIFs/h2.gif) no-repeat left bottom; MARGIN: 0px 0px 1em; COLOR: #000
+}
+H3 {
+	PADDING-RIGHT: 10px; MARGIN-TOP: 0.5em; PADDING-LEFT: 10px; FONT-SIZE: 1.2em; PADDING-BOTTOM: 4px; PADDING-TOP: 4px
+}
+H4 {
+	MARGIN-TOP: 0.6em; FONT-SIZE: 0.9em; MARGIN-LEFT: 0.2em
+}
+H5 {
+	PADDING-LEFT: 10px; FONT-SIZE: 1em
+}
+H6 {
+	FONT-SIZE: 0.9em
+}
+A:link {
+	COLOR: #f6952e
+}
+A:hover {
+	BACKGROUND-COLOR: #dbd4a6
+}
+#sidebar {
+	MARGIN-BOTTOM: 2em
+}
+#sidebar-alternate {
+	MARGIN-BOTTOM: 2em
+}
+#sidebar H3 {
+	BORDER-TOP: #000 1px solid; FONT-WEIGHT: normal; FONT-SIZE: 1.3em; MARGIN-BOTTOM: 0.5em
+}
+#sidebar-alternate H3 {
+	BORDER-TOP: #000 1px solid; FONT-WEIGHT: normal; FONT-SIZE: 1.3em; MARGIN-BOTTOM: 0.5em
+}
+#sidebar H4 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar H5 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar H6 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar-alternate H4 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar-alternate H5 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar-alternate H6 {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar P {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar-alternate P {
+	MARGIN-LEFT: 10px; MARGIN-RIGHT: 20px
+}
+#sidebar LI {
+	MARGIN-BOTTOM: 0.8em
+}
+#sidebar-alternate LI {
+	MARGIN-BOTTOM: 0.8em
+}
+#sidebar .links {
+	MARGIN-BOTTOM: 2em
+}
+#adsense {
+	TEXT-ALIGN: center
+}
+.editable {
+	BORDER-RIGHT: #666 1px dashed; BORDER-TOP: #666 1px dashed; BORDER-LEFT: #666 1px dashed; BORDER-BOTTOM: #666 1px dashed
+}
+#twocolumn-liquid-left #sidebar {
+	FLOAT: left
+}
+#twocolumn-liquid-right #sidebar {
+	FLOAT: right
+}
+#threecolumn #sidebar-alternate {
+	FLOAT: right
+}
+#footer {
+	CLEAR: both; PADDING-RIGHT: 15px; BORDER-TOP: #000 1px solid; PADDING-LEFT: 15px; PADDING-BOTTOM: 1px; PADDING-TOP: 1px; BORDER-BOTTOM: #000 1px solid
+}
+#footer HR {
+	DISPLAY: none
+}
+#onecolumn #main-content .wrapper {
+	MARGIN: 20px
+}
+#twocolumn-left #main-content .wrapper {
+	PADDING-RIGHT: 20px; PADDING-LEFT: 20px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+}
+#twocolumn-right #main-content .wrapper {
+	PADDING-RIGHT: 20px; PADDING-LEFT: 20px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+}
+#threecolumn #main-content .wrapper {
+	PADDING-RIGHT: 20px; PADDING-LEFT: 20px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+}
+#threecolumn #sidebar H3 {
+	MARGIN-BOTTOM: 0px
+}
+#threecolumn #sidebar-alternate H3 {
+	MARGIN-BOTTOM: 0px
+}
+#twocolumn-liquid-left #main-content .wrapper {
+	MARGIN: 0px 20px
+}
+#twocolumn-liquid-right #main-content .wrapper {
+	MARGIN: 0px 20px
+}
+BODY {
+	BACKGROUND: url(GIFs/body.gif) #f4f4f4 repeat-y center top; COLOR: #1c2023
+}
+CAPTION {
+	BACKGROUND: url(GIFs/h3.gif) #2aa63b; COLOR: #fff
+}
+CODE {
+	COLOR: #139522
+}
+KBD {
+	COLOR: #139522
+}
+DT {
+	COLOR: #139522
+}
+HR {
+	BORDER-LEFT-COLOR: #604829; BACKGROUND: #604829; BORDER-BOTTOM-COLOR: #604829; BORDER-TOP-STYLE: none; BORDER-TOP-COLOR: #604829; BORDER-RIGHT-COLOR: #604829
+}
+TH {
+	BORDER-RIGHT: #002797 1px solid; BORDER-TOP: #63afdf 1px solid; BACKGROUND: url(GIFs/th.gif) #001474 repeat-x 0px 0px; COLOR: #fff; BORDER-BOTTOM: #002797 1px solid
+}
+#container {
+	BACKGROUND: url(GIFs/container.gif) #fff repeat-x
+}
+#header {
+	BORDER-BOTTOM: #7da9c5 1px solid
+}
+P.description {
+	BACKGROUND: url(GIFs/description.gif) #0039a0 repeat-x 0px 0px; COLOR: #85c0e5; BORDER-BOTTOM: #002797 1px solid
+}
+H1 {
+	BORDER-TOP: #9edfaa 1px solid; BACKGROUND: url(GIFs/h1.gif) #55c76b repeat-x left bottom; COLOR: #fff; BORDER-BOTTOM: #63afdf 1px solid
+}
+H2 {
+	BACKGROUND: url(GIFs/h2.gif) no-repeat left bottom; COLOR: #0d83ce
+}
+H3 {
+	BACKGROUND: url(GIFs/h3.gif) #2aa63b; COLOR: #fff
+}
+H4 {
+	COLOR: #0d83ce; BORDER-BOTTOM: #7f9ccf 1px dotted
+}
+H5 {
+	BACKGROUND: url(GIFs/h5.gif) no-repeat left center; COLOR: #139522
+}
+#sidebar {
+	BACKGROUND: url(GIFs/sidebar.gif) repeat-x 0px 0px
+}
+#sidebar-alternate {
+	BACKGROUND: url(GIFs/sidebar.gif) repeat-x 0px 0px
+}
+#sidebar H3 {
+	BORDER-TOP: #ddd 1px solid; BACKGROUND: url(GIFs/sidebar-h3.gif) #e5e5e5 repeat-x left top; COLOR: #0d83ce
+}
+#sidebar-alternate H3 {
+	BORDER-TOP: #ddd 1px solid; BACKGROUND: url(GIFs/sidebar-h3.gif) #e5e5e5 repeat-x left top; COLOR: #0d83ce
+}
+.editable {
+	BORDER-RIGHT: #f00 1px dashed; BORDER-TOP: #f00 1px dashed; BORDER-LEFT: #f00 1px dashed; BORDER-BOTTOM: #f00 1px dashed
+}
+#footer {
+	BORDER-TOP: #9edfaa 1px solid; BACKGROUND: url(GIFs/h1.gif) #55c76b repeat-x left bottom; COLOR: #fff; BORDER-BOTTOM: #0b8218 1px solid
+}
