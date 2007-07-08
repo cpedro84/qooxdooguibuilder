@@ -10,6 +10,20 @@ from tableData import *
 import cPickle as pickle
 
 
+##Documentation for a function.
+# Return the control type designation
+#
+# @param typeControl String
+#
+# @return string
+def getTypeControlDesignation(typeControl):
+	
+	res = ""
+	if CONTROLS_DESIGNATIONS.has_key(typeControl):
+		res = CONTROLS_DESIGNATIONS[typeControl]
+
+	return res
+
 
 def ListToQStringList(pList): #Não Utilizar
 	try:

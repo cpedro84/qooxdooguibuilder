@@ -31,6 +31,8 @@ from LineEditProperty import *
 from spinnerEditProperty import *
 from InputMask import *
 from yamlInterpreter import *
+from htmlGenerator import *
+
 
 pathButtonPixmap = DIR_CONTROLS+"Button.png"
 pathCheckPixmap = DIR_CONTROLS+"CheckBox.png"
@@ -109,6 +111,8 @@ class DrawArea(QtGui.QWidget):
 	if typeControl <> -1 and idControl <> -1:
 		#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
 		self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
+		#Envio sinal, indicando que as propriedades devem ser carregados para o controlo clicado
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), typeControl,  idControl)
 
 
     def mouseMoveEvent(self, event):		
@@ -277,7 +281,7 @@ class DrawArea(QtGui.QWidget):
 	    self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
 	    
 	else:
-            event.ignore()
+	    event.ignore()
 
 
 class PropertiesDockWidget(QtGui.QDockWidget):
@@ -1070,8 +1074,14 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def configureAct(self):
-
-        return
+	
+	html = generateHTML("teste",self.monitor.getControlsDataHTMLGenerator())
+        print self.monitor.getControlsDataHTMLGenerator()
+	file = open("generatedHTMLs/teste.html", "w")	
+	file.write(html)	
+	file.close()
+	
+	return
 
 
     def undoAct(self):

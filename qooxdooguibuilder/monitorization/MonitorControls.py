@@ -4,6 +4,7 @@
 import sys
 from importResizables import *
 from string import Template
+from string import lower
 import copy
 
 from PyQt4 import QtCore, QtGui
@@ -16,8 +17,8 @@ from ControlInfo import *
 #***************COLOCAR NOUTRO FICHEIRO*****
 
 def callProcedure(procedureInfo, DparametersValues):
-	print procedureInfo
-	print DparametersValues
+	#print procedureInfo
+	#print DparametersValues
 	pieces = procedureInfo.split(';')
 	
 	#armazenar o nome do procedimento a ser chamado
@@ -1010,8 +1011,8 @@ class CMonitorControls(QtCore.QObject):
 		return copy.deepcopy(self.DControlsInfo[typeControl])
 	
 		
-	def getAllControls(self): #(...)
-		print self.DControlsInfo	
+	#def getAllControls(self): #(...)
+	#	print self.DControlsInfo	
 		
 		
 	##
@@ -1096,7 +1097,30 @@ class CMonitorControls(QtCore.QObject):
 	def getSelectedControls(self):		
 		return self.LControlsSelected
 
+	
+	
+	
+	def getControlsDataHTMLGenerator(self):
+		LControlsInfo = self.getControlsInfo()
 		
+		MapHTMLGenerator = {}
+		controlKey = ""
+		designControl = ""
+		for controlInfo in LControlsInfo:
+			designControl = getTypeControlDesignation(controlInfo.getTypeControl())
+			controlKey = lower(designControl)+""+controlInfo.getIdControl()
+			MapHTMLGenerator[controlKey] = {}
+			#Definir primeiro elemento: Tipo de controlo
+			MapHTMLGenerator[controlKey].update({"Type": designControl})
+			#Definir as propriedades dos controlos
+			for controlProperty in controlInfo.getControlProperties():
+				if controlProperty.getValueProperty() <> "-":
+					MapHTMLGenerator[controlKey].update({controlProperty.getNameProperty():controlProperty.getValueProperty() })
+		
+
+		return MapHTMLGenerator
+
+	
 	
 		
 	def SendResizableSignal(self, typeControl, idControl):

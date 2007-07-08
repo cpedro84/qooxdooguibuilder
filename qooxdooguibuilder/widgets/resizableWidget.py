@@ -530,14 +530,20 @@ class CResizableWidget(QtGui.QWidget):
 		height = self.geometry().height()
 		width = self.geometry().width()
 		
+		hasMoved = false
+		
 		if keyPressed == QtCore.Qt.Key_Up and validatePosition(self.x(), self.y()-STEP_MOVE, width, height, widthArea, heightArea):			
 			self.move(self.x(), self.y()-STEP_MOVE)
+			hasMoved = true
 		elif keyPressed == QtCore.Qt.Key_Down and validatePosition(self.x(), self.y()+STEP_MOVE, width, height, widthArea, heightArea):
 			self.move(self.x(), self.y()+STEP_MOVE)
+			hasMoved = true
 		elif keyPressed == QtCore.Qt.Key_Left and validatePosition(self.x()-STEP_MOVE, self.y(), width, height, widthArea, heightArea):
 			self.move(self.x()-STEP_MOVE, self.y())
+			hasMoved = true
 		elif keyPressed == QtCore.Qt.Key_Right and validatePosition(self.x()+STEP_MOVE, self.y(), width, height, widthArea, heightArea):
 			self.move(self.x()+STEP_MOVE, self.y())
+			hasMoved = true
 		elif keyPressed == QtCore.Qt.Key_Escape:
 			self.clearFocus()
 			self.isSelected = false
@@ -545,6 +551,9 @@ class CResizableWidget(QtGui.QWidget):
 		else:		
 			return
 		
+		#Caso a resizable tenha sido movida então as propriedads é enviado um sinal para alterar as suas propriedades na janela da aplicação
+		if hasMoved:
+			elf.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 	
 	def IsPointInsideRect(self, point, rect):
 		
