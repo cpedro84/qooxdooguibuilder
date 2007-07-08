@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>teste</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("teste", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
+			qx.Proto.main = function(e)
+			{
+				var combobox0 = new qx.ui.form.ComboBox();
+				combobox0.setPagingInterval(10);
+				combobox0.add(new qx.ui.form.ListItem("New Item"));
+				combobox0.add(new qx.ui.form.ListItem("New Item"));
+				combobox0.add(new qx.ui.form.ListItem("New Item"));
+				combobox0.setTop(275);
+				combobox0.setSelected(combobox0.getList().findStringExact("true"));
+				combobox0.setEditable(false);
+				combobox0.setVisibility(true);
+				combobox0.setHeight(30);
+				combobox0.setWidth(100);
+				combobox0.setSelectable(true);
+				combobox0.setLeft(165);
+				combobox0.addToDocument();
+			};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(teste);
+		</script>
+	</body>
+</html>
