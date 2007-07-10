@@ -32,7 +32,7 @@ from spinnerEditProperty import *
 from InputMask import *
 from yamlInterpreter import *
 from htmlGenerator import *
-
+from labelControl import *
 
 pathButtonPixmap = DIR_CONTROLS+"Button.png"
 pathCheckPixmap = DIR_CONTROLS+"CheckBox.png"
@@ -122,7 +122,7 @@ class DrawArea(QtGui.QWidget):
 	# (...) - verificar se existem vários controlos selecciondos 
 
     
-    #***************PROCESSAMENTO DE SINAIS***************
+    #***************PROCESSAMENTO DE SINAIS - SLOTS -***************
     def SignalProcess_resizableReleased(self, typeControl, idControl):	
 	typeControl = str(typeControl)
 	idControl =str(idControl)
@@ -137,6 +137,18 @@ class DrawArea(QtGui.QWidget):
 	#Envio do sinal, indicando que um controlo foi clicado, enviando a sua identificação
 	self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl,  idControl)
 
+
+    def SignalProcess_resizableMovedByKeyboard(self, typeControl, idControl):	
+	typeControl = str(typeControl)
+	idControl =str(idControl)
+	
+	#Obter a referência de memória da resizable
+	widgetControl = self.monitor.getValueMemRef(typeControl, idControl)
+	
+	#Alterar as prorpriedades Height w Width
+	self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(int(round(widgetControl.geometry().x()))))
+	self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(int(round(widgetControl.geometry().y()))))
+	
 
     def SignalProcess_resizableClicked(self, typeControl, idControl):
 	typeControl = str(typeControl)
@@ -199,7 +211,8 @@ class DrawArea(QtGui.QWidget):
     def assignSignalsToControlWidget(self, newControlWidget):
 	#PROCESSAMENTO DOS SINAIS DA RESIZABLE WIDGET
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), self.SignalProcess_resizableReleased)
-        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_KEYBOARD_MOVED), self.SignalProcess_resizableMovedByKeyboard)
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_CLICKED), self.SignalProcess_resizableClicked)
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), self.Signal_Redirect_PropertiesToChange)
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteSelectedControls)
 	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
@@ -443,7 +456,7 @@ class ControlsWidget(QtGui.QWidget):
 
     def __init__(self, monitor, parent = None):
 
-        QtGui.QListWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent)
 
 	self.monitor = monitor
 
@@ -452,6 +465,10 @@ class ControlsWidget(QtGui.QWidget):
         itemButton = QtGui.QLabel(self)
         itemButton.setPixmap(QtGui.QPixmap(pathButtonPixmap))
         itemButton.move(2, 2)
+	"""itemButton = CLabelControl(self)
+        itemButton.setPixmap(QtGui.QPixmap(pathButtonPixmap))
+        itemButton.move(2, 2)"""
+	
 
         itemCheckBox = QtGui.QLabel(self)
         itemCheckBox.setPixmap(QtGui.QPixmap(pathCheckPixmap))
@@ -516,7 +533,7 @@ class ControlsWidget(QtGui.QWidget):
         itemTree = QtGui.QLabel(self)
         itemTree.setPixmap(QtGui.QPixmap(pathTreePixmap))
         itemTree.move(2, 338)
-
+  
 
     def mousePressEvent(self, event):
 
@@ -893,10 +910,20 @@ class MainWindow(QtGui.QMainWindow):
         
 
     def saveInterface(self, fileName):
-        file = QtCore.QFile(fileName)
+        
+	fileNameToSave = ""
+	
+	#verificar se ao nome do ficheiro escolhido foi associada a extensão .ymli
+	if not QtCore.QString(fileName).endsWith(FILE_EXTENSION_INTERFACE):
+		fileNameToSave = fileName + FILE_EXTENSION_INTERFACE
+	else:
+		fileNameToSave = fileName
+	
+	
+	file = QtCore.QFile(fileNameToSave)
         if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
-                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileName).arg(file.errorString()))
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileNameToSave).arg(file.errorString()))
             return False
         
 	outstr = QtCore.QTextStream(file)
@@ -951,10 +978,18 @@ class MainWindow(QtGui.QMainWindow):
     
     def saveTemplate(self, fileName):
 
-	file = QtCore.QFile(fileName)
+	fileNameToSave = ""
+
+	#verificar se ao nome do ficheiro escolhido foi associada a extensão .ymlt
+	if not QtCore.QString(fileName).endsWith(FILE_EXTENSION_TEMPLATE):
+		fileNameToSave = fileName + FILE_EXTENSION_TEMPLATE
+	else:
+		fileNameToSave = fileName
+
+	file = QtCore.QFile(fileNameToSave)
         if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
-                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileName).arg(file.errorString()))
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileNameToSave).arg(file.errorString()))
             return False
         
 	outstr = QtCore.QTextStream(file)
@@ -965,8 +1000,38 @@ class MainWindow(QtGui.QMainWindow):
 	outstr << CYamlInterpreter().writeTemplate(self.monitor.getControlInfo(typeControl, idControl))	
 	#***************************************************
         QtGui.QApplication.restoreOverrideCursor()
-        
+        file.close()
         self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)
+
+
+    def saveHTMLPage(self, fileName):	
+
+	fileNameToSave = ""	
+	#verificar se ao nome do ficheiro escolhido foi associada a extensão .html
+	if not QtCore.QString(fileName).endsWith(FILE_EXTENSION_HTML) and not QtCore.QString(fileName).endsWith(FILE_EXTENSION_HTM):
+		fileNameToSave = fileName + FILE_EXTENSION_HTML
+	else:
+		fileNameToSave = fileName
+		
+	file = QtCore.QFile(fileNameToSave)
+        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileNameToSave).arg(file.errorString()))
+            return False
+
+	outstr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*************gerar HTML************	
+	#Obter nome da página de acordo com o nome escolhido para o ficheiro	
+	splits = fileNameToSave.split('/')	 
+	tmpStr = splits.last()
+	webPageReference = tmpStr.split('.')[0]
+	
+	outstr << generateHTML(webPageReference,self.monitor.getControlsDataHTMLGenerator())	
+	#***************************************************        
+	QtGui.QApplication.restoreOverrideCursor()
+        file.close()
+        self.statusBar().showMessage(MSG_FILE_SAVED, TIMEOUT_MSG)	
 
 
     def setCurrentInterfaceFile(self, fileName):
@@ -1010,7 +1075,12 @@ class MainWindow(QtGui.QMainWindow):
     # ABRE UM CONTROLO E COLOCA-O NA INTERFACE ???? valerá a pena....
     def openTemplateAct(self):	
 	#(...)
-	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_TEMPLATE_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
+	fileName = QtGui.QFileDialog.getOpenFileName(self, 
+			TITLE_OPEN_TEMPLATE_DIALOG, 
+			ROOT_DIRECTORY, 
+			FILES_FILTER_INTERFACE,
+			FILES_FILTER_INTERFACE,
+			QtGui.QFileDialog.DontUseNativeDialog)
 
     
     def openInterfaceAct(self):
@@ -1034,7 +1104,13 @@ class MainWindow(QtGui.QMainWindow):
 		if ret == QtGui.QMessageBox.Yes:
 			self.saveInterfaceAct()
 	
-	fileName = QtGui.QFileDialog.getOpenFileName(self, TITLE_OPEN_DIALOG, ROOT_DIRECTORY, FILES_FILTER)
+	fileName = QtGui.QFileDialog.getOpenFileName(self, 
+				TITLE_OPEN_DIALOG, 
+				ROOT_DIRECTORY, 
+				FILES_FILTER_INTERFACE,
+				FILES_FILTER_INTERFACE,
+				QtGui.QFileDialog.DontUseNativeDialog)
+
 	if not fileName.isEmpty():
 		self.loadInterface(fileName)       
 		
@@ -1049,37 +1125,51 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def saveInterfaceAsAct(self):
+	
+	"""
 	fileName = QtGui.QFileDialog.getSaveFileName(self, 
 					TITLE_SAVE_DIALOG, 
 					ROOT_DIRECTORY, 
-					FILES_FILTER, 
-					FILE_EXTENSION)
+					FILES_FILTER_INTERFACE, 
+					FILES_FILTER_INTERFACE)
 					
 	if fileName.isEmpty():
             return False
         
 	
-        """
-	#verificar se o ficheira já existe
-	if QtCore.QFile.exists(fileName):
-            ret = QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
-				self.tr(MSG_FILE_ALREADY_EXISTS).arg(QtCore.QDir.convertSeparators(fileName)),
-                                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
-                                QtGui.QMessageBox.No | QtGui.QMessageBox.Escape)
-            if ret == QtGui.QMessageBox.No:
-                return
-        """
-	
 	self.saveInterface(fileName)	
-
+	"""
+	       
+	saveFileDialog = QtGui.QFileDialog(self, 
+					TITLE_SAVE_DIALOG, 
+					ROOT_DIRECTORY, 
+					FILES_FILTER_INTERFACE+";;"+FILES_FILTER_HTML)
+	
+	saveFileDialog.setAcceptMode(QtGui.QFileDialog.AcceptSave)
+	saveFileDialog.setFileMode(QtGui.QFileDialog.AnyFile)	
+	#saveFileDialog.setViewMode(QtGui.QFileDialog.Detail);
+	
+	if saveFileDialog.exec_() == QtGui.QDialog.Accepted:	
+		fileNames = QtCore.QStringList()	
+		fileNames = saveFileDialog.selectedFiles()
+		if fileNames.isEmpty():
+			return false
+		else:			
+			#verificar que tipo de ficheiro (filtro) foi escolhido para armazenamento
+			if  saveFileDialog.selectedFilter() == FILES_FILTER_INTERFACE: #.ymli
+				self.saveInterface(fileNames.first())
+			else: #.html ou .htm				
+				self.saveHTMLPage(fileNames.first())
 
     def configureAct(self):
+	dialog = QtGui.QDialog(self)
+	originParent = QtGui.QWidget(self.drawArea)
+	self.drawArea.setParent(dialog)	
 	
-	html = generateHTML("teste",self.monitor.getControlsDataHTMLGenerator())
-        print self.monitor.getControlsDataHTMLGenerator()
-	file = open("generatedHTMLs/teste.html", "w")	
-	file.write(html)	
-	file.close()
+	if dialog.exec_():
+		print "teste"
+	
+	
 	
 	return
 
@@ -1157,7 +1247,9 @@ class MainWindow(QtGui.QMainWindow):
 	fileName = QtGui.QFileDialog.getOpenFileName(self,
 					TITLE_APPLY_TEMPLATE_DIALOG,
 					ROOT_DIRECTORY,
-					FILES_FILTER_TEMPLATE)
+					FILES_FILTER_TEMPLATE, 
+					FILES_FILTER_TEMPLATE, 
+					QtGui.QFileDialog.DontUseNativeDialog)
 
 	if not fileName.isEmpty():
 		self.applyTemplate(fileName) 
@@ -1168,7 +1260,8 @@ class MainWindow(QtGui.QMainWindow):
 					TITLE_SAVE_TEMPLATE_DIALOG, 
 					ROOT_DIRECTORY, 
 					FILES_FILTER_TEMPLATE, 
-					FILE_EXTENSION)
+					FILES_FILTER_TEMPLATE,
+					QtGui.QFileDialog.DontUseNativeDialog)
 					
 	if fileName.isEmpty():
             return False

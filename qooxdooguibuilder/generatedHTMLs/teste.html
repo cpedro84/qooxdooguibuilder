@@ -7,20 +7,14 @@
 			qx.OO.defineClass("teste", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
 			qx.Proto.main = function(e)
 			{
-				var combobox0 = new qx.ui.form.ComboBox();
-				combobox0.setPagingInterval(10);
-				combobox0.add(new qx.ui.form.ListItem("New Item"));
-				combobox0.add(new qx.ui.form.ListItem("New Item"));
-				combobox0.add(new qx.ui.form.ListItem("New Item"));
-				combobox0.setTop(275);
-				combobox0.setSelected(combobox0.getList().findStringExact("true"));
-				combobox0.setEditable(false);
-				combobox0.setVisibility(true);
-				combobox0.setHeight(30);
-				combobox0.setWidth(100);
-				combobox0.setSelectable(true);
-				combobox0.setLeft(165);
-				combobox0.addToDocument();
+				var button0 = new qx.ui.form.Button("Button");
+				button0.setWidth(100);
+				button0.setSelectable(true);
+				button0.setLeft(145);
+				button0.setTop(105);
+				button0.setVisibility(true);
+				button0.setHeight(30);
+				button0.addToDocument();
 			};
 		</script>
 	</head>

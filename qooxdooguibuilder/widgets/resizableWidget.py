@@ -510,8 +510,8 @@ class CResizableWidget(QtGui.QWidget):
 		#ALTERAR O CURSOR DO RATO PARA O ESTADO ORIGINAL
 		self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 	
-		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 		self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_RELEASED), str(self.typeControl), str(self.idControl))
+		self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 	
 	def keyPressEvent(self, event):
 		#caso o evento tenha ocorrido por uma tecla desconhecida não será processado
@@ -553,7 +553,8 @@ class CResizableWidget(QtGui.QWidget):
 		
 		#Caso a resizable tenha sido movida então as propriedads é enviado um sinal para alterar as suas propriedades na janela da aplicação
 		if hasMoved:
-			elf.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
+			self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_KEYBOARD_MOVED), str(self.typeControl), str(self.idControl))
+			self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
 	
 	def IsPointInsideRect(self, point, rect):
 		
