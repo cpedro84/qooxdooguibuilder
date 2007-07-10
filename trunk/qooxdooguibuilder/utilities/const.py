@@ -24,6 +24,7 @@ SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Items_Changed" #ENVIO DE: typeContro
 SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Tabs_Changed" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
 SIGNAL_RESIZABLE_RELEASED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
+SIGNAL_RESIZABLE_KEYBOARD_MOVED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_CONTROL_CLICKED = "Control_Clicked(const QString &, const QString &)"
 SIGNAL_PROPERTY_CHANGED = "Property_Changed" #ENVIO IMPLICITO DE: idProperty; propertyValue
 SIGNAL_NONE_CONTROL_SELECTED = "None_Control_Selected" # INDICAÇÃO QUE A DRAW AREA FOI CLICADA
@@ -207,9 +208,15 @@ TITLE_OPEN_TEMPLATE_DIALOG = "Open template"
 TITLE_SAVE_TEMPLATE_DIALOG = "Save template"
 TITLE_APPLY_TEMPLATE_DIALOG = "Apply template"
 ROOT_DIRECTORY = "./"
-FILES_FILTER = "YAML Interface Files (*.ymli)"
-FILE_EXTENSION = "*.yaml"
+FILES_FILTER_INTERFACE = "YAML Interface Files (*.ymli)"
 FILES_FILTER_TEMPLATE = "YAML Template Files (*.ymlt)"
+FILES_FILTER_HTML = "Web Page (*.html *.htm)"
+FILE_EXTENSION_INTERFACE = ".ymli"
+FILE_EXTENSION_TEMPLATE = ".ymlt"
+FILE_EXTENSION_HTML = ".html"
+FILE_EXTENSION_HTM = ".htm"
+
+
 
 #DEFINIÇÃO DO TIMEOUT DAS MENSAGENS DA STATUSBAR
 TIMEOUT_MSG = 2000
