@@ -203,8 +203,7 @@ class CResizableWidget(QtGui.QWidget):
 		 
 		self.setPixmap(QtGui.QPixmap.fromImage(image))
 		self.labelText = text"""
-	
-	
+		
 	#****************************************************************************************
 	#**********************GESTÃO DOS MENUS EXTRA DO POP-UP MENU DA WIDGET********************
 	#****************************************************************************************
@@ -216,6 +215,15 @@ class CResizableWidget(QtGui.QWidget):
 			
 			#Adicionar o pop-up menu extra á lista
 			self.popUpMenusExtraList.append(self.editItemsAction)
+			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
+			
+		elif self.isMenusControl(typeControl):			
+			self.editMenusAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit menus..."), self)
+			self.editMenusAction.setStatusTip(self.tr("Edit the menus"))
+			self.connect(self.editMenusAction , QtCore.SIGNAL("triggered()"), self.editMenus)			
+			
+			#Adicionar o pop-up menu extra á lista
+			self.popUpMenusExtraList.append(self.editMenusAction)
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isTabsControl(typeControl):
@@ -245,6 +253,14 @@ class CResizableWidget(QtGui.QWidget):
 			return true
 		except ValueError:
 			return false
+	
+	def isMenusControl(self, typeControl):
+		try:
+			menusControls.index(typeControl) 
+			return true
+		except ValueError:
+			return false
+	
 	
 	def isTabsControl(self, typeControl):		
 		try:
@@ -809,6 +825,23 @@ class CResizableWidget(QtGui.QWidget):
 		except structureError_Exception, e:		
 			return e.errorId
 	
+	def editMenus(self):
+		try:
+			list = []
+			list = self.getMenus()
+			widgetMenus = CEditItemsWidget(TITLE_EDIT_ITEMS, self, list)
+			if widgetMenus.exec_() == QtGui.QDialog.Accepted:				 
+				list = widgetMenus.getItemsList()
+				#Alterar na resizable respectiva do controlo os items escolhidos
+				self.setMenus(list)
+				
+				#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
+				self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_MENUS_CHANGED), str(self.typeControl), str(self.idControl), list)		
+		
+		except structureError_Exception, e:		
+			return e.errorId
+	
+	
 	#TTABVIEW
 	def editTabs(self):
 		try:
@@ -834,6 +867,8 @@ class CResizableWidget(QtGui.QWidget):
 
 		except structureError_Exception, e:		
 			return e.errorId
+	
+		
 	
 	#TTABLEVIEW
 	def editTable(self):
@@ -936,19 +971,6 @@ class editMenu(QtGui.QMenu):
 """
 #-------------------------------------------------------------------------------------
 #??????
-class ResizableMenuBar(CResizableWidget):	
-	def __init__(self, typeControl, id, app, parent=None):
-		self.MenuBar = QtGui.QMenuBar()
-		CResizableWidget.__init__(self, typeControl, id, self.MenuBar, parent)
-		
-		self.MenuBar.setEnabled(true)
-		
-			
-		menuHelp = editMenu(app, self.MenuBar)
-		#edit = QtGui.QLineEdit("edit",  menuHelp)
-		#edit.setGeometry(menuHelp.geometry().x(), menuHelp.geometry().y(), menuHelp.geometry().width(), menuHelp.geometry().height())
-				
-		self.MenuBar.addMenu(menuHelp)
 
 #-------------------------------------------------------------------------------------
 """

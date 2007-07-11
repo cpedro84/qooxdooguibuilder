@@ -20,6 +20,7 @@ SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi selecciona
 SIGNAL_PROPERTIES_TO_CHANGE = "PropertiesToChange(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 #SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Items_Changed" #ENVIO DE: typeControl; idControl; lista de items
+SIGNAL_RESIZABLE_MENUS_CHANGED = "Resizable_Menus_Changed" #ENVIO DE: typeControl; idControl; lista de items
 #SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Tabs_Changed" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
@@ -111,6 +112,7 @@ TFLOAT = "TFloat"
 TSTRING = "TString"
 TBOOLEAN = "TBoolean"
 TITEMS = "TItems"
+TMENUS = "TMenus"
 TTABLEITEMS = "TTableItems" 
 TTABS = "TTabs"
 TICON = "TIcon"
@@ -126,6 +128,7 @@ ALIGN_JUSTIFY = "justify"
 
 #LISTA QUE IDENTIFICA OS CONTROLOS ESPECIAIS QUE UTILZAM ITEMS COMO PROPRIEDADE
 itemsControls = [TList, TCombo]
+menusControls = [TMenuBar]
 tabsControls = [TTabView]
 tableControls = [TTable]
 
@@ -133,7 +136,7 @@ tableControls = [TTable]
 multiPropretyValues = [TBOOLEAN]
 
 #LISTA QUE IDENTIFICA QUAIS OS TIPOS DE DADOS DE PROPRIEDADE QUE NÃO SÃO PARA SER APRESENTADOS NA WIDGET DE ALTERAÇÃO DE PROPRIEDADES
-specificTypeProperties = [TITEMS, TTABLEITEMS, TTABS]
+specificTypeProperties = [TITEMS, TMENUS, TTABLEITEMS, TTABS]
 
 #TIPOS DE ERROS
 generalError = -1
@@ -185,9 +188,15 @@ STEP_MOVE = 5
 PIXELS_TO_DRAG = 5
 
 #DEFINIÇÃO DO TAMANHO DA DRAW AREA
-PERCENT_LARGURA_POR_ALTURA = 0.7516
+"""PERCENT_LARGURA_POR_ALTURA = 0.7516
 DRAW_AREA_HEIGHT = 950
 DRAW_AREA_WIDTH = DRAW_AREA_HEIGHT * PERCENT_LARGURA_POR_ALTURA
+"""
+DRAW_AREA_HEIGHT = 560
+DRAW_AREA_WIDTH = 1000
+
+DESIGN_AREA_HEIGHT = DRAW_AREA_HEIGHT + 30
+DESIGN_AREA_WIDTH = DRAW_AREA_WIDTH + 30
 
 #DEFINIÇÃO DOS TITULOS DA PROPERTIES_WIDGET (Ecrã Principal)
 PROPERTIES_WIDGET_COLUMN1 = "Property"

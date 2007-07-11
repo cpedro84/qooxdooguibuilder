@@ -479,7 +479,15 @@ class CMonitorControls(QtCore.QObject):
 				for itemText in valueProperty:					
 					listItems.append(CEditItem(itemText))
 				controlWidgetReference.setItems(listItems)
-				
+			
+			elif typeProperty == TMENUS and valueProperty <> self.emptyParamValue:
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
+				#Acrescentar Items ao controlo
+				listMenus = []
+				for itemText in valueProperty:					
+					listMenus.append(CEditItem(itemText))
+				controlWidgetReference.setMenus(listMenus)
+			
 			elif typeProperty == TTABS and valueProperty <> self.emptyParamValue:
 				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
 				#Acrescentar Items ao controlo
@@ -587,12 +595,13 @@ class CMonitorControls(QtCore.QObject):
 		idControl = str(idControl)
 	
 		idPropertyItems = self.getIdItemsProperty(typeControl, idControl)
-			
+		print idPropertyItems	
 		#caso tenha sido encontrada a propriedade de Items
 		if idPropertyItems <> -1:
 			#???????????transformar todos os items editItem em texto ?????????????
 			list = []			
 			for item in listItems:
+				print item.getText()
 				list.append(item.getText())
 			#****************************************************
 			#pickleList = serializeObject(listItems)
@@ -600,6 +609,20 @@ class CMonitorControls(QtCore.QObject):
 			#armazenar a lista de items	- Para estes controlos não existe nunhum metodo associado à resizable para a adição de items
 			self.changeProperty(typeControl, idControl, idPropertyItems, list)
 		
+	
+	## Special method for Controls with Menus related properties.
+	# Save the Menus values (listMenus) for a control with Menus property related, idendified with the given typeControl, idControl.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param listMenus python List
+	def changeMenusProperties(self, typeControl, idControl, listMenus):
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+		
+		self.changeItemsProperties(typeControl, idControl, listMenus)
+	
+	
 	
 	## Special method for Controls with Tabs related properties.
 	# Save the Tabs values (listItems) for a control with Tabs property related, idendified with the given typeControl, idControl.
@@ -903,7 +926,13 @@ class CMonitorControls(QtCore.QObject):
 		#Verificar qual a propriedade de Items
 		if controlInfo.hasProperties():
 			for controlProperty in controlInfo.getControlProperties():
-				if controlProperty.getTypeProperty() == TITEMS or controlProperty.getTypeProperty() ==  TTABS or controlProperty.getTypeProperty() ==  TTABLEITEMS:
+				"""if controlProperty.getTypeProperty() == TITEMS 
+					or controlProperty.getTypeProperty() == TMENUS
+					or controlProperty.getTypeProperty() ==  TTABS 
+					or controlProperty.getTypeProperty() ==  TTABLEITEMS:
+				"""
+				if indexValue(specificTypeProperties, controlProperty.getTypeProperty()):
+					
 					idPropertyItems = controlProperty.getIdProperty()
 					break
 		
@@ -998,6 +1027,25 @@ class CMonitorControls(QtCore.QObject):
 			return self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.valueMemRef]
 		else:
 			return self.errorControlMissing
+	
+	"""
+	##
+	# Returns all the values references in momory that makes reference to all Controls.
+	# If no value reference is found then is returned -1.
+	#
+	#
+	# @return python List
+	def getValuesMemRef(self):
+		controlsMenRefList = []
+		
+		for typeControl in self.DControlsInfo.keys():			
+			for idControl in self.DControlsInfo[typeControl]:
+				if self.DControlsInfo[typeControl][idControl] <> self.deletedControl: #verificar se o controlo não está referênciado como apagado
+					widgetItem = QtGui.QWidgetItem(self.DControlsInfo[typeControl][idControl][self.positionMemRef][self.valueMemRef])
+					controlsMenRefList.append(widgetItem.widget())
+	
+		return controlsMenRefList
+	"""
 	
 	##
 	# Returns all the controls information from a given typeControl. If no controls is found then is returned -1.

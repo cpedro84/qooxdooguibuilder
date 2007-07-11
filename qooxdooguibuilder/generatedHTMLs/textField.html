@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>textField</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("textField", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
+			qx.Proto.main = function(e)
+			{
+				var textfield0 = new qx.ui.form.TextField("Text Field");
+				textfield0.setWidth(100);
+				textfield0.setReadOnly(false);
+				textfield0.setMaxLength(100);
+				textfield0.setSelectable(true);
+				textfield0.setLeft(790);
+				textfield0.setTop(550);
+				textfield0.setVisibility(true);
+				textfield0.setHeight(30);
+				textfield0.addToDocument();
+			};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(textField);
+		</script>
+	</body>
+</html>

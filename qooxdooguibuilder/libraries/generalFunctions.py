@@ -67,11 +67,9 @@ def QStringListToList(qtList):
 # Delete all elements from the given List.
 #
 # @param list List of Elements
-def clearList(list):
-	itr=0
-	while itr<len(list):
-		list.pop()
-		itr +=1
+def clearList(list):	
+	while len(list)>0:
+		list.pop()		
 
 ##Documentation for a function.
 # Convert QString to String, in latin1 format
