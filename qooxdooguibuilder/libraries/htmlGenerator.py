@@ -83,8 +83,26 @@ def customizeControlJS(control_id, properties):
                 js_control += text
                 js_control += '"));\n\t\t\t\t'
 
-        #elif property_key == 'Menus' and properties['Type'] == 'MenuBar':
-                #nao foi feito pois o controlo encontra-se inactivo na aplicação
+        elif property_key == 'Menus' and properties['Type'] == 'MenuBar':
+            for text in properties[property_key]:
+                js_control += 'var '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                js_control += ' = new qx.ui.menu.Button("'
+                js_control += text
+                js_control += '");\n\t\t\t\t'
+            js_control += control_id
+            js_control += '.add('
+            first = True
+            for text in properties[property_key]:
+                if not first:
+                    js_control += ', '
+                js_control += control_id
+                js_control += '_'
+                js_control += text
+                first = False
+            js_control += ');\n\t\t\t\t'
 
         elif property_key == 'HeaderCellHeight' and properties['Type'] == 'Table':
             js_control += control_id
