@@ -151,6 +151,7 @@ TITLE_MAIN_WINDOW = "Qooxdoo GUI Builder"
 TITLE_EDIT_ITEMS = "Edit items"
 TITLE_EDIT_TABS = "Edit tabs"
 TITLE_EDIT_TABLE = "Edit table"
+TITLE_EDIT_MENUS = "Edit menus"
 
 #DRAW AREA VIEWPORT MARGINS
 MARGIN = 15

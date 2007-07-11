@@ -829,7 +829,7 @@ class CResizableWidget(QtGui.QWidget):
 		try:
 			list = []
 			list = self.getMenus()
-			widgetMenus = CEditItemsWidget(TITLE_EDIT_ITEMS, self, list)
+			widgetMenus = CEditItemsWidget(TITLE_EDIT_MENUS, self, list)
 			if widgetMenus.exec_() == QtGui.QDialog.Accepted:				 
 				list = widgetMenus.getItemsList()
 				#Alterar na resizable respectiva do controlo os items escolhidos
