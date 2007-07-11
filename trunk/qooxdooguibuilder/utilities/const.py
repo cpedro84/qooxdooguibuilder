@@ -219,11 +219,10 @@ TITLE_APPLY_TEMPLATE_DIALOG = "Apply template"
 ROOT_DIRECTORY = "./"
 FILES_FILTER_INTERFACE = "YAML Interface Files (*.ymli)"
 FILES_FILTER_TEMPLATE = "YAML Template Files (*.ymlt)"
-FILES_FILTER_HTML = "Web Page (*.html *.htm)"
+FILES_FILTER_HTML = "HTML Files (*.html)"
 FILE_EXTENSION_INTERFACE = ".ymli"
 FILE_EXTENSION_TEMPLATE = ".ymlt"
 FILE_EXTENSION_HTML = ".html"
-FILE_EXTENSION_HTM = ".htm"
 
 
 
