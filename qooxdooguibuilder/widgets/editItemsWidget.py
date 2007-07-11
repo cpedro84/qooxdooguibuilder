@@ -234,12 +234,3 @@ class CEditItemsWidget(QtGui.QDialog):
 			elem+=1
 			
 		self.accept()
-		
-#main
-"""
-app = QtGui.QApplication(sys.argv)
-list = [1,2,3,4,5,'merda']
-widget = editItemsWidget(list)
-widget.show()
-sys.exit(app.exec_())
-"""

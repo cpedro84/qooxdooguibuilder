@@ -1056,9 +1056,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def saveHTMLPage(self, fileName):	
 
-	fileNameToSave = ""	
+	fileNameToSave = ""
 	#verificar se ao nome do ficheiro escolhido foi associada a extensão .html
-	if not QtCore.QString(fileName).endsWith(FILE_EXTENSION_HTML) and not QtCore.QString(fileName).endsWith(FILE_EXTENSION_HTM):
+	if not QtCore.QString(fileName).endsWith(FILE_EXTENSION_HTML):
 		fileNameToSave = fileName + FILE_EXTENSION_HTML
 	else:
 		fileNameToSave = fileName
