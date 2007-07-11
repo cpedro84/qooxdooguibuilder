@@ -646,7 +646,7 @@ class MainWindow(QtGui.QMainWindow):
 	#self.drawArea.setGeometry(MARGIN, MARGIN, DRAW_AREA_WIDTH-(MARGIN), DRAW_AREA_HEIGHT-(MARGIN*2))
 		
 	horizontalWidth = abs((DESIGN_AREA_WIDTH - DRAW_AREA_WIDTH)) / 2
-	verticalWidth = abs((DESIGN_AREA_HEIGHT - DRAW_AREA_HEIGHT)) / 2
+	verticalWidth = abs((DESIGN_AREA_HEIGHT - DRAW_AREA_HEIGHT))
 	self.drawArea.setGeometry(horizontalWidth, 
 						verticalWidth, 
 						DRAW_AREA_WIDTH, 
