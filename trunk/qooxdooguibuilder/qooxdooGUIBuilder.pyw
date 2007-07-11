@@ -199,7 +199,10 @@ class DrawArea(QtGui.QWidget):
     # Items -> QStringList
     def saveTListItems(self, typeControl, idControl, items):
 	self.monitor.changeItemsProperties(typeControl, idControl, items)
-	
+
+    def saveTListMenus(self, typeControl, idControl, menus):
+	self.monitor.changeMenusProperties(typeControl, idControl, menus)
+
     def saveTTabViewTabs(self, typeControl, idControl, tabs):
 	self.monitor.changeTabsProperties(typeControl, idControl, tabs)
 
@@ -217,6 +220,8 @@ class DrawArea(QtGui.QWidget):
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_DELETE), self.deleteSelectedControls)
 	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE ITEMS
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_ITEMS_CHANGED), self.saveTListItems)
+	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE MENUS
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_MENUS_CHANGED), self.saveTListMenus)
         #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
         QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
 	#PARA  CONTROLOS DO TIPO TTABLE QUE TENHAM PROPRIEDADES DE TTABLEITEMS 
@@ -622,19 +627,30 @@ class MainWindow(QtGui.QMainWindow):
 	#self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
 	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 	self.centralWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	
+	
+	self.setCentralWidget(self.centralWidget)
 
 	#Widget intermédia entre a scrollBar e a DrawArea
 	designWidget = QtGui.QWidget()
 	self.centralWidget.setWidget(designWidget)
-	designWidget.setGeometry(designWidget.x(), designWidget.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)	
+	designWidget.setGeometry(designWidget.x(), 
+						designWidget.y(), 
+						DESIGN_AREA_WIDTH,
+						DESIGN_AREA_HEIGHT)	
+						
 	designWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	
 	#Colocar a drawArea na zona intermédia (designWidget)	
 	self.drawArea.setParent(designWidget)
 	#self.drawArea.setGeometry(MARGIN, MARGIN, self.drawArea.width()-(MARGIN*2), self.drawArea.height()-(MARGIN*2))
-	self.drawArea.setGeometry(MARGIN, MARGIN, DRAW_AREA_WIDTH-(MARGIN), DRAW_AREA_HEIGHT-(MARGIN*2))
+	#self.drawArea.setGeometry(MARGIN, MARGIN, DRAW_AREA_WIDTH-(MARGIN), DRAW_AREA_HEIGHT-(MARGIN*2))
 		
-	self.setCentralWidget(self.centralWidget)	
+	horizontalWidth = abs((DESIGN_AREA_WIDTH - DRAW_AREA_WIDTH)) / 2
+	verticalWidth = abs((DESIGN_AREA_HEIGHT - DRAW_AREA_HEIGHT)) / 2
+	self.drawArea.setGeometry(horizontalWidth, 
+						verticalWidth, 
+						DRAW_AREA_WIDTH, 
+						DRAW_AREA_HEIGHT)		
 	
         self.setWindowIcon(QtGui.QIcon("icons/mainwindow.png"))
         self.setWindowTitle(TITLE_MAIN_WINDOW)
@@ -883,24 +899,23 @@ class MainWindow(QtGui.QMainWindow):
             return
         instr = QtCore.QTextStream(file)
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        #*********Leitura da interface*********	
+        
+	#*********Leitura da interface*********	
 	controlsInfoList = CYamlInterpreter().readInterface(QStringToString(instr.readAll()))
-	#caso tenha ocorrido erro na leitura do código YAML o processo é terminado
-	if controlsInfoList == -1:
+	#caso tenha ocorrido erro na leitura do código YAML o processo é terminado	
+	if controlsInfoList == -1:		
 		QtGui.QApplication.restoreOverrideCursor()
 		return
 	
 	#Limpar a interface gráfica
 	self.monitor.deleteAllControls()
-	
-	for controlInfo in controlsInfoList:
-		listProperties = controlInfo.getControlProperties()
-		
-		newControlWidget = self.monitor.addNewControl(controlInfo.getTypeControl(), self.drawArea, listProperties, false)	    
-		
+	#QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,"teste")
+	for controlInfo in controlsInfoList:		
+		listProperties = controlInfo.getControlProperties()		
+		newControlWidget = self.monitor.addNewControl(controlInfo.getTypeControl(), self.drawArea, listProperties, false)		
 		#atribuir os sinais ao controlo criado
 		self.drawArea.assignSignalsToControlWidget(newControlWidget)		
-		newControlWidget.show()
+		newControlWidget.show()		
 		
 	#*************************************
         QtGui.QApplication.restoreOverrideCursor()
@@ -908,6 +923,41 @@ class MainWindow(QtGui.QMainWindow):
         self.setCurrentInterfaceFile(fileName)
         self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
         
+
+    def loadTemplate(self, fileName):
+        file = QtCore.QFile(fileName)
+        if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_READ_FILE).arg(fileName).arg(file.errorString()))
+            return
+        instr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        
+	#*********Leitura da interface*********	
+	controlInfo = CYamlInterpreter().readTemplate(QStringToString(instr.readAll()))
+	#caso tenha ocorrido erro na leitura do código YAML o processo é terminado
+	if controlInfo == -1:
+		QtGui.QApplication.restoreOverrideCursor()
+		return
+	
+	#Limpar a interface gráfica
+	self.monitor.deleteAllControls()
+	
+	listProperties = controlInfo.getControlProperties()	
+	newControlWidget = self.monitor.addNewControl(controlInfo.getTypeControl(), self.drawArea, listProperties, false)	    
+	
+	#atribuir os sinais ao controlo criado
+	self.drawArea.assignSignalsToControlWidget(newControlWidget)		
+	newControlWidget.show()
+		
+	#*************************************
+        QtGui.QApplication.restoreOverrideCursor()
+        	
+        self.setCurrentInterfaceFile(fileName)
+        self.statusBar().showMessage(MSG_FILE_LOADED, TIMEOUT_MSG)
+
+
+
 
     def saveInterface(self, fileName):
         
@@ -1023,9 +1073,13 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         #*************gerar HTML************	
 	#Obter nome da página de acordo com o nome escolhido para o ficheiro	
+	
+	fileNameToSave = QStringToString(fileNameToSave)
+	fileNameToSave = fileNameToSave.replace("\\", '/')
 	splits = fileNameToSave.split('/')	 
-	tmpStr = splits.last()
-	webPageReference = tmpStr.split('.')[0]
+	tmpStr = splits.pop()	
+	webPageReference = tmpStr.split('.')[0]	
+	#webPageReference = "Default"
 	
 	outstr << generateHTML(webPageReference,self.monitor.getControlsDataHTMLGenerator())	
 	#***************************************************        
@@ -1074,16 +1128,12 @@ class MainWindow(QtGui.QMainWindow):
 
     # ABRE UM CONTROLO E COLOCA-O NA INTERFACE ???? valerá a pena....
     def openTemplateAct(self):	
-	#(...)
-	fileName = QtGui.QFileDialog.getOpenFileName(self, 
-			TITLE_OPEN_TEMPLATE_DIALOG, 
-			ROOT_DIRECTORY, 
-			FILES_FILTER_INTERFACE,
-			FILES_FILTER_INTERFACE,
-			QtGui.QFileDialog.DontUseNativeDialog)
+	self.openFile(FILES_FILTER_TEMPLATE)	
 
-    
     def openInterfaceAct(self):
+	self.openFile(FILES_FILTER_INTERFACE)
+    
+    def openFile(self, FILES_FILTER):
 	#verificar se a interface foi armazenada
 	if not self.isInterfaceSaved():
 		
@@ -1107,14 +1157,16 @@ class MainWindow(QtGui.QMainWindow):
 	fileName = QtGui.QFileDialog.getOpenFileName(self, 
 				TITLE_OPEN_DIALOG, 
 				ROOT_DIRECTORY, 
-				FILES_FILTER_INTERFACE,
-				FILES_FILTER_INTERFACE,
+				FILES_FILTER,
+				FILES_FILTER,
 				QtGui.QFileDialog.DontUseNativeDialog)
 
 	if not fileName.isEmpty():
-		self.loadInterface(fileName)       
+		if FILES_FILTER == FILES_FILTER_INTERFACE:
+			self.loadInterface(fileName)   
+		elif FILES_FILTER == FILES_FILTER_TEMPLATE:
+			self.loadTemplate(fileName)
 		
-    
 
     def saveInterfaceAct(self):	
 
@@ -1162,14 +1214,20 @@ class MainWindow(QtGui.QMainWindow):
 				self.saveHTMLPage(fileNames.first())
 
     def configureAct(self):
+	
+	"""
 	dialog = QtGui.QDialog(self)
+	
 	originParent = QtGui.QWidget(self.drawArea)
-	self.drawArea.setParent(dialog)	
+	originParent.setParent(dialog)	
+	#Colocar os controlos no clone da ScrollArea (Área de Desenho)
+	for control in self.monitor.getValuesMemRef():
+		print control.geometry().x()
+		control.setParent(originParent)
 	
 	if dialog.exec_():
 		print "teste"
-	
-	
+	"""	
 	
 	return
 

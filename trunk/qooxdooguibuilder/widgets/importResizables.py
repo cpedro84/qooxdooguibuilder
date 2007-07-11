@@ -20,4 +20,4 @@ from resizableTextArea import *
 from resizableTextField import *
 from resizableToolBar import *
 from resizableTree import *
-
+from resizableMenuBar import *

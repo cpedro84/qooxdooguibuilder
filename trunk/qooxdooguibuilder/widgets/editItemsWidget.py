@@ -96,7 +96,7 @@ class CEditItemsWidget(QtGui.QDialog):
 	#************SLOTS*****************
 	def listItemDoubleClicked(self, listWidgetItem):
 		self.itemsListView.openPersistentEditor(listWidgetItem)
-		self.itemsListView.CEditItem(listWidgetItem)
+		#self.itemsListView.CEditItem(listWidgetItem) ??????
 	
 	def listItemClicked(self, listWidgetItem):
 		self.setLineEdit(listWidgetItem.text())

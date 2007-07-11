@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>buttons</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("buttons", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
+			qx.Proto.main = function(e)
+			{
+				var button3 = new qx.ui.form.Button("Button");
+				button3.setWidth(100);
+				button3.setSelectable(true);
+				button3.setLeft(985);
+				button3.setTop(525);
+				button3.setVisibility(true);
+				button3.setHeight(30);
+				button3.addToDocument();
+				var button2 = new qx.ui.form.Button("Button");
+				button2.setWidth(100);
+				button2.setSelectable(true);
+				button2.setLeft(5);
+				button2.setTop(0);
+				button2.setVisibility(true);
+				button2.setHeight(30);
+				button2.addToDocument();
+				var button1 = new qx.ui.form.Button("Button");
+				button1.setWidth(100);
+				button1.setSelectable(true);
+				button1.setLeft(990);
+				button1.setTop(5);
+				button1.setVisibility(true);
+				button1.setHeight(30);
+				button1.addToDocument();
+				var button0 = new qx.ui.form.Button("Button");
+				button0.setWidth(100);
+				button0.setSelectable(true);
+				button0.setLeft(5);
+				button0.setTop(525);
+				button0.setVisibility(true);
+				button0.setHeight(30);
+				button0.addToDocument();
+				var checkbox0 = new qx.ui.form.CheckBox("Check Box", null, null, "true");
+				checkbox0.setWidth(100);
+				checkbox0.setSelectable(true);
+				checkbox0.setLeft(395);
+				checkbox0.setTop(275);
+				checkbox0.setVisibility(true);
+				checkbox0.setHeight(30);
+				checkbox0.addToDocument();
+			};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(buttons);
+		</script>
+	</body>
+</html>
