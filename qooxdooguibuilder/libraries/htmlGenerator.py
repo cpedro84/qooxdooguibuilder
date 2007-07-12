@@ -3,23 +3,6 @@
 
 
 
-##def readTags(properties_file_path, lowerIndex, higherIndex):
-##
-##    index = 0
-##    tags = []
-##    properties_file = file(properties_file_path, 'r')
-##
-##    for line in properties_file:
-##        if index >= lowerIndex and index <= higherIndex:
-##            tmp = line.split(':')
-##            tags.append(tmp[1])
-##        index += 1
-##
-##    properties_file.close()
-##
-##    return tags
-
-
 def customizeControlJS(control_id, properties):
 
     js_control = ''
@@ -88,8 +71,8 @@ def customizeControlJS(control_id, properties):
                 js_control += 'var '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
-                js_control += ' = new qx.ui.menu.Button("'
+                js_control += text.replace(' ', '_')
+                js_control += ' = new qx.ui.toolbar.MenuButton("'
                 js_control += text
                 js_control += '");\n\t\t\t\t'
             js_control += control_id
@@ -100,7 +83,7 @@ def customizeControlJS(control_id, properties):
                     js_control += ', '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 first = False
             js_control += ');\n\t\t\t\t'
 
@@ -124,7 +107,7 @@ def customizeControlJS(control_id, properties):
                 js_control += 'var '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += '_button'
                 js_control += ' = new qx.ui.pageview.tabview.Button("'
                 js_control += text
@@ -133,25 +116,25 @@ def customizeControlJS(control_id, properties):
                 js_control += '.getBar().add('
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += '_button'
                 js_control += ');\n\t\t\t\t'
                 js_control += 'var '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += '_page'
                 js_control += ' = new qx.ui.pageview.tabview.Page('
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += '_button'
                 js_control += ');\n\t\t\t\t'
                 js_control += control_id
                 js_control += '.getPane().add('
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += '_page'
                 js_control += ');\n\t\t\t\t'
 
@@ -178,7 +161,7 @@ def customizeControlJS(control_id, properties):
                 js_control += 'var '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 js_control += ' = new qx.ui.toolbar.MenuButton("'
                 js_control += text
                 js_control += '");\n\t\t\t\t'
@@ -190,7 +173,7 @@ def customizeControlJS(control_id, properties):
                     js_control += ', '
                 js_control += control_id
                 js_control += '_'
-                js_control += text
+                js_control += text.replace(' ', '_')
                 first = False
             js_control += ');\n\t\t\t\t'
 
@@ -377,9 +360,8 @@ def generateControlsJS(data):
                 js_controls += data[control_id]['Text']
                 js_controls += '"'
             if 'Checked' in data[control_id]:
-                js_controls += ', null, null, "'
+                js_controls += ', null, null, '
                 js_controls += data[control_id]['Checked']
-                js_controls += '"'
 
         elif data[control_id]['Type'] == 'ComboBox':
             js_controls += ' = new qx.ui.form.ComboBox('
@@ -417,7 +399,7 @@ def generateControlsJS(data):
             js_controls += ' = new qx.ui.form.List('
 
         elif data[control_id]['Type'] == 'MenuBar':
-            js_controls += ' = new qx.ui.menubar.MenuBar('
+            js_controls += ' = new qx.ui.toolbar.ToolBar('
 
         elif data[control_id]['Type'] == 'PasswordField':
             js_controls += ' = new qx.ui.form.PasswordField('
@@ -433,24 +415,19 @@ def generateControlsJS(data):
                 js_controls += data[control_id]['Text']
                 js_controls += '"'
             if 'Checked' in data[control_id]:
-                js_controls += ', null, null, "'
+                js_controls += ', null, null, '
                 js_controls += data[control_id]['Checked']
-                js_controls += '"'
 
         elif data[control_id]['Type'] == 'Spinner':
             js_controls += ' = new qx.ui.form.Spinner('
             if 'Min' in data[control_id]:
-                js_controls += '"'
                 js_controls += data[control_id]['Min']
-                js_controls += '"'
             if 'Value' in data[control_id]:
-                js_controls += ', "'
+                js_controls += ', '
                 js_controls += data[control_id]['Value']
-                js_controls += '"'
             if 'Max' in data[control_id]:
-                js_controls += ', "'
+                js_controls += ', '
                 js_controls += data[control_id]['Max']
-                js_controls += '"'
 
         elif data[control_id]['Type'] == 'Table':
             js_controls += ' = new qx.ui.table.Table(new qx.ui.table.SimpleTableModel()'
