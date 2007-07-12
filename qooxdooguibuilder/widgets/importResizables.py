@@ -21,3 +21,4 @@ from resizableTextField import *
 from resizableToolBar import *
 from resizableTree import *
 from resizableMenuBar import *
+from resizableIFrame import *

@@ -148,10 +148,11 @@ ERROR_ACCESS_STRUCTURE = "Error accessing the data structure."
 
 #TITULOS DAS JANELAS
 TITLE_MAIN_WINDOW = "Qooxdoo GUI Builder"
-TITLE_EDIT_ITEMS = "Edit items"
-TITLE_EDIT_TABS = "Edit tabs"
-TITLE_EDIT_TABLE = "Edit table"
-TITLE_EDIT_MENUS = "Edit menus"
+TITLE_EDIT_ITEMS = TITLE_MAIN_WINDOW+" - "+"Edit items"
+TITLE_EDIT_TABS = TITLE_MAIN_WINDOW+" - "+"Edit tabs"
+TITLE_EDIT_TABLE = TITLE_MAIN_WINDOW+" - "+"Edit table"
+TITLE_EDIT_MENUS = TITLE_MAIN_WINDOW+" - "+"Edit menus"
+TITLE_PREVIEW_APP = TITLE_MAIN_WINDOW+" - "+"Preview Interface"
 
 #DRAW AREA VIEWPORT MARGINS
 MARGIN = 15
@@ -239,3 +240,8 @@ MSG_FILE_LOADED = "File loaded"
 MSG_INTERFACE_TO_SAVE = "Do you want to save the changes you made?"
 MSG_INTERFACE_FILE_TO_SAVE = "Do you want to save the changes you made to '%1'?"
 MSG_QUESTION_DELETE_CONTROL = "Do you really wish to delete the selected control(s)?"
+
+
+#DIRECTORIO + NOME FICHEIRO, SOBRE O FICHEIRO TEMPORÁRIO HTML PARA PRÉ_VISUALIZAÇÃO NUM BROWSER
+TMP_DIR_HTML_FILE = ".\\generatedHTMLs\\_TMP_PAGE_.html"
+
