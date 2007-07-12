@@ -35,6 +35,12 @@ def customizeControlJS(control_id, properties):
                 js_control += text
                 js_control += '"));\n\t\t\t\t'
 
+        elif property_key == 'Source URL' and properties['Type'] == 'Iframe':
+            js_control += control_id
+            js_control += '.setSource("http://'
+            js_control += properties[property_key]
+            js_control += '");\n\t\t\t\t'
+
         elif property_key == 'TextAlign' and properties['Type'] == 'Label':
             js_control += control_id
             js_control += '.setTextAlign("'
@@ -379,10 +385,6 @@ def generateControlsJS(data):
 
         elif data[control_id]['Type'] == 'Iframe':
             js_controls += ' = new qx.ui.embed.Iframe('
-            if 'Source' in data[control_id]:
-                js_controls += '"'
-                js_controls += data[control_id]['Source']
-                js_controls += '"'
 
         elif data[control_id]['Type'] == 'Label':
             js_controls += ' = new qx.ui.basic.Label('
