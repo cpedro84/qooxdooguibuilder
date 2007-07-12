@@ -4,6 +4,7 @@
 #teste controlo......
 
 import sys, os
+import webbrowser
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "controls"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "data"))
@@ -19,7 +20,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../monitorization"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../utilities"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "../widgets"))
-
 
 
 from PyQt4 import QtCore, QtGui
@@ -732,13 +732,11 @@ class MainWindow(QtGui.QMainWindow):
         self.deleteAction.setStatusTip("Delete the current selection")
         self.connect(self.deleteAction, QtCore.SIGNAL("triggered()"), self.deleteAct)
 
-        self.previewInApplicationAction = QtGui.QAction(QtGui.QIcon("icons/preview_application.png"), "Preview in the &application", self)
-        self.previewInApplicationAction.setDisabled(True)
+        self.previewInApplicationAction = QtGui.QAction(QtGui.QIcon("icons/preview_application.png"), "Preview in the &application", self)        
         self.previewInApplicationAction.setStatusTip("Preview the interface in the application")
         self.connect(self.previewInApplicationAction, QtCore.SIGNAL("triggered()"), self.previewInApplicationAct)
 
-        self.previewInBrowserAction = QtGui.QAction(QtGui.QIcon("icons/preview_browser.png"), "Preview in a &browser", self)
-        self.previewInBrowserAction.setDisabled(True)
+        self.previewInBrowserAction = QtGui.QAction(QtGui.QIcon("icons/preview_browser.png"), "Preview in a &browser", self)        
         self.previewInBrowserAction.setStatusTip("Preview the interface in a browser")
         self.connect(self.previewInBrowserAction, QtCore.SIGNAL("triggered()"), self.previewInBrowserAct)
 
@@ -1214,21 +1212,7 @@ class MainWindow(QtGui.QMainWindow):
 				self.saveHTMLPage(fileNames.first())
 
     def configureAct(self):
-	
-	"""
-	dialog = QtGui.QDialog(self)
-	
-	originParent = QtGui.QWidget(self.drawArea)
-	originParent.setParent(dialog)	
-	#Colocar os controlos no clone da ScrollArea (Área de Desenho)
-	for control in self.monitor.getValuesMemRef():
-		print control.geometry().x()
-		control.setParent(originParent)
-	
-	if dialog.exec_():
-		print "teste"
-	"""	
-	
+
 	return
 
 
@@ -1267,11 +1251,52 @@ class MainWindow(QtGui.QMainWindow):
 
     def previewInApplicationAct(self):
 
+	dialog = QtGui.QDialog(self, QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
+	dialog.setWindowTitle(TITLE_PREVIEW_APP)
+	
+	originParent = QtGui.QWidget(self.drawArea)	
+	originParent.setParent(dialog)
+	#FIXAR O TAMANHO DA WIDGET AO TAMANHO ACTUAL
+	originParent.setFixedSize(DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
+	#Criar clones de todos os controlos e colocalos na dialog de pré-visualização
+	clonesList = self.monitor.cloneAllControls(originParent)
+	#Executar a dialog	
+	dialog.exec_()	
+	del dialog
+	#Eliminar todos os clones criados
+	for controlClone in clonesList:		
+		del controlClone
+
         return
 
 
     def previewInBrowserAct(self):
+	
+	fileNameToSave = TMP_DIR_HTML_FILE
+	file = QtCore.QFile(fileNameToSave)
+        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(self, TITLE_MAIN_WINDOW,
+                    self.tr(MSG_CANNOT_SAVE_FILE).arg(fileNameToSave).arg(file.errorString()))
+            return False
 
+	outstr = QtCore.QTextStream(file)
+        QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        #*************gerar HTML************	
+	#Obter nome da página de acordo com o nome escolhido para o ficheiro		
+	fileNameToSave_ = fileNameToSave.replace("\\", '/')
+	splits = fileNameToSave_.split('/')	 
+	tmpStr = splits.pop()	
+	webPageReference = tmpStr.split('.')[0]	
+	
+	outstr << generateHTML(webPageReference,self.monitor.getControlsDataHTMLGenerator())	
+	#***************************************************        
+	QtGui.QApplication.restoreOverrideCursor()
+
+	file.close()
+	
+	#Abrir o Browser por defeito do sistema com a página HTML gerada
+	webbrowser.open(fileNameToSave, true)
+		
         return
 
 
@@ -1328,6 +1353,10 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def closeAct(self):
+	self.close()
+
+    #Evento de Close da janela
+    def closeEvent(self, event):
 	if not self.isInterfaceSaved():
 		
 		if self.curFile.isEmpty():
@@ -1346,11 +1375,16 @@ class MainWindow(QtGui.QMainWindow):
 		
 		if ret == QtGui.QMessageBox.Yes:
 			self.saveInterfaceAct()
-	
-	self.close()
+
 
 
     control_beeing_added = 0
+
+
+#*****************************************************
+def exitProcess():
+	#verificar se existe o ficheiro temporário da página HTML de pré-visualização - caso exista este é eliminado
+	QtCore.QFile.remove(TMP_DIR_HTML_FILE)
 
 
 
@@ -1358,6 +1392,8 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     main_window = MainWindow()
     main_window.showMaximized()
-    sys.exit(app.exec_())
+    exitCode = app.exec_()
+    exitProcess()    
+    sys.exit(exitCode)
     
 

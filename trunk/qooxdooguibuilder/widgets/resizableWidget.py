@@ -137,11 +137,14 @@ class CResizableWidget(QtGui.QWidget):
 		self.mouseButtonClicked =QtCore.Qt.NoButton
 		#posicionamento anterior
 		self.mousePressedPos = QtCore.QPoint(0,0)
-		
-		
+				
 		#VARIAVEL QUE CONTROLA SE A WIDGET ESTÁ SELECCIONADA
 		self.isSelected = bool(0)
-				
+		
+		#VARIAVEL QUE CONTROLA SE A POSSIBILIDADE DE INTERACçÂO COM A WIDGET 
+		self.hasInteraction = true
+		
+		
 		#*************POP-UP MENU (definição de acções)************************		
 		self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
 		self.cutAction.setShortcut(self.tr("Ctrl+X"))
@@ -499,6 +502,9 @@ class CResizableWidget(QtGui.QWidget):
 
 	def mousePressEvent(self, event):
 		
+		if not self.hasInteraction:
+			return
+		
 		#INDICAR QUE A WIDGET FOI SELECCIONADA
 		self.setFocus()
 		self.isSelected = true		
@@ -630,6 +636,12 @@ class CResizableWidget(QtGui.QWidget):
 	
 #*******************************************************************
 	#DEFINIÇÃO DE FUNÇÕES GLOBAIS
+	
+	def disableInteraction(self):
+		self.hasInteraction = false
+		
+	def enableInteraction(self):
+		self.hasInteraction = true
 	
 	def setFont(self, Font):
 		self.childWidget.setFont(Font)
