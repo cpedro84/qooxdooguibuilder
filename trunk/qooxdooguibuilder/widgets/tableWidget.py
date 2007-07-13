@@ -110,13 +110,63 @@ class CTableWidget(QtGui.QTableWidget):
 	
 	
 	
+	def setTableWidget_teste(self, tableData):
+		
+		
+		#LIMPAR OS DADOS DA TABLE_WIDGET
+		self.removeAll()
+		
+		tableItems = { }
+		#tableItems = tableData.??(...)
+		
+		listIdCells = tableItems.keys()
+		listIdCells.sort()
+		nColumns = -1
+		nLines = -1
+		for IdCell in listIdCells:
+			if IdCell[0] > nLines:
+				nLines =IdCell[0]
+
+			if IdCell[1] > nColumns:
+				nColumns = IdCell[1]
+			
+		
+		#Criar colunas na tableWidget
+		n=0
+		while n < nColumns:
+			self.insertRow(n)
+			self.setVerticalHeaderItem(n, QtGui.QTableWidgetItem(tableItems[(0,n)]))
+			itrRow +=1
+			
+		#Criar linhas na tableWidget
+		n=0		
+		while n < nLines:
+			self.insertColumn(n)
+			self.setHorizontalHeaderItem(n, QtGui.QTableWidgetItem(tableItems[(n,0)]))
+			n +=1
+		
+		nL=0
+		nC=0		
+		while nC < nColumns: #??- OU WHILE nC <=nColumns:
+		
+		   
+			while nL < nLines: #??- OU WHILE nL <=nLines:
+				#Adicionar o item á celula
+				self.setItem(nL, nC, QtGui.QTableWidgetItem(tableItems[(nL,nC)]))
+				nL+=1
+			
+			nL=0
+			nC +=1    
+		
+	
+	#***************************************************************************
 	
 	##
 	# Get the content of the table.
 	#
 	# @Return CTableData
 	# @see CTableData
-	def getTableData(self): #alterar função de forma a retornar um objecto do tipo tableData
+	def getTableData(self):
 			
 		tableItems = { }
 		
@@ -129,12 +179,11 @@ class CTableWidget(QtGui.QTableWidget):
 		itrRow = 0
 		#copiar todos os items da self
 		while itrColumn < self.columnCount():
-			columnItem = QStringToString(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())
-			
-			itrRow = 0 
+			columnItem = QStringToString(QtGui.QTableWidgetItem(self.horizontalHeaderItem(itrColumn)).text())			
+			itrRow = 0
 			tableItems[columnItem] = {}
 			for rowItem in rowsList:
-				tableItem = self.item(itrRow, itrColumn)
+				tableItem = self.item(itrRow, itrColumn) #Obter o item da tabela				
 				if tableItem == None:
 					tableItem = QtGui.QTableWidgetItem("")
 				cellItem = QStringToString(QtGui.QTableWidgetItem(tableItem).text())
@@ -143,16 +192,54 @@ class CTableWidget(QtGui.QTableWidget):
 				
 			itrColumn +=1
 		
+		#print tableItems
+		
 		#tableData = CTableData(rowsList, columnsList, tableItems)
 		tableData = CTableData()
 		tableData.setTableRows(rowsList)		
 		tableData.setTableColumns(columnsList)
 		tableData.setTableItems(tableItems)
 		
+		self.getTableData_teste_dict()
+		
 		return tableData
 	
 	
-	##
+	def getTableData_teste_dict(self):
+		
+		tableItems = { }
+		
+		rowsList = []
+		rowsList = self.getRowsList()
+		columnsList = []
+		columnsList = self.getColumnsList()
+		
+		itrColumn = 1
+		itrRow = 1
+		for column in columnsList:
+			tableItems[(0,itrColumn)] = column #Preencher campos de colunas identificadoras        
+			for line in rowsList:
+				tableItems[(itrRow,0)] = line #Preencher campos de linhas identificadores
+				idCel = (itrColumn, itrRow)
+				#Obter elemento da linha,coluna				
+				tableItem = self.item(itrRow-1, itrColumn-1) #Obter o item da tabela				
+				if tableItem == None:
+					tableItem = QtGui.QTableWidgetItem("")
+				cellItem = QStringToString(QtGui.QTableWidgetItem(tableItem).text())
+				print cellItem
+				tableItems[idCel] = cellItem
+		
+				itrRow +=1
+			
+			itrRow=1
+			itrColumn +=1
+		
+		#tableData = CTableData()
+		#return tableData 
+	
+	
+
+##
 	# Get the rows text of the table.
 	#
 	# @Return python list

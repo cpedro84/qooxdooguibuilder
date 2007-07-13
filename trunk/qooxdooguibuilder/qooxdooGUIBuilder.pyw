@@ -1,7 +1,6 @@
 # !/usr/bin/env python
 # -*- encoding: latin1 -*-
 
-#teste controlo......
 
 import sys, os
 import webbrowser
