@@ -99,7 +99,7 @@ class CResizableTabView(CResizableWidget):
 		nElements = self.countTabs()
 		elem = 0		
 		while elem < nElements:
-			tabsList.append(editItem(self.getTabText(elem), self.getTabWidget(elem)))
+			tabsList.append(CEditItem(self.getTabText(elem), self.getTabWidget(elem)))
 			elem = elem + 1
 		
 		return tabsList	

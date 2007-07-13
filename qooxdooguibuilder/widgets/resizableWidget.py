@@ -824,7 +824,7 @@ class CResizableWidget(QtGui.QWidget):
 	def editItems(self):
 		try:
 			list = []
-			list = self.getItems()
+			list = self.getItems()			
 			widgetItems = CEditItemsWidget(TITLE_EDIT_ITEMS, self, list)
 			if widgetItems.exec_() == QtGui.QDialog.Accepted:				 
 				list = widgetItems.getItemsList()

@@ -54,7 +54,7 @@ class CResizableComboBox(CResizableWidget):
 	#
 	# @Param textItemsList python list
 	def setItems(self, textItemsList):
-		self.ComboBox.clear()
+		self.ComboBox.clear()		
 		for item in textItemsList:			
 			self.addItemText(item.getText())
 	
@@ -76,7 +76,7 @@ class CResizableComboBox(CResizableWidget):
 		return self.ComboBox.isEditable()
 	
 	def countItems(self):
-		self.ComboBox.count()
+		return self.ComboBox.count()
 	
 	
 	##
@@ -99,7 +99,7 @@ class CResizableComboBox(CResizableWidget):
 		nElements = self.countItems()
 		elem = 0		
 		while elem < nElements:
-			textItems.append(CEditItem(self.getItemText(elem)))
+			items.append(CEditItem(self.getItemText(elem)))
 			elem = elem + 1
 		
 		return items
