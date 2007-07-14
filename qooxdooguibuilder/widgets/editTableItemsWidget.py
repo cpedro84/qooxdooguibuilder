@@ -299,8 +299,14 @@ class CEditTableItemsWidget(QtGui.QDialog):
 			self.ListColumns.setFocus()
 			self.renameColumnsButton.setText(self.ApplyState)
 			self.btnColumnState = self.ApplyState
-		elif self.btnColumnState == self.ApplyState:			
-			self.ListColumns.closePersistentEditor(self.ListColumns.currentItem())
+		elif self.btnColumnState == self.ApplyState:
+			columnItem = self.ListColumns.currentItem() #Obter o item current da lista de colunas
+			nCol = self.ListColumns.currentRow() #Obter o nº da coluna seleccionada na lista de colunas			
+			#Fechar o editor de texto			
+			self.ListColumns.closePersistentEditor(columnItem)
+			#Alterar o texto do titulo da coluna na tableWidget
+			self.TableItems.setHorizontalHeaderItem(nCol, QtGui.QTableWidgetItem(columnItem.text()))			
+			#Alteração do estado do botão
 			self.renameColumnsButton.setText(self.RenameState)
 			self.renameColumnsButton.setFocus()
 			self.btnColumnState = self.RenameState
@@ -313,8 +319,15 @@ class CEditTableItemsWidget(QtGui.QDialog):
 			self.ListRows.setFocus()
 			self.renameRowsButton.setText(self.ApplyState)
 			self.btnRowState = self.ApplyState
-		elif self.btnRowState == self.ApplyState:			
-			self.ListRows.closePersistentEditor(self.ListRows.currentItem())
+		elif self.btnRowState == self.ApplyState:						
+			
+			rowItem = self.ListRows.currentItem() #Obter o item current da lista de colunas
+			nLine = self.ListRows.currentRow() #Obter o nº da coluna seleccionada na lista de colunas
+			#Fechar o editor de texto
+			self.ListRows.closePersistentEditor(rowItem)
+			#Alterar o texto do titulo da linha na tableWidget
+			self.TableItems.setVerticalHeaderItem(nLine, QtGui.QTableWidgetItem(rowItem.text()))			
+			#Alteração do estado do botão
 			self.renameRowsButton.setText(self.RenameState)
 			self.renameRowsButton.setFocus()
 			self.btnRowState = self.RenameState

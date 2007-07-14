@@ -74,6 +74,8 @@ class DrawArea(QtGui.QWidget):
 	self.setAutoFillBackground(true)
 	self.setBackgroundRole(QtGui.QPalette.Light)
 	
+	#Rectangulo que produz o efeito de posicionamento de um control visual
+	self.highlightedRect = QtCore.QRect()
 	
 	#self.setGeometry(self.x(), self.y(), self.width() * 2, self.height() * 6)	
 	self.setGeometry(self.x(), self.y(), DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
@@ -229,11 +231,45 @@ class DrawArea(QtGui.QWidget):
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), self.Signal_Redirect_ApplyTemplateControl)
 	#*****************************************************************
 
+    def targetHighLightSquare(self, position, offset, widgetRect):
+
+	position = QtCore.QPoint(position)	
+	widgetRect = QtCore.QRect(widgetRect)
+
+	dropPos = QtCore.QPoint(position - offset)	
+	dropPos.setX(dropPos.x() - (dropPos.x() % STEP_MOVE))
+	dropPos.setY(dropPos.y() - (dropPos.y() % STEP_MOVE))
+
+	return QtCore.QRect(dropPos.x(), dropPos.y(), widgetRect.width(), widgetRect.height())
+
+
+    #PROCESSAMENTO DO DRAH n' DROP    
+    def dragMoveEvent(self, event):
+	
+	itemData = event.mimeData().data(APLICATION_RESIZABLE_TYPE)	    
+	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)	    
+	    
+	offset = QtCore.QPoint()	
+	actionType = QtCore.QString()
+	dataStream >> actionType >> offset
+	
+	
+	updateRect = self.highlightedRect.unite(self.targetHighLightSquare(event.pos(), offset, event.source().geometry()))
+		
+	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):	
+	    #print float(event.source().geometry().width())
+	    self.highlightedRect = self.targetHighLightSquare(event.pos(), offset, event.source().geometry())	    
+	    event.acceptProposedAction() #Indicação do possivel drop
+	else:
+	    self.highlightedRect = QtCore.QRect()
+            event.ignore()
+
+	self.update(updateRect)
 
     def dragEnterEvent(self, event):	
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             event.acceptProposedAction() #Indicação do possivel drop	    
-	else:
+	else:	
             event.ignore()
 
     def dropEvent(self, event):
@@ -299,6 +335,19 @@ class DrawArea(QtGui.QWidget):
 	    
 	else:
 	    event.ignore()
+
+    def paintEvent(self, event):
+	painter = QtGui.QPainter()
+        painter.begin(self)
+        painter.fillRect(event.rect(), QtCore.Qt.white)
+
+        if self.highlightedRect.isValid():
+            painter.setBrush(QtGui.QColor(HIGHLIGHT_COLOR))
+            painter.setPen(QtCore.Qt.NoPen)
+            painter.drawRect(self.highlightedRect.adjusted(0, 0, -1, -1))
+
+
+        painter.end()
 
 
 class PropertiesDockWidget(QtGui.QDockWidget):

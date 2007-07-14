@@ -756,7 +756,7 @@ class CMonitorControls(QtCore.QObject):
 	#
 	# @Param typeControl string
 	# @Param idControl string
-	# @Param listTabs python List
+	# @Param tableItems python List
 	def changeTableItemsProperties(self, typeControl, idControl, tableItems):		
 		typeControl = str(typeControl)
 		idControl = str(idControl)
