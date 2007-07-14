@@ -70,7 +70,7 @@ class CTableWidget(QtGui.QTableWidget):
 	#
 	# @Param tableData CTableData
 	# @see CTableData
-	def setTableWidget(self, tableData):
+	def setTableWidget_(self, tableData):
 		
 		itrColumn = 0
 		itrRow = 0	
@@ -110,15 +110,15 @@ class CTableWidget(QtGui.QTableWidget):
 	
 	
 	
-	def setTableWidget_teste(self, tableData):
+	def setTableWidget(self, tableData):
 		
 		
 		#LIMPAR OS DADOS DA TABLE_WIDGET
 		self.removeAll()
 		
 		tableItems = { }
-		#tableItems = tableData.??(...)
-		
+		tableItems = tableData.getTableItems()
+
 		listIdCells = tableItems.keys()
 		listIdCells.sort()
 		nColumns = -1
@@ -130,32 +130,29 @@ class CTableWidget(QtGui.QTableWidget):
 			if IdCell[1] > nColumns:
 				nColumns = IdCell[1]
 			
-		
 		#Criar colunas na tableWidget
-		n=0
-		while n < nColumns:
-			self.insertRow(n)
-			self.setVerticalHeaderItem(n, QtGui.QTableWidgetItem(tableItems[(0,n)]))
-			itrRow +=1
-			
-		#Criar linhas na tableWidget
-		n=0		
-		while n < nLines:
-			self.insertColumn(n)
-			self.setHorizontalHeaderItem(n, QtGui.QTableWidgetItem(tableItems[(n,0)]))
+		n=1
+		while n <= nColumns:			
+			self.insertColumn(n-1)			
+			self.setHorizontalHeaderItem(n-1, QtGui.QTableWidgetItem(tableItems[(0,n)]))
 			n +=1
 		
-		nL=0
-		nC=0		
-		while nC < nColumns: #??- OU WHILE nC <=nColumns:
+		#Criar linhas na tableWidget
+		n=1		
+		while n <= nLines:			
+			self.insertRow(n-1)			
+			self.setVerticalHeaderItem(n-1, QtGui.QTableWidgetItem(tableItems[(n,0)]))
+			n +=1
 		
-		   
-			while nL < nLines: #??- OU WHILE nL <=nLines:
+		nL=1
+		nC=1		
+		while nC <= nColumns: #??- OU WHILE nC <=nColumns:		
+			while nL <= nLines: #??- OU WHILE nL <=nLines:
 				#Adicionar o item á celula
-				self.setItem(nL, nC, QtGui.QTableWidgetItem(tableItems[(nL,nC)]))
+				self.setItem(nL-1, nC-1, QtGui.QTableWidgetItem(tableItems[(nL,nC)]))
 				nL+=1
 			
-			nL=0
+			nL=1
 			nC +=1    
 		
 	
@@ -166,7 +163,7 @@ class CTableWidget(QtGui.QTableWidget):
 	#
 	# @Return CTableData
 	# @see CTableData
-	def getTableData(self):
+	def getTableData_(self):
 			
 		tableItems = { }
 		
@@ -192,20 +189,16 @@ class CTableWidget(QtGui.QTableWidget):
 				
 			itrColumn +=1
 		
-		#print tableItems
-		
 		#tableData = CTableData(rowsList, columnsList, tableItems)
 		tableData = CTableData()
 		tableData.setTableRows(rowsList)		
 		tableData.setTableColumns(columnsList)
 		tableData.setTableItems(tableItems)
 		
-		self.getTableData_teste_dict()
-		
 		return tableData
 	
 	
-	def getTableData_teste_dict(self):
+	def getTableData(self):
 		
 		tableItems = { }
 		
@@ -213,20 +206,20 @@ class CTableWidget(QtGui.QTableWidget):
 		rowsList = self.getRowsList()
 		columnsList = []
 		columnsList = self.getColumnsList()
-		
+				
 		itrColumn = 1
 		itrRow = 1
 		for column in columnsList:
 			tableItems[(0,itrColumn)] = column #Preencher campos de colunas identificadoras        
 			for line in rowsList:
 				tableItems[(itrRow,0)] = line #Preencher campos de linhas identificadores
-				idCel = (itrColumn, itrRow)
+				idCel = (itrRow, itrColumn)
 				#Obter elemento da linha,coluna				
 				tableItem = self.item(itrRow-1, itrColumn-1) #Obter o item da tabela				
 				if tableItem == None:
 					tableItem = QtGui.QTableWidgetItem("")
 				cellItem = QStringToString(QtGui.QTableWidgetItem(tableItem).text())
-				print cellItem
+				
 				tableItems[idCel] = cellItem
 		
 				itrRow +=1
@@ -234,8 +227,12 @@ class CTableWidget(QtGui.QTableWidget):
 			itrRow=1
 			itrColumn +=1
 		
-		#tableData = CTableData()
-		#return tableData 
+		tableData = CTableData()
+		tableData.setTableRows(rowsList)		
+		tableData.setTableColumns(columnsList)
+		tableData.setTableItems(tableItems)
+		
+		return tableData 
 	
 	
 
