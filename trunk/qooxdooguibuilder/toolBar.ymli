@@ -1,0 +1,28 @@
+- TLB:
+    '01':
+    - !!python/tuple ['C:/qooxdooguibuilder/qooxdooguibuilder/dialog-cancel.png',
+      New Item]
+    - !!python/tuple ['', teste]
+    G01: '300'
+    G02: '120'
+    G05: '115'
+    G06: '-'
+    G07: '-'
+    G08: '45'
+    G09: '-'
+    G10: '-'
+    G11: '-'
+    G12: '-'
+    G13: '-'
+    G14: '-'
+    G15: '-'
+    G16: '-'
+    G17: '-'
+    G18: '-'
+    G19: '-'
+    G20: '-'
+    G21: '-'
+    G22: '-'
+    G23: '-'
+    G24: 'true'
+    G25: 'true'

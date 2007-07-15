@@ -11,6 +11,7 @@ from PyQt4 import QtCore, QtGui
 from const import *
 from editItemsWidget import *
 from editTableItemsWidget import *
+from editIconsItemsWidget import *
 from generalFunctions import *
 from projectExceptions import *
 from tableWidget import *
@@ -240,6 +241,15 @@ class CResizableWidget(QtGui.QWidget):
 			self.popUpMenusExtraList.append(self.editTabsAction)
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
+		elif self.isToolsItemsControls(typeControl):
+			self.editToolItemsAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit tool items..."), self)
+			self.editToolItemsAction.setStatusTip(self.tr("Edit the tool items"))
+			self.connect(self.editToolItemsAction, QtCore.SIGNAL("triggered()"), self.editToolItems)			
+			
+			#Adicionar o pop-up menu extra á lista
+			self.popUpMenusExtraList.append(self.editToolItemsAction)
+			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
+				
 		elif self.isTableControl(typeControl):
 			self.editTableAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit table..."), self)
 			self.editTableAction.setStatusTip(self.tr("Edit the table"))
@@ -273,7 +283,14 @@ class CResizableWidget(QtGui.QWidget):
 			return true
 		except ValueError:
 			return false
-			
+	
+	def isToolsItemsControls(self, typeControl):
+		try:
+			toolControls.index(typeControl) 
+			return true
+		except ValueError:
+			return false
+	
 	def isTableControl(self, typeControl):
 		try:
 			tableControls.index(typeControl)
@@ -366,9 +383,9 @@ class CResizableWidget(QtGui.QWidget):
 		drag.setHotSpot(position - self.rect().topLeft())
 		
 		#definição de um pixmap Associada ao Drag n' Drop
-		pixmap = QtGui.QPixmap(self.rect().size())		
-		pixmap.fill(QtGui.QColor(PIXMAP_DRAG_N_DROP_COLOR))
-		drag.setPixmap(pixmap)
+		#pixmap = QtGui.QPixmap(self.rect().size())		
+		#pixmap.fill(QtGui.QColor(PIXMAP_DRAG_N_DROP_COLOR))
+		#drag.setPixmap(pixmap)
 		#***********************************************
 		#self.hide()
 		
@@ -897,6 +914,7 @@ class CResizableWidget(QtGui.QWidget):
 		except structureError_Exception, e:		
 			return e.errorId
 	
+	#TMENUBAR
 	def editMenus(self):
 		try:
 			list = []
@@ -909,6 +927,24 @@ class CResizableWidget(QtGui.QWidget):
 				
 				#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
 				self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_MENUS_CHANGED), str(self.typeControl), str(self.idControl), list)		
+		
+		except structureError_Exception, e:		
+			return e.errorId
+	
+	
+	#TTOOLBAR
+	def editToolItems(self):
+		try:
+			list = []
+			list = self.getItems()
+			widgetMenus = CEditIconsItemsWidget(TITLE_EDIT_TOOL_ITEMS, self, list)
+			if widgetMenus.exec_() == QtGui.QDialog.Accepted:				 
+				list = widgetMenus.getItemsList()
+				#Alterar na resizable respectiva do controlo os items escolhidos
+				self.setItems(list)
+				
+				#ENVIO DO SINAL PARA INFORMAR QUE FORAM ALTERADOS ITEMS DE UM CONTROLS
+				self.emit(QtCore.SIGNAL(SIGNAL_RESIZABLE_TOOLBAR_CHANGED), str(self.typeControl), str(self.idControl), list)
 		
 		except structureError_Exception, e:		
 			return e.errorId

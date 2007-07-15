@@ -530,7 +530,17 @@ class CMonitorControls(QtCore.QObject):
 				listItems = []
 				for itemText in valueProperty:					
 					listItems.append(CEditItem(itemText, QtGui.QWidget()))
-					controlWidgetReference.setTabs(listItems)
+				controlWidgetReference.setTabs(listItems)
+
+			elif typeProperty == TTOOLITEMS and valueProperty <> self.emptyParamValue:
+	
+				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
+				#Acrescentar Items ao controlo (a nivel visual)
+				listItems = []
+				for item in valueProperty:					
+					listItems.append(CEditItem(item[1], None, item[0]))
+				controlWidgetReference.setItems(listItems)
+
 
 			elif typeProperty == TTABLEITEMS and valueProperty <> self.emptyParamValue:
 				self.changeProperty(typeControl, idControl, idProperty, valueProperty)
@@ -750,6 +760,29 @@ class CMonitorControls(QtCore.QObject):
 		
 		self.changeItemsProperties(typeControl, idControl, listTabs)
 	
+	
+	## Special method for Controls with ToolItems related properties.
+	# Save the Tabs values (listItems) for a control with Tabs property related, idendified with the given typeControl, idControl.
+	#
+	# @Param typeControl string
+	# @Param idControl string
+	# @Param listTabs python List
+	def changeToolItemsProperties(self, typeControl, idControl, toolItems):		
+		typeControl = str(typeControl)
+		idControl = str(idControl)
+				
+		idPropertyItems = self.getIdItemsProperty(typeControl, idControl)
+		if idPropertyItems <> -1:			
+			list = []			
+			for item in toolItems:
+				itemIcon = (item.getIconPath(), item.getText())
+				list.append(itemIcon)
+			#****************************************************
+			#pickleList = serializeObject(listItems)
+			print list
+			#armazenar a lista de items	- Para estes controlos não existe nunhum metodo associado à resizable para a adição de items
+			self.changeProperty(typeControl, idControl, idPropertyItems, list)
+		
 	
 	## Special method for Controls with TableItens related properties.
 	# Save the TableItems values for a control with TableItems property related, idendified with the given typeControl, idControl.
