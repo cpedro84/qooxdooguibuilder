@@ -144,6 +144,8 @@ class CResizableWidget(QtGui.QWidget):
 		#VARIAVEL QUE CONTROLA SE A POSSIBILIDADE DE INTERACçÂO COM A WIDGET 
 		self.hasInteraction = true
 		
+		self.pixelsResized = 0
+		
 		
 		#*************POP-UP MENU (definição de acções)************************		
 		self.cutAction = QtGui.QAction(QtGui.QIcon("icons/edit_cut.png"), self.tr("Cu&t"), self)
@@ -345,7 +347,41 @@ class CResizableWidget(QtGui.QWidget):
 		
 		#REDIMENSIONAR TAMANHO DA WIDGET
 		self.childWidget.setGeometry(self.RectSize,self.RectSize,WidgetWidth-self.RectSize*2, WidgetHeight-self.RectSize*2)
+	
+	
+	def startDrag(self, position = None):
 		
+		if position == None:
+			position = QtCore.QPoint(self.geometry().x(), self.geometry().y())
+		
+		itemData = QtCore.QByteArray()			
+		dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
+		dataStream << QtCore.QString(DRAG_MOVE_ACTION) << QtCore.QPoint(position - self.rect().topLeft())	
+
+		mimeData = QtCore.QMimeData()
+		mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
+		
+		drag = QtGui.QDrag(self)			
+		drag.setMimeData(mimeData)		
+		drag.setHotSpot(position - self.rect().topLeft())
+		
+		#definição de um pixmap Associada ao Drag n' Drop
+		pixmap = QtGui.QPixmap(self.rect().size())		
+		pixmap.fill(QtGui.QColor(PIXMAP_DRAG_N_DROP_COLOR))
+		drag.setPixmap(pixmap)
+		#***********************************************
+		#self.hide()
+		
+		#Vai executar o operação de drag e posteriormente verificar qual a operação que foi após o drag (Após o drag o código dentro do if vai ser executado) 			
+		if drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+			self.MouseState = self.MouseRelease
+			self.mouseButtonClicked = QtCore.Qt.NoButton
+			self.show()
+		else: #Em caso de drop inválido a widget será colocada na sua posição original
+			self.MouseState = self.MouseRelease
+			self.mouseButtonClicked = QtCore.Qt.NoButton
+			self.show()
+			
 	
 	def mouseMoveEvent(self, event):
 		
@@ -409,6 +445,14 @@ class CResizableWidget(QtGui.QWidget):
 		#CASO O BOTÃO ESQUERDO DO RATO ESTEJA PRESSIONADO ENTÃO SERÁ PROCESSADO O DRAG
 		elif self.MouseState == self.MouseClicked and self.mouseButtonClicked == QtCore.Qt.LeftButton and self.pontoRef == self.noRef and (abs(event.pos().x() - self.mousePressedPos.x()) >= PIXELS_TO_DRAG or  abs(event.pos().y() - self.mousePressedPos.y()) >= PIXELS_TO_DRAG):
 			
+			
+			#Enviar sinal que irá ser realizado um drag sobre um controlo
+			#self.emit(QtCore.SIGNAL(SIGNAL_INIT_DRAG))
+			
+			#Iniciar Drag
+			self.startDrag(event.pos())
+			
+			"""
 			itemData = QtCore.QByteArray()			
 			dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
 			dataStream << QtCore.QString(DRAG_MOVE_ACTION) << QtCore.QPoint(event.pos() - self.rect().topLeft())	
@@ -420,10 +464,11 @@ class CResizableWidget(QtGui.QWidget):
 			drag.setMimeData(mimeData)		
 			drag.setHotSpot(event.pos() - self.rect().topLeft())
 			
-			pixmap = QtGui.QPixmap(self.rect().size())		
-			pixmap.fill(QtGui.QColor(QtCore.Qt.darkCyan))
-			drag.setPixmap(pixmap)
-			
+			#definição de um pixmap Associada ao Drag n' Drop
+			#pixmap = QtGui.QPixmap(self.rect().size())		
+			#pixmap.fill(QtGui.QColor())
+			#drag.setPixmap(pixmap)
+			#***********************************************
 			#self.hide()
 			
 			#Vai executar o operação de drag e posteriormente verificar qual a operação que foi após o drag (Após o drag o código dentro do if vai ser executado) 			
@@ -435,22 +480,26 @@ class CResizableWidget(QtGui.QWidget):
 				self.MouseState = self.MouseRelease
 				self.mouseButtonClicked = QtCore.Qt.NoButton
 				self.show()
+			"""
 			
 			#Enviar sinal indicando que o processo de drag foi terminando, informando que as propriedades podem ser actualizadas
 			self.emit(QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), str(self.typeControl), str(self.idControl))
-			
-			
+
 			self.setFocus()
 			self.isSelected = true			
 			self.update()
 		#****************************************************************	
 		#****************************************************************
 		#****************************************************************
-		
+		pixelsXResized = abs(event.pos().x() - self.mousePressedPos.x()) 
+		pixelsYResized = abs(event.pos().y() - self.mousePressedPos.y())
 		#ALTERAR AS DIMENSÕES DA WIDGET DE ACORDO COM A POSIÇÃO DO RATO (caso o rato esteja pressionado numa área de alteração de tamanho)		
-		if self.MouseState == self.MouseClicked:
+		if self.MouseState == self.MouseClicked: #and ((pixelsXResized == 0 or (pixelsXResized % STEP_RESIZE) == 0) or (pixelsYResized == 0 or (pixelsYResized % STEP_RESIZE) == 0)):
 
 			newRect = QtCore.QRect()
+			
+			mouseXpos = mouseXpos - (mouseXpos%STEP_RESIZE)
+			mouseYpos = mouseYpos - (mouseYpos%STEP_RESIZE)
 			
 			if self.pontoRef == self.RefRectLeftTop: # NO OK				
 				#newRect.setRect(mouseXpos, mouseYpos, widgetRect.width(), widgetRect.height())			
@@ -482,19 +531,28 @@ class CResizableWidget(QtGui.QWidget):
 			elif self.pontoRef == self.RefRectRightTop:# NO OK
 				#newRect.setRect(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
 				self.update()
+			
 			elif self.pontoRef == self.RefRectLeftBottom: #NO OK
 				#newRect.setRect(mouseXpos, widgetRect.y(), mouseXpos, mouseYpos)
 				self.update()
-			elif self.pontoRef == self.RefRectCenterBottom: #OK
+			
+			elif self.pontoRef == self.RefRectCenterBottom and (pixelsYResized == 0 or (pixelsYResized % STEP_RESIZE) == 0): #OK
 				newRect.setRect(widgetRect.x(), widgetRect.y(), widgetRect.width(), mouseYpos)
-			elif self.pontoRef == self.RefRectRightBottom: #OK
+				#newRect.setRect(widgetRect.x(), widgetRect.y(), widgetRect.width(), pixelsYResized)
+			
+			elif self.pontoRef == self.RefRectRightBottom and ((pixelsXResized == 0 or (pixelsXResized % STEP_RESIZE) == 0) or (pixelsYResized == 0 or (pixelsYResized % STEP_RESIZE) == 0)): #OK
 				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos, mouseYpos)
+				#newRect.setRect(widgetRect.x(), widgetRect.y(), pixelsXResized, pixelsYResized)
+			
 			elif self.pontoRef == self.RefRectLeft: #NO OK		
 				#newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos, 0)
 				self.update()
-			elif self.pontoRef == self.RefRectRight: #OK
-				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos,widgetRect.height())
 			
+			elif self.pontoRef == self.RefRectRight and (pixelsXResized == 0 or (pixelsXResized % STEP_RESIZE) == 0): #OK				
+				newRect.setRect(widgetRect.x(), widgetRect.y(), mouseXpos, widgetRect.height())
+				#newRect.setRect(widgetRect.x(), widgetRect.y(), pixelsXResized, widgetRect.height())
+		
+		
 			#VALIDAR NOVO TAMANHO DA RESIZABLE DE ACORDO COM OS LIMITES MINIMOS
 			if newRect.width() > MIN_RESIZABLE_WIDTH and newRect.height() > MIN_RESIZABLE_HEIGHT: #CASO SEJA VÁLIDO ENTÃO SERÁ APLICADO O NOVO TAMANHO				
 				self.resize(newRect.width(), newRect.height())
@@ -816,6 +874,8 @@ class CResizableWidget(QtGui.QWidget):
 		self.isSelected = true
 		self.setFocus()
 		self.repaint()
+	
+	
 	
 	
 	
