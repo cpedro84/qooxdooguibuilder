@@ -953,7 +953,7 @@ class CMonitorControls(QtCore.QObject):
 		
 		return self.error	
 
-	##
+	"""##
 	# Returns the default property value from a given typeControl and idProperty.
 	#
 	# @Param typeControl string
@@ -962,7 +962,23 @@ class CMonitorControls(QtCore.QObject):
 	# @return value string
 	def getDefaultPropertyValue(self, typeControl, idProperty):
 		return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
+	"""
 	
+	##
+	# Returns the default property value from a given typeControl and idProperty.
+	#
+	# @Param typeControl string
+	# @Param idProperty string
+	#
+	# @return value string
+	def getDefaultPropertyValue(self, typeControl, idProperty):
+		typeControl = str(typeControl)		
+		idProperty = str(idProperty)
+		
+		try:			
+			return self.DControlDefaultProperties[typeControl][idProperty][self.PropertyValue]
+		except:
+			return self.error
 	
 	##
 	# Returns the property value from a given typeControl and idProperty. If no property value is found then is returned -1.
@@ -1223,6 +1239,8 @@ class CMonitorControls(QtCore.QObject):
 	
 	
 	
+	
+	
 	##
 	# Returns the Id of the selected control.
 	# Ifnone control is selected -1 will be returned.
@@ -1230,6 +1248,14 @@ class CMonitorControls(QtCore.QObject):
 	# @Param string
 	def getIdSelectedControl(self):
 		return self.controlSelected[self.positionIdControl]
+	
+	
+	##
+	# Returns a list with the information about all selected controls.
+	#
+	# @Param python list
+	def getSelectedControls(self):		
+		return self.LControlsSelected
 	
 	##
 	# Returns a list with the sizes (QRect) of all widgets saved in the structures.
@@ -1252,12 +1278,7 @@ class CMonitorControls(QtCore.QObject):
 		return LWidgetsRects
 
 
-	##
-	# Returns a list with the information about all selected controls.
-	#
-	# @Param python list
-	def getSelectedControls(self):		
-		return self.LControlsSelected
+	
 
 	
 	

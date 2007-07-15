@@ -1,6 +1,6 @@
 G01:Top:0:setTop(param):TInt
 G02:Left:0:setLeft(param):TInt
-G05:Width:100:setWidth(param):TInt
+G05:Width:115:setWidth(param):TInt
 G06:MaxWidth:-:-:TInt
 G07:MinWidth:-:-:TInt
 G08:Height:30:setHeight(param):TInt

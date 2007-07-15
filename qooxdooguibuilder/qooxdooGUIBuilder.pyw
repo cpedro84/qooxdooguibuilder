@@ -84,6 +84,7 @@ class DrawArea(QtGui.QWidget):
 	self.PenWidth = 2 
 	self.RectSize = 4
 	
+	self.showEffect = false
 	
 	self.originPressed = QtCore.QPoint()
 
@@ -210,6 +211,21 @@ class DrawArea(QtGui.QWidget):
     def saveTTableItems(self, typeControl, idControl, tableItems):
 	self.monitor.changeTableItemsProperties(typeControl, idControl, tableItems)
 
+    
+    def processDrags(self):
+	
+	for selectedControl in self.monitor.getSelectedControls():
+		typeControl = selectedControl["TypeControl"]
+		idControl =  selectedControl["IdControl"]
+		controlRef = self.monitor.getValueMemRef(typeControl, idControl)
+		left = int(self.monitor.getPropertyControlValue(typeControl, idControl, ID_LEFT))
+		top = int(self.monitor.getPropertyControlValue(typeControl, idControl, ID_TOP))
+		pointOrigin = QtCore.QPoint(left, top)
+		#print selectedControl
+		#print left
+		#print top
+		controlRef.startDrag(pointOrigin)
+    
     #********************************************************* 
     #************************************************************
     def assignSignalsToControlWidget(self, newControlWidget):
@@ -229,6 +245,7 @@ class DrawArea(QtGui.QWidget):
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.saveTTableItems)
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), self.Signal_Redirect_SaveTemplateControl)
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), self.Signal_Redirect_ApplyTemplateControl)
+	#QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_INIT_DRAG), self.processDrags)
 	#*****************************************************************
 
     def targetHighLightSquare(self, position, offset, widgetRect):
@@ -242,9 +259,17 @@ class DrawArea(QtGui.QWidget):
 
 	return QtCore.QRect(dropPos.x(), dropPos.y(), widgetRect.width(), widgetRect.height())
 
-
     #PROCESSAMENTO DO DRAH n' DROP    
+    def dragLeaveEvent(self, event):
+        updateRect = self.highlightedRect
+        self.showEffect = false
+	self.highlightedRect = QtCore.QRect()
+        self.update(updateRect)
+        event.accept()
+    
+    
     def dragMoveEvent(self, event):
+
 	
 	itemData = event.mimeData().data(APLICATION_RESIZABLE_TYPE)	    
 	dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)	    
@@ -258,22 +283,28 @@ class DrawArea(QtGui.QWidget):
 		
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):	
 	    #print float(event.source().geometry().width())
+	    self.showEffect = true
 	    self.highlightedRect = self.targetHighLightSquare(event.pos(), offset, event.source().geometry())	    
 	    event.acceptProposedAction() #Indicação do possivel drop
 	else:
+	    self.showEffect = false
 	    self.highlightedRect = QtCore.QRect()
             event.ignore()
 
 	self.update(updateRect)
 
+
+
     def dragEnterEvent(self, event):	
 	if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             event.acceptProposedAction() #Indicação do possivel drop	    
-	else:	
+	else:	    
             event.ignore()
 
+
+
     def dropEvent(self, event):
-        
+
         if event.mimeData().hasFormat(APLICATION_RESIZABLE_TYPE):
             
 	    itemData = event.mimeData().data(APLICATION_RESIZABLE_TYPE)	    
@@ -288,6 +319,16 @@ class DrawArea(QtGui.QWidget):
 	    dropPos.setX(dropPos.x() - (dropPos.x() % STEP_MOVE))
 	    dropPos.setY(dropPos.y() - (dropPos.y() % STEP_MOVE))
 	    #*************************************************************************************************
+	    
+	    #***Renincialização do rectângulo com o efeito de posicionamento******
+	    updateRect = self.highlightedRect.unite(self.targetHighLightSquare(event.pos(), offset, event.source().geometry()))
+	    self.hightlightedRect = QtCore.QRect()
+	    self.showEffect = false
+	    self.update(updateRect)	    
+	    #*****************************************************************
+	    
+	    typeControl = ""
+	    idControl = ""
 	    
 	    #CASO DE CRIAÇÃO DE UM NOVO CONTROLO
 	    if actionType == DRAG_COPY_ACTION:
@@ -318,15 +359,16 @@ class DrawArea(QtGui.QWidget):
 		#Alterar as prorpriedades Left e Top de acordo com a nova posição	    
 		self.monitor.changeProperty(typeControl, idControl, ID_LEFT, str(dropPos.x()))
 		self.monitor.changeProperty(typeControl, idControl, ID_TOP, str(dropPos.y()))	
-		
-		
+	
 	    #Indicação de operação de Drop sucedida
             if event.source() in self.children():
 		event.setDropAction(QtCore.Qt.MoveAction) #indicação da acção de move, pois a o drop foi efectuado sobre a mesma widget da acção de drag
                 event.accept()
-            else:
+            else:		
                 event.acceptProposedAction()	    
 
+	    #Envio do sinal, indicando que um controlo foi posicionado na drawArea
+	    self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_DROPED), str(typeControl), str(idControl))
 	
 	    #Envio do sinal de que um controlo foi clicado, com as suas propriedades (para repreencher as propriedades na dockWidget das propriedades)    	    
 	    #self.emit(QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), typeControl, idControl)	    
@@ -334,15 +376,18 @@ class DrawArea(QtGui.QWidget):
 	    self.emit(QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED))
 	    
 	else:
+	    #Renincialização do rectângulo com o efeito de posicionamento
+	    self.hightlightedRect = QtCore.QRect()	    	    
 	    event.ignore()
+
 
     def paintEvent(self, event):
 	painter = QtGui.QPainter()
         painter.begin(self)
         painter.fillRect(event.rect(), QtCore.Qt.white)
 
-        if self.highlightedRect.isValid():
-            painter.setBrush(QtGui.QColor(HIGHLIGHT_COLOR))
+        if self.highlightedRect.isValid() and self.showEffect:            
+	    painter.setBrush(QtGui.QColor(HIGHLIGHT_COLOR))
             painter.setPen(QtCore.Qt.NoPen)
             painter.drawRect(self.highlightedRect.adjusted(0, 0, -1, -1))
 
@@ -637,7 +682,19 @@ class ControlsWidget(QtGui.QWidget):
         mimeData = QtCore.QMimeData()
         mimeData.setData(APLICATION_RESIZABLE_TYPE, itemData)
 
-        drag = QtGui.QDrag(self)
+	#Criar uma QWidget com o tamanho por defeito do controlo
+	width = int(self.monitor.getDefaultPropertyValue(main_window.control_beeing_added, ID_WIDTH))
+	height = int(self.monitor.getDefaultPropertyValue(main_window.control_beeing_added, ID_HEIGHT))
+	
+	controlWidget = QtGui.QWidget()	
+	if width <> -1 and height <> -1:
+	    rect = QtCore.QRect()	    
+	    rect.setSize(QtCore.QSize(width, height))
+	    controlWidget.setGeometry(rect)
+	    controlWidget.updateGeometry()
+	#*******************************************************
+		
+        drag = QtGui.QDrag(controlWidget)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos())
 
@@ -670,7 +727,7 @@ class MainWindow(QtGui.QMainWindow):
 	self.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_RESIZABLE_APPLY_TEMPLATE), self.applyTemplateAct)
 		
 	#formatar a central Widget
-        self.centralWidget = QtGui.QScrollArea()
+        self.centralWidget = QtGui.QScrollArea()	
         self.centralWidget.setBackgroundRole(BACKGROUNDS_COLOR)
 	#self.centralWidget.setViewportMargins(MARGIN,MARGIN,MARGIN,MARGIN)
 	self.centralWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
@@ -919,6 +976,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_PROPERTIES_TO_CHANGE), self.propertiesWidget.fillControlPropertys)
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_CLICKED), self.changeControlName)
+	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SIGNAL_CONTROL_DROPED), self.changeControlName) 
 	QtCore.QObject.connect(self.drawArea, QtCore.SIGNAL(SINGNAL_INTERFACE_CHANGED), self.setInterfaceSaved)
     
     def changeControlName(self, typeControl, idControl):
@@ -926,7 +984,7 @@ class MainWindow(QtGui.QMainWindow):
 	idControl = str(idControl)
 	
 	#Preencher a label com o nome do controlo	
-	self.controlName.setText(CONTROL_LABEL + CONTROLS_DESIGNATIONS[typeControl])
+	self.controlName.setText(CONTROL_LABEL + CONTROLS_DESIGNATIONS[typeControl] + idControl)
     
     def clearControlName(self):
 	self.controlName.setText(CONTROL_LABEL)
