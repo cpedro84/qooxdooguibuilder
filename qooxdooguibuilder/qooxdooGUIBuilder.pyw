@@ -208,12 +208,15 @@ class DrawArea(QtGui.QWidget):
     def saveTTabViewTabs(self, typeControl, idControl, tabs):
 	self.monitor.changeTabsProperties(typeControl, idControl, tabs)
 
+    def saveTToolItems(self, typeControl, idControl, toolItems):
+        self.monitor.changeToolItemsProperties(typeControl, idControl, toolItems)
+
     def saveTTableItems(self, typeControl, idControl, tableItems):
 	self.monitor.changeTableItemsProperties(typeControl, idControl, tableItems)
 
     
     def processDrags(self):
-	
+
 	for selectedControl in self.monitor.getSelectedControls():
 		typeControl = selectedControl["TypeControl"]
 		idControl =  selectedControl["IdControl"]
@@ -240,7 +243,9 @@ class DrawArea(QtGui.QWidget):
 	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE MENUS
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_MENUS_CHANGED), self.saveTListMenus)
         #PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TABS
-        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)		    
+        QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABS_CHANGED), self.saveTTabViewTabs)
+	#PARA  CONTROLOS QUE TENHAM PROPRIEDADES DE TOOL ITEMS
+	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TOOLBAR_CHANGED), self.saveTToolItems)
 	#PARA  CONTROLOS DO TIPO TTABLE QUE TENHAM PROPRIEDADES DE TTABLEITEMS 
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_TABLE_CHANGED), self.saveTTableItems)
 	QtCore.QObject.connect(newControlWidget, QtCore.SIGNAL(SIGNAL_RESIZABLE_SAVE_TEMPLATE), self.Signal_Redirect_SaveTemplateControl)
@@ -769,6 +774,7 @@ class MainWindow(QtGui.QMainWindow):
 	self.curFile = QtCore.QString("")
 	
     def createActions(self):
+
 
         self.newInterfaceAction = QtGui.QAction(QtGui.QIcon("icons/file_new.png"), "&New interface...", self)     
         self.newInterfaceAction.setShortcut("Ctrl+N")

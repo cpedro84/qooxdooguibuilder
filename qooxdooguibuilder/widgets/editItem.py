@@ -21,10 +21,10 @@ class CEditItem(QtCore.QObject):
 	#
 	# @Param text string
 	# @Param widget reference
-	def __init__(self, text, widget = None):
+	def __init__(self, text, widget = None, iconPath = ""):
 		self.text = text
 		self.widget = widget
-
+		self.iconPath = iconPath
 	
 	##
 	# Set the item's widget .
@@ -33,13 +33,24 @@ class CEditItem(QtCore.QObject):
 	def setWidget(self, widget):
 		self.widget = widget
 		
+	
 	##
 	# Set the item's text .
 	#
 	# @Param text string
 	def setText(self, text):
 		self.text = text
-		
+	
+	##
+	# Set the item's icon path .
+	#
+	# @Param iconPath string
+	def setIconPath(self, iconPath):
+		self.iconPath = iconPath
+	
+	
+	#*****************************************
+	
 	##
 	# Get item's text.
 	#	
@@ -53,3 +64,12 @@ class CEditItem(QtCore.QObject):
 	# @return reference
 	def getWidget(self):
 		return self.widget
+		
+		
+	##
+	# Get item's icon path.
+	#	
+	# @return string
+	def getIconPath(self):
+		#return QStringToString(self.iconPath)
+		return self.iconPath

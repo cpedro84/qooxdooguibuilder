@@ -20,9 +20,10 @@ SIGNAL_RESIZABLE_SELECTED = "Resizable_Selected()" #indicação que foi selecciona
 SIGNAL_PROPERTIES_TO_CHANGE = "PropertiesToChange(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 #SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de items
 SIGNAL_RESIZABLE_ITEMS_CHANGED = "Resizable_Items_Changed" #ENVIO DE: typeControl; idControl; lista de items
-SIGNAL_RESIZABLE_MENUS_CHANGED = "Resizable_Menus_Changed" #ENVIO DE: typeControl; idControl; lista de items
+SIGNAL_RESIZABLE_MENUS_CHANGED = "Resizable_Menus_Changed" #ENVIO DE: typeControl; idControl; lista de menus
 #SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Clicked(const QString &, const QString &, const QStringList &)" #ENVIO DE: typeControl; idControl; lista de tabs
 SIGNAL_RESIZABLE_TABS_CHANGED = "Resizable_Tabs_Changed" #ENVIO DE: typeControl; idControl; lista de tabs
+SIGNAL_RESIZABLE_TOOLBAR_CHANGED = "Resizable_ToolBar_Changed" #ENVIO DE: typeControl; idControl; lista de tool items
 SIGNAL_RESIZABLE_TABLE_CHANGED = "Resizable_Clicked" #ENVIO IMPLICITO DE: typeControl; idControl; tableData (objecto com os dados da tabela)
 SIGNAL_RESIZABLE_RELEASED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
 SIGNAL_RESIZABLE_KEYBOARD_MOVED = "Resizable_Released(const QString &, const QString &)" #ENVIO DE: typeControl; idControl
@@ -114,6 +115,7 @@ TSTRING = "TString"
 TBOOLEAN = "TBoolean"
 TITEMS = "TItems"
 TMENUS = "TMenus"
+TTOOLITEMS = "TToolItems"
 TTABLEITEMS = "TTableItems" 
 TTABS = "TTabs"
 TICON = "TIcon"
@@ -131,13 +133,14 @@ ALIGN_JUSTIFY = "justify"
 itemsControls = [TList, TCombo]
 menusControls = [TMenuBar]
 tabsControls = [TTabView]
+toolControls = [TToolBar]
 tableControls = [TTable]
 
 #LISTA QUE IDENTIFICA QUAIS OS TIPOS DE PROPRIEDADES COM MAIS QUE UMA OPÇÃO
 multiPropretyValues = [TBOOLEAN]
 
 #LISTA QUE IDENTIFICA QUAIS OS TIPOS DE DADOS DE PROPRIEDADE QUE NÃO SÃO PARA SER APRESENTADOS NA WIDGET DE ALTERAÇÃO DE PROPRIEDADES
-specificTypeProperties = [TITEMS, TMENUS, TTABLEITEMS, TTABS]
+specificTypeProperties = [TITEMS, TMENUS, TTABLEITEMS, TTABS, TTOOLITEMS]
 
 #TIPOS DE ERROS
 generalError = -1
@@ -153,6 +156,7 @@ TITLE_EDIT_ITEMS = TITLE_MAIN_WINDOW+" - "+"Edit items"
 TITLE_EDIT_TABS = TITLE_MAIN_WINDOW+" - "+"Edit tabs"
 TITLE_EDIT_TABLE = TITLE_MAIN_WINDOW+" - "+"Edit table"
 TITLE_EDIT_MENUS = TITLE_MAIN_WINDOW+" - "+"Edit menus"
+TITLE_EDIT_TOOL_ITEMS = TITLE_MAIN_WINDOW+" - "+"Edit tool bar items"
 TITLE_PREVIEW_APP = TITLE_MAIN_WINDOW+" - "+"Preview Interface"
 
 #DRAW AREA VIEWPORT MARGINS
@@ -220,10 +224,12 @@ TITLE_SAVE_DIALOG = "Save interface"
 TITLE_OPEN_TEMPLATE_DIALOG = "Open template"
 TITLE_SAVE_TEMPLATE_DIALOG = "Save template"
 TITLE_APPLY_TEMPLATE_DIALOG = "Apply template"
+TITLE_OPEN_ICON = "Open Icon Image File"
 ROOT_DIRECTORY = "./"
 FILES_FILTER_INTERFACE = "YAML Interface Files (*.ymli)"
 FILES_FILTER_TEMPLATE = "YAML Template Files (*.ymlt)"
 FILES_FILTER_HTML = "HTML Files (*.html)"
+FILES_FILTER_IMAGES = "Images (*.png *.xpm *.jpg)"
 FILE_EXTENSION_INTERFACE = ".ymli"
 FILE_EXTENSION_TEMPLATE = ".ymlt"
 FILE_EXTENSION_HTML = ".html"
