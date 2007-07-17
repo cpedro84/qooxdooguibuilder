@@ -52,6 +52,101 @@ pathToolbarPixmap = DIR_CONTROLS+"ToolBar.png"
 pathTreePixmap = DIR_CONTROLS+"Tree.png"
 
 
+class Configure(QtGui.QDialog):
+    def __init__(self, parent = None):
+
+        QtGui.QDialog.__init__(self, parent)
+
+        self.parent = parent
+
+        grid = QtGui.QGridLayout()
+
+        f = file('data//config.dat', 'r')
+        tmp = f.readlines()
+
+        self.controlsGB = QtGui.QGroupBox(self.tr("Controls Window Position"))
+        self.controlsLeft = QtGui.QRadioButton(self.tr("&Left"))
+        self.connect(self.controlsLeft, QtCore.SIGNAL("clicked()"), self.controlsLeftClicked) 
+        self.controlsRight = QtGui.QRadioButton(self.tr("&Right"))
+        self.connect(self.controlsRight, QtCore.SIGNAL("clicked()"), self.controlsRightClicked)
+        line = tmp[0].split(':')
+        if line[1] == 'left\n':
+            self.controlsLeft.setChecked(True)
+        else:
+            self.controlsRight.setChecked(True)
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.controlsLeft)
+        hbox.addWidget(self.controlsRight)
+        self.controlsGB.setLayout(hbox)
+        grid.addWidget(self.controlsGB, 0, 0)
+
+        self.propertiesGB = QtGui.QGroupBox(self.tr("Properties Window Position"))
+        self.propertiesLeft = QtGui.QRadioButton(self.tr("&Left"))
+        self.connect(self.propertiesLeft, QtCore.SIGNAL("clicked()"), self.propertiesLeftClicked)
+        self.propertiesRight = QtGui.QRadioButton(self.tr("&Right"))
+        self.connect(self.propertiesRight, QtCore.SIGNAL("clicked()"), self.propertiesRightClicked)
+        line = tmp[1].split(':')
+        if line[1] == 'left\n':
+            self.propertiesLeft.setChecked(True)
+        else:
+            self.propertiesRight.setChecked(True)
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.propertiesLeft)
+        hbox.addWidget(self.propertiesRight)
+        self.propertiesGB.setLayout(hbox)
+        grid.addWidget(self.propertiesGB, 1, 0)
+        
+        self.okButton = QtGui.QPushButton(self.tr("OK"))
+        self.connect(self.okButton, QtCore.SIGNAL("clicked()"), self.ok)
+        grid.addWidget(self.okButton, 3, 0)
+        
+        self.setLayout(grid)
+        self.setWindowTitle(self.tr("Configure"))
+        self.resize(175, 50)
+
+    def controlsLeftClicked(self):
+        self.parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.parent.controlsDockWidget, QtCore.Qt.Vertical)
+        if self.propertiesLeft.isChecked():
+            self.parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+        else:
+            self.parent.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+
+    def controlsRightClicked(self):
+        self.parent.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.parent.controlsDockWidget, QtCore.Qt.Vertical)
+        if self.propertiesLeft.isChecked():
+            self.parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+        else:
+            self.parent.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+
+    def propertiesLeftClicked(self):
+        self.parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+
+    def propertiesRightClicked(self):
+        self.parent.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.parent.propertiesDockWidget, QtCore.Qt.Vertical)
+
+    def ok(self):
+        f = file('data//config.dat', 'w')
+
+        f.write('controls:')
+        if self.controlsLeft.isChecked():
+            f.write('left\n')
+        else:
+            f.write('right\n')
+
+        f.write('properties:')
+        if self.propertiesLeft.isChecked():
+            f.write('left\n')
+        else:
+            f.write('right\n')
+
+        f.close()
+
+        self.parent.configureIsOpen = False
+
+        self.close()
+
+
+
 class DrawArea(QtGui.QWidget):
     def __init__(self, monitor, parent = None):	
         
@@ -547,6 +642,8 @@ class ControlsDockWidget(QtGui.QDockWidget):
         self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.setFeatures(QtGui.QDockWidget.DockWidgetClosable | QtGui.QDockWidget.DockWidgetMovable)
         self.setFixedWidth(273)
+        #self.setFixedHeight(387)
+        self.workspace = QtGui.QWorkspace()
 
 
     def closeEvent(self, event):
@@ -941,6 +1038,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDockWindows(self):
 
+        f = file('data//config.dat', 'r')
+        tmp = f.readlines()
+
 	#CONTROLS
         self.controlsWidget = ControlsWidget(self.monitor)
 
@@ -950,10 +1050,15 @@ class MainWindow(QtGui.QMainWindow):
 
         self.controlsDockWidget = ControlsDockWidget()
         self.controlsDockWidget.setWidget(self.intermediateWidget)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
 
-        
-	#PROPERTIES 	
+        line = tmp[0].split(':')
+        if line[1] == 'left\n':
+            self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
+        else:
+            self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.controlsDockWidget, QtCore.Qt.Vertical)
+
+
+        #PROPERTIES 	
 	self.controlInfoWidget = QtGui.QWidget()	
 	
 	self.controlName = QtGui.QLabel("Control: ")
@@ -970,9 +1075,15 @@ class MainWindow(QtGui.QMainWindow):
 	self.controlInfoWidget.setLayout(propertiesLayout) 
 
         self.propertiesDockWidget = PropertiesDockWidget()
-        #self.propertiesDockWidget.setWidget(self.propertiesWidget)
         self.propertiesDockWidget.setWidget(self.controlInfoWidget)
-	self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
+
+        line = tmp[1].split(':')
+        if line[1] == 'left\n':
+            self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
+        else:
+            self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.propertiesDockWidget, QtCore.Qt.Vertical)
+
+        f.close()
 
 
     def createDrawArea(self):
@@ -1324,8 +1435,9 @@ class MainWindow(QtGui.QMainWindow):
 				self.saveHTMLPage(fileNames.first())
 
     def configureAct(self):
-
-	return
+        self.configure = Configure(self)
+        self.configure.show()
+        self.configureIsOpen = True
 
 
     def undoAct(self):
@@ -1469,6 +1581,8 @@ class MainWindow(QtGui.QMainWindow):
 
     #Evento de Close da janela
     def closeEvent(self, event):
+        if self.configureIsOpen:
+            self.configure.close()
 	if not self.isInterfaceSaved():
 		
 		if self.curFile.isEmpty():
@@ -1491,6 +1605,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     control_beeing_added = 0
+    configureIsOpen = False
 
 
 #*****************************************************
