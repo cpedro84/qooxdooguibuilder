@@ -6,6 +6,7 @@
 def customizeControlJS(control_id, properties):
 
     js_control = ''
+    js_control_tmp = ''
 
     for property_key in properties.iterkeys():
         if property_key == 'Editable' and properties['Type'] == 'ComboBox':
@@ -105,8 +106,53 @@ def customizeControlJS(control_id, properties):
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        #elif property_key == 'Items' and properties['Type'] == 'Table':
-            #os itens deverão vir indexados num dicionario de dados para depois aqui serem tratados devidamente
+        elif property_key == 'Items' and properties['Type'] == 'Table':
+            js_control_tmp += 'var tableModel = new qx.ui.table.SimpleTableModel();\n\t\t\t\t'
+            js_control_tmp += 'var rowData = []\n\t\t\t\t'
+            lastRow = 0
+            lastColumn = 0
+            for x, y in properties[property_key].iterkeys():
+                if int(x) - 1 > lastRow:
+                    lastRow = int(x) - 1
+                if int(y) - 1 > lastColumn:
+                    lastColumn = int(y) - 1
+            js_control_tmp += 'for(var row = 0; row < '
+            js_control_tmp += str(lastRow + 1)
+            js_control_tmp += '; row++)\n\t\t\t\t'
+            js_control_tmp += '{\n\t\t\t\t\t'
+            js_control_tmp += 'rowData.push(["'
+            first = True
+            for x in range(0, lastColumn + 1):
+                if not first:
+                    js_control_tmp += '", "'
+                first = False
+            js_control_tmp += '"]);\n\t\t\t\t}\n\t\t\t\t'
+            column_titles = []
+            for x, y in properties[property_key].iterkeys():
+                if x == 0:
+                    column_titles.append(properties[property_key][x, y])
+                elif y != 0:
+                    js_control_tmp += 'rowData['
+                    js_control_tmp += str(int(x) - 1)
+                    js_control_tmp += ']['
+                    js_control_tmp += str(int(y) - 1)
+                    js_control_tmp += '] = "'
+                    js_control_tmp += properties[property_key][x, y]
+                    js_control_tmp += '"\n\t\t\t\t'
+            js_control_tmp += 'tableModel.setData(rowData);\n\t\t\t\t'
+            js_control_tmp += 'tableModel.setColumns(["'
+            first = True
+            for text in column_titles:
+                if not first:
+                    js_control_tmp += '", "'
+                js_control_tmp += text
+                first = False
+            js_control_tmp += '"]);\n\t\t\t\t'
+            js_control_tmp += 'var '
+            js_control_tmp += control_id
+            js_control_tmp += ' = new qx.ui.table.Table(tableModel);\n\t\t\t\t'
+            js_control_tmp += control_id
+            js_control_tmp += '.setBorder(qx.renderer.border.BorderPresets.getInstance().thinInset);\n\t\t\t\t'
 
         elif property_key == 'Tabs' and properties['Type'] == 'TabView':
             for text in properties[property_key]:
@@ -162,29 +208,30 @@ def customizeControlJS(control_id, properties):
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-        elif property_key == 'Icons' and properties['Type'] == 'ToolBar':
-            for text in properties[property_key]:
+        elif property_key == 'ToolItems' and properties['Type'] == 'ToolBar':
+            for data in properties[property_key]:
                 js_control += 'var '
                 js_control += control_id
                 js_control += '_'
-                js_control += text.replace(' ', '_')
-                js_control += ' = new qx.ui.toolbar.MenuButton("'
-                js_control += text
+                js_control += data[1].replace(' ', '_')
+                js_control += ' = new qx.ui.toolbar.Button("'
+                js_control += data[1]
+                js_control += '", "'
+                js_control += data[0]
                 js_control += '");\n\t\t\t\t'
             js_control += control_id
             js_control += '.add('
             first = True
-            for text in properties[property_key]:
+            for data in properties[property_key]:
                 if not first:
                     js_control += ', '
                 js_control += control_id
                 js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += data[1].replace(' ', '_')
                 first = False
             js_control += ');\n\t\t\t\t'
 
         #elif property_key == 'Items' and properties['Type'] == 'Tree':
-            #nao foi feito pois o controlo encontra-se inactivo na aplicação
 
         elif property_key == 'Top':
             js_control += control_id
@@ -336,7 +383,7 @@ def customizeControlJS(control_id, properties):
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
-    return js_control
+    return js_control_tmp + js_control
 
 
 def generateControlsJS(data):
@@ -432,7 +479,7 @@ def generateControlsJS(data):
                 js_controls += data[control_id]['Max']
 
         elif data[control_id]['Type'] == 'Table':
-            js_controls += ' = new qx.ui.table.Table(new qx.ui.table.SimpleTableModel()'
+            js_controls = ''
 
         elif data[control_id]['Type'] == 'TabView':
             js_controls += ' = new qx.ui.pageview.tabview.TabView('
@@ -460,11 +507,11 @@ def generateControlsJS(data):
                 js_controls += '"'
                 js_controls += data[control_id]['Label']
                 js_controls += '"'
-                
 
-        js_controls += ');\n\t\t\t\t'
+        if data[control_id]['Type'] != 'Table':
+            js_controls += ');'
+        js_controls += '\n\t\t\t\t'
 
-        
         js_controls += customizeControlJS(control_id, data[control_id])
         js_controls += control_id
         js_controls += '.addToDocument();'

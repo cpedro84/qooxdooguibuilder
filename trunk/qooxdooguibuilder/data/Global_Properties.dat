@@ -6,10 +6,10 @@ G07:MinWidth:-:-:TInt
 G08:Height:30:setHeight(param):TInt
 G09:MaxHeigth:-:-:TInt
 G10:MinHeight:-:-:TInt
-G11:ClipWidth:-:-:TBoolean
-G12:ClipHeight:-:-:TBoolean
-G13:ClipLeft:-:-:TBoolean
-G14:ClipTop:-:-:TBoolean
+G11:ClipWidth:-:-:TInt
+G12:ClipHeight:-:-:TInt
+G13:ClipLeft:-:-:TInt
+G14:ClipTop:-:-:TInt
 G15:MarginBottom:-:-:TInt
 G16:MarginLeft:-:-:TInt
 G17:MarginRight:-:-:TInt
