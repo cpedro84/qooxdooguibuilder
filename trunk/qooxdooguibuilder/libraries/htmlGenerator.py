@@ -215,7 +215,8 @@ def customizeControlJS(control_id, properties):
                 js_control += '_'
                 js_control += data[1].replace(' ', '_')
                 js_control += ' = new qx.ui.toolbar.Button("'
-                js_control += data[1]
+                if data[0] == '':
+                    js_control += data[1]
                 js_control += '", "'
                 js_control += data[0]
                 js_control += '");\n\t\t\t\t'
