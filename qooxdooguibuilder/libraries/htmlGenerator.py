@@ -209,8 +209,8 @@ def customizeControlJS(control_id, properties):
             js_control += ');\n\t\t\t\t'
 
         elif property_key == 'ToolItems' and properties['Type'] == 'ToolBar':
-            for data in properties[property_key]:
-                js_control += 'var '
+            for data in properties[property_key]:                
+		js_control += 'var '
                 js_control += control_id
                 js_control += '_'
                 js_control += data[1].replace(' ', '_')
@@ -531,7 +531,7 @@ def generateJS(title, data):
 
 
 def generateHTML(title, data):
-
+    
     html = '<html>\n\t<head>\n\t\t<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n\t\t<title>'
     html += title
     html += '</title>\n\t\t<script type="text/javascript" src="script/qx.js"></script>\n\t\t<script type="text/javascript">\n\t\t\t'

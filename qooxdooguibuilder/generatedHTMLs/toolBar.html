@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>toolBar</title>
+		<script type="text/javascript" src="script/qx.js"></script>
+		<script type="text/javascript">
+			qx.OO.defineClass("toolBar", qx.component.AbstractApplication, function(){qx.component.AbstractApplication.call(this);});
+			qx.Proto.main = function(e)
+			{
+				var toolbar0 = new qx.ui.toolbar.ToolBar();
+				toolbar0.setWidth(150);
+				var toolbar0_New_Item = new qx.ui.toolbar.Button("New Item", "C:/qooxdooguibuilder/qooxdooguibuilder/dialog-ok.png");
+				var toolbar0_New_Item = new qx.ui.toolbar.Button("New Item", "C:/qooxdooguibuilder/qooxdooguibuilder/dialog-cancel.png");
+				toolbar0.add(toolbar0_New_Item, toolbar0_New_Item);
+				toolbar0.setSelectable(true);
+				toolbar0.setLeft(240);
+				toolbar0.setTop(300);
+				toolbar0.setVisibility(true);
+				toolbar0.setHeight(50);
+				toolbar0.addToDocument();
+			};
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			qx.core.Init.getInstance().setApplication(toolBar);
+		</script>
+	</body>
+</html>
