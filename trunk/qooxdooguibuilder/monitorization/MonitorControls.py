@@ -582,6 +582,12 @@ class CMonitorControls(QtCore.QObject):
 					listMenus.append(CEditItem(itemText))
 				controlWidgetReference.setMenus(listMenus)
 			
+			elif typeProperty == TTOOLITEMS and valueProperty <> self.emptyParamValue:
+				listItems = []
+				for item in valueProperty:					
+					listItems.append(CEditItem(item[1], None, item[0]))
+				controlWidgetReference.setItems(listItems)
+						
 			elif typeProperty == TTABS and valueProperty <> self.emptyParamValue:				
 				#Acrescentar Items ao controlo
 				listItems = []
@@ -593,9 +599,13 @@ class CMonitorControls(QtCore.QObject):
 				#Construir TableData para preencher a tabela				
 				columns = valueProperty.keys()
 				rows = []
-				for column in valueProperty.keys():
-					rows = valueProperty[column].keys()
-					break
+				
+				#for column in valueProperty.keys():
+				#	print column
+					
+					#print valueProperty[column]
+					#rows = valueProperty[column].keys()
+					#break
 				
 				tableData = CTableData()				
 				tableData.setTableColumns(columns) 
@@ -778,8 +788,8 @@ class CMonitorControls(QtCore.QObject):
 				itemIcon = (item.getIconPath(), item.getText())
 				list.append(itemIcon)
 			#****************************************************
-			#pickleList = serializeObject(listItems)
-			print list
+			#pickleList = serializeObject(listItems)			
+			
 			#armazenar a lista de items	- Para estes controlos não existe nunhum metodo associado à resizable para a adição de items
 			self.changeProperty(typeControl, idControl, idPropertyItems, list)
 		
