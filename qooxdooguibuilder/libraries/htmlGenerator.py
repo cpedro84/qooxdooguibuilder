@@ -74,24 +74,28 @@ def customizeControlJS(control_id, properties):
                 js_control += '"));\n\t\t\t\t'
 
         elif property_key == 'Menus' and properties['Type'] == 'MenuBar':
+            i = 1
             for text in properties[property_key]:
                 js_control += 'var '
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_menu'
+                js_control += str(i)
                 js_control += ' = new qx.ui.toolbar.MenuButton("'
                 js_control += text
                 js_control += '");\n\t\t\t\t'
+                i += 1
             js_control += control_id
             js_control += '.add('
+            i = 1
             first = True
             for text in properties[property_key]:
                 if not first:
                     js_control += ', '
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_menu'
+                js_control += str(i)
                 first = False
+                i += 1
             js_control += ');\n\t\t\t\t'
 
         elif property_key == 'HeaderCellHeight' and properties['Type'] == 'Table':
@@ -155,11 +159,12 @@ def customizeControlJS(control_id, properties):
             js_control_tmp += '.setBorder(qx.renderer.border.BorderPresets.getInstance().thinInset);\n\t\t\t\t'
 
         elif property_key == 'Tabs' and properties['Type'] == 'TabView':
+            i = 1
             for text in properties[property_key]:
                 js_control += 'var '
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_tab'
+                js_control += str(i)
                 js_control += '_button'
                 js_control += ' = new qx.ui.pageview.tabview.Button("'
                 js_control += text
@@ -167,28 +172,29 @@ def customizeControlJS(control_id, properties):
                 js_control += control_id
                 js_control += '.getBar().add('
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_tab'
+                js_control += str(i)
                 js_control += '_button'
                 js_control += ');\n\t\t\t\t'
                 js_control += 'var '
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_tab'
+                js_control += str(i)
                 js_control += '_page'
                 js_control += ' = new qx.ui.pageview.tabview.Page('
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_tab'
+                js_control += str(i)
                 js_control += '_button'
                 js_control += ');\n\t\t\t\t'
                 js_control += control_id
                 js_control += '.getPane().add('
                 js_control += control_id
-                js_control += '_'
-                js_control += text.replace(' ', '_')
+                js_control += '_tab'
+                js_control += str(i)
                 js_control += '_page'
                 js_control += ');\n\t\t\t\t'
+                i += 1
 
         elif property_key == 'Wrap' and properties['Type'] == 'TextArea':
             js_control += control_id
@@ -209,27 +215,31 @@ def customizeControlJS(control_id, properties):
             js_control += ');\n\t\t\t\t'
 
         elif property_key == 'ToolItems' and properties['Type'] == 'ToolBar':
+            i = 1
             for data in properties[property_key]:                
 		js_control += 'var '
                 js_control += control_id
-                js_control += '_'
-                js_control += data[1].replace(' ', '_')
+                js_control += '_tool'
+                js_control += str(i)
                 js_control += ' = new qx.ui.toolbar.Button("'
                 if data[0] == '':
                     js_control += data[1]
                 js_control += '", "'
                 js_control += data[0]
                 js_control += '");\n\t\t\t\t'
+                i += 1
             js_control += control_id
             js_control += '.add('
+            i = 1
             first = True
             for data in properties[property_key]:
                 if not first:
                     js_control += ', '
                 js_control += control_id
-                js_control += '_'
-                js_control += data[1].replace(' ', '_')
+                js_control += '_tool'
+                js_control += str(i)
                 first = False
+                i += 1
             js_control += ');\n\t\t\t\t'
 
         #elif property_key == 'Items' and properties['Type'] == 'Tree':
@@ -363,12 +373,6 @@ def customizeControlJS(control_id, properties):
         elif property_key == 'PaddingTop':
             js_control += control_id
             js_control += '.setPaddingTop('
-            js_control += properties[property_key]
-            js_control += ');\n\t\t\t\t'
-
-        elif property_key == 'Border':
-            js_control += control_id
-            js_control += '.setBorder('
             js_control += properties[property_key]
             js_control += ');\n\t\t\t\t'
 
