@@ -242,7 +242,7 @@ class CResizableWidget(QtGui.QWidget):
 			self.havePopUpMenusExtra = true	#indicação da existencia de pop-up menus extra
 		
 		elif self.isToolsItemsControls(typeControl):
-			self.editToolItemsAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit tool bar items..."), self)
+			self.editToolItemsAction = QtGui.QAction(QtGui.QIcon("icons/editors.png"), self.tr("Edit tools..."), self)
 			self.editToolItemsAction.setStatusTip(self.tr("Edit the tool items"))
 			self.connect(self.editToolItemsAction, QtCore.SIGNAL("triggered()"), self.editToolItems)			
 			
