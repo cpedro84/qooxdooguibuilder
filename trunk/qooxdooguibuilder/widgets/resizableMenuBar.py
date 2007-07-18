@@ -17,6 +17,7 @@ class CResizableMenuBar(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):	
 		self.MenuBar = QtGui.QMenuBar()
 		CResizableWidget.__init__(self, typeControl, id, self.MenuBar, parent)
+				
 		self.menus = []
 			
 		"""

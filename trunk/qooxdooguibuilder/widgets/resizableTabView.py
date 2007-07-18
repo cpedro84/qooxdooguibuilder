@@ -23,7 +23,7 @@ class CResizableTabView(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.TabView = QtGui.QTabWidget()
 		CResizableWidget.__init__(self, typeControl, id, self.TabView, parent)
-		self.TabView.setEnabled(true)
+		
 	
 	##
 	# Add a tab to the TabView.

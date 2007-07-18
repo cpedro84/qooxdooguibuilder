@@ -1479,7 +1479,7 @@ class MainWindow(QtGui.QMainWindow):
 	dialog.setWindowTitle(TITLE_PREVIEW_APP)
 	
 	originParent = QtGui.QWidget(self.drawArea)	
-	originParent.setParent(dialog)
+	originParent.setParent(dialog)	
 	#FIXAR O TAMANHO DA WIDGET AO TAMANHO ACTUAL
 	originParent.setFixedSize(DRAW_AREA_WIDTH, DRAW_AREA_HEIGHT)
 	#Criar clones de todos os controlos e colocalos na dialog de pré-visualização

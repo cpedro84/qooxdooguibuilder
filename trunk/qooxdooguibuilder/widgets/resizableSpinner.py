@@ -24,6 +24,7 @@ class CResizableSpinner(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.Spinner = QtGui.QSpinBox()
 		CResizableWidget.__init__(self, typeControl, id, self.Spinner, parent)
+		self.Spinner.setReadOnly(true)
 		
 	##
 	# Set value property by the given value.	

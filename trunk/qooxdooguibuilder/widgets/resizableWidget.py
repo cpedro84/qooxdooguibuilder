@@ -47,6 +47,7 @@ class CResizableWidget(QtGui.QWidget):
 		#Formatar output da Widget que representa o controlo
 		self.childWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
 		#self.childWidget.setEnabled(false)		
+		
 		#self.childWidget.grabMouse()
 		#self.lower()
 		#self.blockSignals(true)

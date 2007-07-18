@@ -23,6 +23,8 @@ class CResizableList(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.ListView = CListWidget()
 		CResizableWidget.__init__(self, typeControl, id, self.ListView, parent)	
+		#self.ListView.setEnabled(false)
+		
 		self.items = []
 		#PROPREIDADES
 		self.selectable = bool(1)

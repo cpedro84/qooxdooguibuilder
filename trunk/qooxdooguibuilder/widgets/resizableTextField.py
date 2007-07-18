@@ -24,4 +24,6 @@ class CResizableTextField(CResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		self.TextField = QtGui.QLineEdit()
 		CResizableAbstractIO.__init__(self, typeControl, id, self.TextField, parent)
+		self.TextField.setReadOnly(true)
+		
 		self.TextField.setEchoMode(QtGui.QLineEdit.Normal)

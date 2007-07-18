@@ -28,7 +28,7 @@ class CResizableRadioButton(CResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		self.RadioButton = QtGui.QRadioButton()		
 		CResizableAbstractIO.__init__(self, typeControl, id, self.RadioButton, parent)
-
+		
 
 	##
 	# Set the checked state by the given enable value.
