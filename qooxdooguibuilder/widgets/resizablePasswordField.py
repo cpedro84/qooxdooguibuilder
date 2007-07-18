@@ -23,4 +23,6 @@ class CResizablePasswordField(CResizableAbstractIO):
 	def __init__(self, typeControl, id, parent=None):
 		self.PasswordEdit = QtGui.QLineEdit()
 		CResizableAbstractIO.__init__(self, typeControl, id, self.PasswordEdit, parent)
+		self.PasswordEdit.setReadOnly(true)
+	
 		self.PasswordEdit.setEchoMode(QtGui.QLineEdit.Password)

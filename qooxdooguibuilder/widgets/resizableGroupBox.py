@@ -23,7 +23,7 @@ class CResizableGroupBox(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.GroupBox = QtGui.QGroupBox()
 		CResizableWidget.__init__(self, typeControl, id, self.GroupBox, parent)
-
+		self.GroupBox.setEnabled(false)
 
 	##
 	# Set the legend title, with the given text, of the GroupBox

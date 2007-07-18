@@ -23,7 +23,7 @@ class CResizableComboBox(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.ComboBox = QtGui.QComboBox()
 		CResizableWidget.__init__(self, typeControl, id, self.ComboBox, parent)	
-	
+
 	
 	##
 	# Add a item text to the ComboBox.

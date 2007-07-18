@@ -26,7 +26,7 @@ class CResizableTable(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.tableWidget = CTableWidget()		
 		CResizableWidget.__init__(self, typeControl, id, self.tableWidget, parent)
-		
+		self.tableWidget.setEnabled(false)
 	
 	"""def setHeaderCellHeight(self, height):
 		self.table.

@@ -25,7 +25,7 @@ class CResizableButton(CResizableAbstractIO):
 		
 		self.Button = QtGui.QPushButton()		
 		CResizableAbstractIO.__init__(self, typeControl, id, self.Button, parent)
-	
+		
 	##
 	# Set a icon for the Resizable Button
 	#

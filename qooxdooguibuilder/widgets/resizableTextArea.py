@@ -24,7 +24,8 @@ class CResizableTextArea(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.textArea = QtGui.QTextEdit()
 		CResizableWidget.__init__(self, typeControl, id, self.textArea, parent)
-	
+		self.textArea.setReadOnly(true)
+		
 	##
 	# Set the text of the TextArea with the given text.
 	def setText(self, text):

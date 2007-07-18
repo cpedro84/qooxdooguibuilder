@@ -23,3 +23,4 @@ class CResizableTree(CResizableWidget):
 	def __init__(self, typeControl, id, parent=None):
 		self.Tree = QtGui.QTreeView()
 		CResizableWidget.__init__(self, typeControl, id, self.Tree, parent)
+		self.Tree.setEnabled(false)

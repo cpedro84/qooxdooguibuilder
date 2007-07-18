@@ -391,11 +391,11 @@ class CMonitorControls(QtCore.QObject):
 		params = {self.paramTypeControl : typeControl, self.paramIDResizable : idControl, self.paramParentResizable : parentWidget }
 		#criar ResizableWidget
 		widget = callProcedureResizableConstructor(memRefName, constructorMethod, params)		
-		widget.disableInteraction()
+		widget.disableInteraction()		
 		
 		controlInfo = self.getControlInfo(typeControl, idControl)
 		self.assignPropertiesToCloneControl(widget, memRefName, typeControl, idControl, controlInfo.getControlProperties())
-		
+	
 		return widget
 	
 	
