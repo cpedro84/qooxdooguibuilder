@@ -548,9 +548,9 @@ class CMonitorControls(QtCore.QObject):
 				#Construir TableData para preencher a tabela				
 				columns = valueProperty.keys()
 				rows = []
-				for column in valueProperty.keys():
-					rows = valueProperty[column].keys()
-					break
+				#for column in valueProperty.keys():
+					#rows = valueProperty[column].keys()
+					#break
 				
 				tableData = CTableData()				
 				tableData.setTableColumns(columns) 
